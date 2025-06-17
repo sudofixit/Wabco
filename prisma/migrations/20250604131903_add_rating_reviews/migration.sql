@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Product" ADD COLUMN     "rating" DOUBLE PRECISION DEFAULT 4.2,
+ADD COLUMN     "reviews" INTEGER DEFAULT 127;
