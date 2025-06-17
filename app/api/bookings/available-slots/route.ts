@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Extract booked time slots
-    const bookedSlots = existingBookings.map(booking => booking.bookingTime);
+    const bookedSlots = existingBookings.map((booking: { bookingTime: string | null }) => booking.bookingTime).filter(Boolean);
 
     // Generate all possible time slots (9:00 to 17:30)
     const allSlots: string[] = [];

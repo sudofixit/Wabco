@@ -60,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // Dynamic location pages
-  const locationPages = locations.map((location) => ({
+  const locationPages = locations.map((location: any) => ({
     url: `${baseUrl}/location/${location.id}`,
     lastModified: new Date(location.updatedAt),
     changeFrequency: 'monthly' as const,
@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Dynamic service booking pages
-  const servicePages = services.flatMap((service) => {
+  const servicePages = services.flatMap((service: any) => {
     const slug = generateSlug(service.title)
     return [
       {

@@ -22,7 +22,7 @@ async function findServiceBySlug(slug: string) {
     where: { isActive: true }
   });
   
-  return services.find(service => generateSlug(service.title) === slug);
+  return services.find((service: any) => generateSlug(service.title) === slug);
 }
 
 // Generate dynamic metadata for SEO
@@ -102,7 +102,7 @@ export default async function BookingPage({ params }: BookingPageProps) {
       orderBy: { name: 'asc' }
     });
 
-    const serializedLocations = locations.map(location => ({
+    const serializedLocations = locations.map((location: any) => ({
       ...location,
       createdAt: location.createdAt.toISOString(),
       updatedAt: location.updatedAt.toISOString(),

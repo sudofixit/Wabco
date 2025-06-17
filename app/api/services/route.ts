@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Convert Decimal to number for client compatibility
-    const serializedServices = services.map(service => ({
+    const serializedServices = services.map((service: any) => ({
       ...service,
       price: service.price ? Number(service.price) : null,
       createdAt: service.createdAt.toISOString(),

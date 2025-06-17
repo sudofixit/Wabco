@@ -36,7 +36,7 @@ export default async function MultiBookingPage({ searchParams }: MultiBookingPag
     }
 
     // Convert Decimal to number for client component compatibility
-    const serializedServices = services.map(service => ({
+    const serializedServices = services.map((service: any) => ({
       ...service,
       price: service.price ? Number(service.price) : null,
       createdAt: service.createdAt.toISOString(),
@@ -48,7 +48,7 @@ export default async function MultiBookingPage({ searchParams }: MultiBookingPag
       orderBy: { name: 'asc' }
     });
 
-    const serializedLocations = locations.map(location => ({
+    const serializedLocations = locations.map((location: any) => ({
       ...location,
       createdAt: location.createdAt.toISOString(),
       updatedAt: location.updatedAt.toISOString(),
