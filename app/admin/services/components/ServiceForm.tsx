@@ -80,6 +80,8 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
     const file = e.target.files?.[0];
     if (file) {
       setIsUploadingImage(true);
+      setErrors(prev => ({ ...prev, image: undefined })); // Clear any previous image errors
+      
       try {
         const uploadFormData = new FormData();
         uploadFormData.append('file', file);
@@ -89,6 +91,7 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
           uploadFormData.append('oldImageUrl', service.image);
         }
 
+        console.log('Starting image upload for service...');
         const response = await fetch('/api/upload', {
           method: 'POST',
           body: uploadFormData,
@@ -100,12 +103,18 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
           console.log('Image uploaded successfully:', data.path);
         } else {
           const err = await response.json();
-          console.error('Failed to upload file', err);
-          alert('Failed to upload image. ' + (err?.error || 'Please try again.'));
+          console.error('Failed to upload file - Response:', response.status, err);
+          setErrors(prev => ({ 
+            ...prev, 
+            image: `Upload failed: ${err?.error || 'Server error'} (${response.status})` 
+          }));
         }
-      } catch (error) {
-        console.error('Error uploading file:', error);
-        alert('Error uploading image. Please try again.');
+      } catch (error: any) {
+        console.error('Error uploading file - Network/Other error:', error);
+        setErrors(prev => ({ 
+          ...prev, 
+          image: `Upload failed: ${error?.message || 'Network error'}` 
+        }));
       } finally {
         setIsUploadingImage(false);
       }
@@ -219,7 +228,7 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
             ) : formData.image ? (
               <div className="mb-4">
                 <img 
-                  src={formData.image.startsWith('/') ? formData.image : `/${formData.image}`}
+                  src={formData.image.startsWith('http') ? formData.image : (formData.image.startsWith('/') ? formData.image : `/${formData.image}`)}
                   alt="Service preview" 
                   className="mx-auto h-[180px] w-[180px] object-cover rounded-lg border-4 border-gray-300 shadow-md"
                   onError={(e) => {

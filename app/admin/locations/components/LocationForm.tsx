@@ -292,7 +292,7 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
             ) : imagePreview ? (
               <div className="mb-4">
                 <img 
-                  src={imagePreview.startsWith('/') ? imagePreview : `/${imagePreview}`}
+                  src={imagePreview.startsWith('http') ? imagePreview : (imagePreview.startsWith('/') ? imagePreview : `/${imagePreview}`)}
                   alt="Location preview" 
                   className="mx-auto h-[180px] w-[180px] object-cover rounded-lg border-4 border-gray-300 shadow-md"
                   onError={(e) => {

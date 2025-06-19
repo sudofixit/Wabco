@@ -181,7 +181,7 @@ export default function BannerForm({
             ) : formData.image ? (
               <div className="mb-4">
                 <img 
-                  src={formData.image.startsWith('/') ? formData.image : `/${formData.image}`}
+                  src={formData.image.startsWith('http') ? formData.image : (formData.image.startsWith('/') ? formData.image : `/${formData.image}`)}
                   alt="Banner preview" 
                   className="mx-auto h-[180px] w-[180px] object-cover rounded-lg border-4 border-gray-300 shadow-md"
                   onError={(e) => {
