@@ -169,7 +169,7 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
 
         {/* Price field - smaller */}
         <div>
-          <label htmlFor="price" className="block text-sm font-semibold text-gray-900 mb-2">Price ($)</label>
+          <label htmlFor="price" className="block text-sm font-semibold text-gray-900 mb-2">Price (KES)</label>
           <input
             type="number"
             name="price"

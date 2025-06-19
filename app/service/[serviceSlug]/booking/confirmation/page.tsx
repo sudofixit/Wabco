@@ -230,7 +230,7 @@ export default async function ConfirmationPage({ searchParams }: ConfirmationPag
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/service">
               <button className="w-full sm:w-auto border-2 border-[#0a1c58] text-[#0a1c58] px-8 py-3 rounded-lg font-semibold hover:bg-[#0a1c58] hover:text-white transition">
-                Book Another Service
+                {booking.requestType === 'booking' ? 'Book Another Service' : 'Back to Quote'}
               </button>
             </Link>
             

@@ -14,6 +14,10 @@ export default function AdminLoginClient() {
     const error = searchParams.get("error");
     if (error === "CredentialsSignin") {
       toast.error("Invalid email or password");
+    } else if (error === "access_denied") {
+      toast.error("Access denied. Admin privileges required.");
+    } else if (error === "auth_error") {
+      toast.error("Authentication error. Please try logging in again.");
     }
   }, [searchParams]);
 

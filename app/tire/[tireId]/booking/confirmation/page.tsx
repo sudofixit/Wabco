@@ -247,7 +247,10 @@ export default async function TireConfirmationPage({ searchParams }: Confirmatio
               href="/tire"
               className="bg-[#0a1c58] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#132b7c] transition text-center"
             >
-              {isTireBooking ? 'Browse More Tires' : 'Back to Services'}
+              {isTireBooking 
+                ? (booking.requestType === 'booking' ? 'Browse More Tires' : 'Back to Quote')
+                : 'Back to Services'
+              }
             </Link>
             <Link 
               href="/contact-us"

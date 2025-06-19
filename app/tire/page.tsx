@@ -170,7 +170,7 @@ export default async function TirePage({ searchParams }: PageProps) {
             <p className="text-white text-lg mb-6">Buy any set of new tires and enjoy complimentary installation by certified technicians.</p>
             <div className="flex items-center gap-4">
               <Image src="/tireicon.png" alt="Save icon" width={32} height={32} />
-              <span className="text-white text-xl font-semibold">Save up to $80</span>
+              <span className="text-white text-xl font-semibold">Save up to KES 8,000</span>
             </div>
             <span className="text-white text-sm mt-2">Offer valid until Sunday</span>
           </div>

@@ -30,11 +30,21 @@ export async function PATCH(
     }
 
     // Toggle the status
-    const updatedBooking = await prisma.booking.update({
+    const updatedBookingRaw = await prisma.booking.update({
       where: { id: bookingId },
       data: { isActive: !currentBooking.isActive },
       include: { branch: true },
     });
+
+    // Serialize booking with branch data to handle Decimal lat/lng fields
+    const updatedBooking = {
+      ...updatedBookingRaw,
+      branch: updatedBookingRaw.branch ? {
+        ...updatedBookingRaw.branch,
+        lat: updatedBookingRaw.branch.lat ? Number(updatedBookingRaw.branch.lat) : null,
+        lng: updatedBookingRaw.branch.lng ? Number(updatedBookingRaw.branch.lng) : null,
+      } : null,
+    };
 
     return NextResponse.json(updatedBooking);
   } catch (error) {

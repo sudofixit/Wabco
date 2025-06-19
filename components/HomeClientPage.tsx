@@ -148,7 +148,7 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
               <Image src="/6.png" alt="Tire Rotation" fill className="object-cover absolute inset-0 opacity-30" />
               <div className="relative z-10 flex flex-col h-full justify-between">
                 {/* Price Badge */}
-                <span className="bg-white text-black font-bold text-4xl px-10 py-4 rounded-full shadow-lg rotate-[-15deg] absolute top-8 right-8 border-2 border-white" style={{letterSpacing: '2px'}}>$19.99</span>
+                <span className="bg-white text-black font-bold text-4xl px-10 py-4 rounded-full shadow-lg rotate-[-15deg] absolute top-8 right-8 border-2 border-white" style={{letterSpacing: '2px'}}>KES 1,999</span>
                 {/* Heading */}
                 <h4 className="text-4xl font-bold text-black mb-4 mt-100 font-poppins">Tire Rotation Special</h4>
                 {/* Description */}

@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     if (customerEmail) where.customerEmail = { contains: customerEmail, mode: 'insensitive' };
     if (bookingDate) where.bookingDate = new Date(bookingDate);
 
-    const [bookings, totalCount] = await Promise.all([
+    const [bookingsRaw, totalCount] = await Promise.all([
       prisma.booking.findMany({
         where,
         include: { branch: true },
@@ -28,6 +28,16 @@ export async function GET(request: Request) {
       }),
       prisma.booking.count({ where }),
     ]);
+
+    // Serialize bookings with branch data to handle Decimal lat/lng fields
+    const bookings = bookingsRaw.map((booking: any) => ({
+      ...booking,
+      branch: booking.branch ? {
+        ...booking.branch,
+        lat: booking.branch.lat ? Number(booking.branch.lat) : null,
+        lng: booking.branch.lng ? Number(booking.branch.lng) : null,
+      } : null,
+    }));
 
     return NextResponse.json({
       bookings,
@@ -66,7 +76,7 @@ export async function POST(request: Request) {
     // Convert bookingDate to Date object
     const bookingDate = body.bookingDate ? new Date(body.bookingDate) : null;
     
-    const booking = await prisma.booking.create({
+    const bookingRaw = await prisma.booking.create({
       data: {
         carYear: body.carYear,
         carMake: body.carMake,
@@ -88,6 +98,16 @@ export async function POST(request: Request) {
       },
       include: { branch: true },
     });
+
+    // Serialize booking with branch data to handle Decimal lat/lng fields
+    const booking = {
+      ...bookingRaw,
+      branch: bookingRaw.branch ? {
+        ...bookingRaw.branch,
+        lat: bookingRaw.branch.lat ? Number(bookingRaw.branch.lat) : null,
+        lng: bookingRaw.branch.lng ? Number(bookingRaw.branch.lng) : null,
+      } : null,
+    };
 
     // Log success without sensitive customer data
     console.log(`${booking.requestType} created successfully:`, {
@@ -129,8 +149,8 @@ export async function POST(request: Request) {
             tireSize: tireSize,
             quantity: booking.quantity || 1,
             branchName: booking.branchName,
-            branchAddress: booking.branch.address,
-            branchPhone: booking.branch.phone,
+            branchAddress: booking.branch?.address || '',
+            branchPhone: booking.branch?.phone || '',
             bookingDate: booking.bookingDate ? booking.bookingDate.toISOString().split('T')[0] : undefined,
             bookingTime: booking.bookingTime || undefined,
             referenceNumber: referenceNumber,
@@ -164,8 +184,8 @@ export async function POST(request: Request) {
           carMake: booking.carMake,
           carModel: booking.carModel,
           branchName: booking.branchName,
-          branchAddress: booking.branch.address,
-          branchPhone: booking.branch.phone,
+          branchAddress: booking.branch?.address || '',
+          branchPhone: booking.branch?.phone || '',
           bookingDate: booking.bookingDate ? booking.bookingDate.toISOString().split('T')[0] : undefined,
           bookingTime: booking.bookingTime || undefined,
           referenceNumber: referenceNumber,

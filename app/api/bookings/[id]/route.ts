@@ -7,14 +7,24 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const booking = await prisma.booking.findUnique({
+    const bookingRaw = await prisma.booking.findUnique({
       where: { id: parseInt(id) },
       include: { branch: true },
     });
 
-    if (!booking) {
+    if (!bookingRaw) {
       return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
+
+    // Serialize booking with branch data to handle Decimal lat/lng fields
+    const booking = {
+      ...bookingRaw,
+      branch: bookingRaw.branch ? {
+        ...bookingRaw.branch,
+        lat: bookingRaw.branch.lat ? Number(bookingRaw.branch.lat) : null,
+        lng: bookingRaw.branch.lng ? Number(bookingRaw.branch.lng) : null,
+      } : null,
+    };
 
     return NextResponse.json(booking);
   } catch (error: any) {
@@ -49,11 +59,21 @@ export async function PUT(
       updateData.branchId = parseInt(body.branchId);
     }
 
-    const booking = await prisma.booking.update({
+    const bookingRaw = await prisma.booking.update({
       where: { id: parseInt(id) },
       data: updateData,
       include: { branch: true },
     });
+
+    // Serialize booking with branch data to handle Decimal lat/lng fields
+    const booking = {
+      ...bookingRaw,
+      branch: bookingRaw.branch ? {
+        ...bookingRaw.branch,
+        lat: bookingRaw.branch.lat ? Number(bookingRaw.branch.lat) : null,
+        lng: bookingRaw.branch.lng ? Number(bookingRaw.branch.lng) : null,
+      } : null,
+    };
 
     // Log success without sensitive customer data
     console.log('Booking updated successfully:', {

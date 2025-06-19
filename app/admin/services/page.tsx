@@ -247,7 +247,7 @@ export default function ServicesPage() {
                         </td>
                         <td className="py-3 px-4 font-semibold text-[#222] align-middle break-words whitespace-normal text-base" style={{fontSize:'14px', fontWeight:600, lineHeight:'1.3'}}>{card.title}</td>
                         <td className="py-3 px-4 text-gray-700 font-medium text-sm align-middle break-words whitespace-normal">{card.description}</td>
-                        <td className="py-3 px-4 text-gray-700 font-medium text-sm align-middle whitespace-nowrap">${card.price}</td>
+                        <td className="py-3 px-4 text-gray-700 font-medium text-sm align-middle whitespace-nowrap">KES {card.price}</td>
                         <td className="py-3 px-4 align-middle">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             card.isActive 

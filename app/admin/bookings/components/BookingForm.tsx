@@ -370,8 +370,8 @@ export default function BookingForm({
                 />
                 <div className="flex-1">
                   <span className="text-sm font-medium text-gray-900">{service.title}</span>
-                  {service.price && (
-                    <span className="text-sm text-gray-700 ml-2">${service.price}</span>
+                                        {service.price && (
+                        <span className="text-sm text-gray-700 ml-2">KES {service.price}</span>
                   )}
                   {service.description && (
                     <p className="text-xs text-gray-600 mt-1">{service.description}</p>

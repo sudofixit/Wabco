@@ -6,8 +6,16 @@ export async function GET() {
     const locations = await prisma.location.findMany({
       orderBy: { createdAt: 'desc' },
     });
+    
+    // Serialize Decimal fields to numbers for client compatibility
+    const serializedLocations = locations.map((location: any) => ({
+      ...location,
+      lat: location.lat ? Number(location.lat) : null,
+      lng: location.lng ? Number(location.lng) : null,
+    }));
+    
     // Add caching headers for better performance
-    return NextResponse.json(locations, {
+    return NextResponse.json(serializedLocations, {
       headers: {
         'Cache-Control': 'public, max-age=300, stale-while-revalidate=600', // 5 minutes cache, 10 minutes stale
         'Content-Type': 'application/json',

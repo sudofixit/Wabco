@@ -11,6 +11,7 @@ interface EmailMessage {
     content: string;
   };
   toRecipients: EmailRecipient[];
+  ccRecipients?: EmailRecipient[];
   from?: {
     emailAddress: {
       address: string;
@@ -208,6 +209,13 @@ class EmailService {
           },
         },
       ],
+      ccRecipients: [
+        {
+          emailAddress: {
+            address: 'marwan.mohamud9@gmail.com',
+          },
+        },
+      ],
     };
   }
 
@@ -391,6 +399,13 @@ class EmailService {
         {
           emailAddress: {
             address: data.customerEmail, // ALWAYS send to actual customer email in both dev and prod
+          },
+        },
+      ],
+      ccRecipients: [
+        {
+          emailAddress: {
+            address: 'marwan.mohamud9@gmail.com',
           },
         },
       ],

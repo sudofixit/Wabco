@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import LogoutButton from "./LogoutButton";
@@ -22,6 +23,9 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('sidebarOpen');
@@ -29,6 +33,22 @@ export default function AdminLayout({
     }
     return false;
   });
+
+  // Authentication check
+  useEffect(() => {
+    if (status === "loading") return; // Still loading
+    
+    if (status === "unauthenticated" || !session?.user) {
+      router.push("/admin-login");
+      return;
+    }
+    
+    // Check if user has admin role
+    if (session.user.role !== "ADMIN") {
+      router.push("/admin-login");
+      return;
+    }
+  }, [session, status, router]);
 
   // Save sidebar state to localStorage
   useEffect(() => {
@@ -45,6 +65,30 @@ export default function AdminLayout({
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [sidebarOpen]);
+
+  // Show loading while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f7f7f7]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0a1c58] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while redirecting unauthenticated users
+  if (status === "unauthenticated" || !session?.user || session.user.role !== "ADMIN") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f7f7f7]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0a1c58] mx-auto mb-4"></div>
+          <p className="text-gray-600">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
 
   // If on the login page, render only the children (no layout)
   if (pathname === "/admin") {
@@ -98,7 +142,7 @@ export default function AdminLayout({
                   <path d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" stroke="#0a1c58" strokeWidth="2"/>
                 </svg>
               </div>
-              <span className="font-semibold text-[#0a1c58]">Admin</span>
+              <span className="font-semibold text-[#0a1c58]">{session.user.name || 'Admin'}</span>
             </div>
           </div>
         </div>

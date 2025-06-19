@@ -73,7 +73,7 @@ export default function ServiceTable({
               {service.description}
             </td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-              ${service.price}
+              KES {service.price}
             </td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
               <span

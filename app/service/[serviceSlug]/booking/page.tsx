@@ -104,6 +104,8 @@ export default async function BookingPage({ params }: BookingPageProps) {
 
     const serializedLocations = locations.map((location: any) => ({
       ...location,
+      lat: location.lat ? Number(location.lat) : null,
+      lng: location.lng ? Number(location.lng) : null,
       createdAt: location.createdAt.toISOString(),
       updatedAt: location.updatedAt.toISOString(),
     }));
