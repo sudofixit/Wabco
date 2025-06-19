@@ -169,6 +169,11 @@ export default function ProductForm({
 
     const formDataObj = new FormData();
     formDataObj.append("file", file);
+    
+    // If we're updating an existing product and it has an image, pass the old image URL for deletion
+    if (product?.image) {
+      formDataObj.append("oldImageUrl", product.image);
+    }
 
     try {
       const res = await fetch("/api/upload", {
@@ -183,7 +188,7 @@ export default function ProductForm({
       }
       setFormData((prev) => ({
         ...prev,
-        image: data.path, // /uploads/filename.jpg
+        image: data.path, // Cloudinary URL
       }));
     } catch (err) {
       setUploadError("Upload failed. Please try again.");

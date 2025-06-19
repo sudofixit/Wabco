@@ -61,6 +61,11 @@ export default function BrandForm({
     try {
       const formData = new FormData();
       formData.append("file", file);
+      
+      // If we're updating an existing brand and it has a logo, pass the old logo URL for deletion
+      if (brand?.logo) {
+        formData.append("oldImageUrl", brand.logo);
+      }
 
       const response = await fetch("/api/upload", {
         method: "POST",

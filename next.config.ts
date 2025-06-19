@@ -16,13 +16,29 @@ const nextConfig: NextConfig = {
         port: '3001',
         pathname: '/uploads/**',
       },
+      // Cloudinary domains
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.cloudinary.com',
+        pathname: '/**',
+      },
       {
         protocol: 'https',
         hostname: '**',
       },
     ],
-    // Allow serving images from the uploads directory
-    domains: ['localhost'],
+    // Allow serving images from the uploads directory and Cloudinary
+    domains: ['localhost', 'res.cloudinary.com', 'cloudinary.com'],
   },
   async headers() {
     return [

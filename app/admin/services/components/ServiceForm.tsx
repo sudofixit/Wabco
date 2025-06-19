@@ -83,6 +83,11 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
       try {
         const uploadFormData = new FormData();
         uploadFormData.append('file', file);
+        
+        // If we're updating an existing service and it has an image, pass the old image URL for deletion
+        if (service?.image) {
+          uploadFormData.append('oldImageUrl', service.image);
+        }
 
         const response = await fetch('/api/upload', {
           method: 'POST',

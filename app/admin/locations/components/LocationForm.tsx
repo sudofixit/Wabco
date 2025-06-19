@@ -126,6 +126,11 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
     try {
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
+      
+      // If we're updating an existing location and it has an image, pass the old image URL for deletion
+      if (location?.image) {
+        uploadFormData.append('oldImageUrl', location.image);
+      }
 
       const response = await fetch('/api/upload', {
         method: 'POST',

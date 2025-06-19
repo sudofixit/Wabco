@@ -89,6 +89,12 @@ export default function BannerForm({
       try {
         const uploadFormData = new FormData();
         uploadFormData.append('file', file);
+        
+        // If we're updating an existing banner and it has an image, pass the old image URL for deletion
+        if (banner?.image) {
+          uploadFormData.append('oldImageUrl', banner.image);
+        }
+        
         const response = await fetch('/api/upload', {
           method: 'POST',
           body: uploadFormData,
