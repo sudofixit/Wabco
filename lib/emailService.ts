@@ -304,32 +304,24 @@ class EmailService {
       const adminEmail = this.generateAdminNotificationEmail(data);
       const adminEmailPayload: GraphEmailPayload = { message: adminEmail };
 
-      // Send emails asynchronously but with better error tracking
+      // Send emails synchronously for better error tracking in production
       console.log(`🔄 Initiating email sends for ${data.referenceNumber}...`);
       
-      // Customer email
-      Promise.resolve().then(async () => {
-        try {
-          console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
-          const customerSuccess = await this.sendEmail(customerEmailPayload);
-          console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
-        } catch (error) {
-          console.error(`❌ Failed to send customer email for ${data.referenceNumber}:`, error);
-        }
-      });
+      try {
+        // Send customer email synchronously
+        console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
+        const customerSuccess = await this.sendEmail(customerEmailPayload);
+        console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
 
-      // Admin email
-      Promise.resolve().then(async () => {
-        try {
-          console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
-          const adminSuccess = await this.sendEmail(adminEmailPayload);
-          console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
-        } catch (error) {
-          console.error(`❌ Failed to send admin email for ${data.referenceNumber}:`, error);
-        }
-      });
+        // Send admin email synchronously
+        console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
+        const adminSuccess = await this.sendEmail(adminEmailPayload);
+        console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
 
-      console.log(`✅ Email sending process initiated for ${data.referenceNumber}`);
+        console.log(`✅ Email sending process completed for ${data.referenceNumber}`);
+      } catch (emailSendError) {
+        console.error(`❌ Critical email sending error for ${data.referenceNumber}:`, emailSendError);
+      }
 
     } catch (error) {
       console.error(`❌ Error in sendTireBookingEmails for ${data.referenceNumber}:`, error);
@@ -521,32 +513,24 @@ class EmailService {
       const adminEmail = this.generateServiceAdminNotificationEmail(data);
       const adminEmailPayload: GraphEmailPayload = { message: adminEmail };
 
-      // Send emails asynchronously but with better error tracking
+      // Send emails synchronously for better error tracking in production
       console.log(`🔄 Initiating email sends for ${data.referenceNumber}...`);
       
-      // Customer email
-      Promise.resolve().then(async () => {
-        try {
-          console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
-          const customerSuccess = await this.sendEmail(customerEmailPayload);
-          console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
-        } catch (error) {
-          console.error(`❌ Failed to send customer email for ${data.referenceNumber}:`, error);
-        }
-      });
+      try {
+        // Send customer email synchronously
+        console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
+        const customerSuccess = await this.sendEmail(customerEmailPayload);
+        console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
 
-      // Admin email
-      Promise.resolve().then(async () => {
-        try {
-          console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
-          const adminSuccess = await this.sendEmail(adminEmailPayload);
-          console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
-        } catch (error) {
-          console.error(`❌ Failed to send admin email for ${data.referenceNumber}:`, error);
-        }
-      });
+        // Send admin email synchronously
+        console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
+        const adminSuccess = await this.sendEmail(adminEmailPayload);
+        console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
 
-      console.log(`✅ Email sending process initiated for ${data.referenceNumber}`);
+        console.log(`✅ Email sending process completed for ${data.referenceNumber}`);
+      } catch (emailSendError) {
+        console.error(`❌ Critical email sending error for ${data.referenceNumber}:`, emailSendError);
+      }
 
     } catch (error) {
       console.error(`❌ Error in sendServiceBookingEmails for ${data.referenceNumber}:`, error);
