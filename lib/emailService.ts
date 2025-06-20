@@ -279,6 +279,22 @@ class EmailService {
       return;
     }
 
+    // Check if email service is properly configured
+    if (!this.tenantId || !this.clientId || !this.clientSecret || !this.senderEmail) {
+      console.error('❌ Email service not configured - missing environment variables');
+      console.error(`Missing: ${[
+        !this.tenantId && 'TENANT_ID',
+        !this.clientId && 'CLIENT_ID', 
+        !this.clientSecret && 'CLIENT_SECRET',
+        !this.senderEmail && 'SENDER_EMAIL'
+      ].filter(Boolean).join(', ')}`);
+      return;
+    }
+
+    console.log(`🚀 Starting email send process for ${data.requestType} ${data.referenceNumber}`);
+    console.log(`📧 Customer: ${data.customerName} (${data.customerEmail})`);
+    console.log(`🏢 Environment: ${this.isProduction ? 'Production' : 'Development'}`);
+
     try {
       // Send customer email
       const customerEmail = this.generateTireBookingEmail(data);
@@ -288,27 +304,35 @@ class EmailService {
       const adminEmail = this.generateAdminNotificationEmail(data);
       const adminEmailPayload: GraphEmailPayload = { message: adminEmail };
 
-      // Send emails asynchronously (fire-and-forget)
+      // Send emails asynchronously but with better error tracking
+      console.log(`🔄 Initiating email sends for ${data.referenceNumber}...`);
+      
+      // Customer email
       Promise.resolve().then(async () => {
         try {
+          console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
           const customerSuccess = await this.sendEmail(customerEmailPayload);
-          console.log(`Customer email sent: ${customerSuccess ? 'SUCCESS' : 'FAILED'} - ${data.referenceNumber}`);
+          console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
         } catch (error) {
-          console.error(`Failed to send customer email for ${data.referenceNumber}:`, error);
+          console.error(`❌ Failed to send customer email for ${data.referenceNumber}:`, error);
         }
       });
 
+      // Admin email
       Promise.resolve().then(async () => {
         try {
+          console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
           const adminSuccess = await this.sendEmail(adminEmailPayload);
-          console.log(`Admin email sent: ${adminSuccess ? 'SUCCESS' : 'FAILED'} - ${data.referenceNumber}`);
+          console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
         } catch (error) {
-          console.error(`Failed to send admin email for ${data.referenceNumber}:`, error);
+          console.error(`❌ Failed to send admin email for ${data.referenceNumber}:`, error);
         }
       });
+
+      console.log(`✅ Email sending process initiated for ${data.referenceNumber}`);
 
     } catch (error) {
-      console.error('Error in sendTireBookingEmails:', error);
+      console.error(`❌ Error in sendTireBookingEmails for ${data.referenceNumber}:`, error);
     }
   }
 
@@ -472,6 +496,22 @@ class EmailService {
       return;
     }
 
+    // Check if email service is properly configured
+    if (!this.tenantId || !this.clientId || !this.clientSecret || !this.senderEmail) {
+      console.error('❌ Email service not configured - missing environment variables');
+      console.error(`Missing: ${[
+        !this.tenantId && 'TENANT_ID',
+        !this.clientId && 'CLIENT_ID', 
+        !this.clientSecret && 'CLIENT_SECRET',
+        !this.senderEmail && 'SENDER_EMAIL'
+      ].filter(Boolean).join(', ')}`);
+      return;
+    }
+
+    console.log(`🚀 Starting email send process for ${data.requestType} ${data.referenceNumber}`);
+    console.log(`📧 Customer: ${data.customerName} (${data.customerEmail})`);
+    console.log(`🏢 Environment: ${this.isProduction ? 'Production' : 'Development'}`);
+
     try {
       // Send customer email
       const customerEmail = this.generateServiceBookingEmail(data);
@@ -481,27 +521,35 @@ class EmailService {
       const adminEmail = this.generateServiceAdminNotificationEmail(data);
       const adminEmailPayload: GraphEmailPayload = { message: adminEmail };
 
-      // Send emails asynchronously (fire-and-forget)
+      // Send emails asynchronously but with better error tracking
+      console.log(`🔄 Initiating email sends for ${data.referenceNumber}...`);
+      
+      // Customer email
       Promise.resolve().then(async () => {
         try {
+          console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
           const customerSuccess = await this.sendEmail(customerEmailPayload);
-          console.log(`Customer email sent: ${customerSuccess ? 'SUCCESS' : 'FAILED'} - ${data.referenceNumber}`);
+          console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
         } catch (error) {
-          console.error(`Failed to send customer email for ${data.referenceNumber}:`, error);
+          console.error(`❌ Failed to send customer email for ${data.referenceNumber}:`, error);
         }
       });
 
+      // Admin email
       Promise.resolve().then(async () => {
         try {
+          console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
           const adminSuccess = await this.sendEmail(adminEmailPayload);
-          console.log(`Admin email sent: ${adminSuccess ? 'SUCCESS' : 'FAILED'} - ${data.referenceNumber}`);
+          console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
         } catch (error) {
-          console.error(`Failed to send admin email for ${data.referenceNumber}:`, error);
+          console.error(`❌ Failed to send admin email for ${data.referenceNumber}:`, error);
         }
       });
+
+      console.log(`✅ Email sending process initiated for ${data.referenceNumber}`);
 
     } catch (error) {
-      console.error('Error in sendServiceBookingEmails:', error);
+      console.error(`❌ Error in sendServiceBookingEmails for ${data.referenceNumber}:`, error);
     }
   }
 }
