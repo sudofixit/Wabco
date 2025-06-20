@@ -72,6 +72,21 @@ class EmailService {
     this.isProduction = process.env.NODE_ENV === 'production';
     this.testEmail = process.env.TEST_EMAIL || 'admin@wabcomobility.com';
 
+    // Debug: Log environment variables safely
+    if (process.env.NODE_ENV === 'production') {
+      console.log('🌐 Running on Vercel Production');
+      console.log('DEBUG - Environment Variables:');
+      console.log('TENANT_ID:', this.tenantId ? `${this.tenantId.substring(0, 8)}...` : 'NOT SET');
+      console.log('CLIENT_ID:', this.clientId ? `${this.clientId.substring(0, 8)}...` : 'NOT SET');
+      console.log('CLIENT_SECRET:', this.clientSecret ? `${this.clientSecret.substring(0, 8)}...` : 'NOT SET');
+      console.log('SENDER_EMAIL:', this.senderEmail || 'NOT SET');
+    } else {
+      console.log('🏠 Running on localhost development');
+      console.log('CLIENT_ID:', process.env.CLIENT_ID);
+      console.log('TENANT_ID:', process.env.TENANT_ID);
+      console.log('SENDER_EMAIL:', process.env.SENDER_EMAIL);
+    }
+
     if (!this.tenantId || !this.clientId || !this.clientSecret || !this.senderEmail) {
       console.error('Missing required environment variables for email service');
     }
@@ -83,6 +98,12 @@ class EmailService {
   private async getAccessToken(): Promise<string> {
     const tokenUrl = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`;
     
+    console.log('🔐 DEBUG - Token Request Details:');
+    console.log('Token URL:', tokenUrl);
+    console.log('Client ID:', this.isProduction ? `${this.clientId.substring(0, 8)}...` : this.clientId);
+    console.log('Grant Type: client_credentials');
+    console.log('Scope: https://graph.microsoft.com/.default');
+    
     const params = new URLSearchParams();
     params.append('client_id', this.clientId);
     params.append('client_secret', this.clientSecret);
@@ -90,23 +111,41 @@ class EmailService {
     params.append('grant_type', 'client_credentials');
 
     try {
+      console.log('🌐 Making token request to Microsoft...');
       const response = await fetch(tokenUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'Wabco-Mobility-App/1.0',
         },
         body: params,
       });
 
+      console.log('📡 Token Response Status:', response.status);
+      console.log('📡 Token Response Headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('❌ Token Request Failed:');
+        console.error('Status:', response.status);
+        console.error('Response:', errorText);
         throw new Error(`Token request failed: ${response.status} - ${errorText}`);
       }
 
-      const data = await response.json();
-      return data.access_token;
-    } catch (error) {
-      console.error('Error getting access token:', error);
+      const tokenData = await response.json();
+      console.log('✅ Token Response Data:', {
+        token_type: tokenData.token_type,
+        expires_in: tokenData.expires_in,
+        access_token: tokenData.access_token ? `${tokenData.access_token.substring(0, 20)}...` : 'NOT PRESENT'
+      });
+
+      return tokenData.access_token;
+    } catch (error: any) {
+      console.error('❌ Token request error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data || 'No response data'
+      });
       throw error;
     }
   }
@@ -116,41 +155,154 @@ class EmailService {
    */
   private async sendEmail(payload: GraphEmailPayload): Promise<boolean> {
     try {
+      console.log(`🔐 Getting access token...`);
       const accessToken = await this.getAccessToken();
+      console.log(`✅ Access token obtained successfully`);
+      
       const sendMailUrl = `https://graph.microsoft.com/v1.0/users/${this.senderEmail}/sendMail`;
 
-      // Enhanced logging for diagnosis
-      console.log(`Sending email via Graph API:`);
+      // Debug: Log payload details
+      console.log(`📤 DEBUG - Email Payload Details:`);
       console.log(`- Endpoint: ${sendMailUrl}`);
       console.log(`- Sender Email: ${this.senderEmail}`);
       console.log(`- From Address: ${payload.message.from?.emailAddress?.address || 'Not specified'}`);
       console.log(`- To Address: ${payload.message.toRecipients[0]?.emailAddress?.address}`);
       console.log(`- Subject: ${payload.message.subject}`);
+      console.log(`- Content Type: ${payload.message.body.contentType}`);
+      console.log(`- Body Length: ${payload.message.body.content.length} characters`);
+      console.log(`- Access Token: ${accessToken ? `${accessToken.substring(0, 20)}...` : 'NOT PRESENT'}`);
       console.log(`- Environment: ${this.isProduction ? 'Production' : 'Development'}`);
+
+      if (this.isProduction) {
+        console.log('📧 Full Payload (Production):', {
+          message: {
+            subject: payload.message.subject,
+            toRecipients: payload.message.toRecipients.map(r => r.emailAddress.address),
+            from: payload.message.from?.emailAddress?.address,
+            body: {
+              contentType: payload.message.body.contentType,
+              content: `${payload.message.body.content.substring(0, 100)}...`
+            }
+          }
+        });
+      } else {
+        console.log('📧 Full Payload (Development):', JSON.stringify(payload, null, 2));
+      }
+
+      console.log(`🌐 Making API call to Microsoft Graph...`);
+      
+      // Add timeout and extra headers for Vercel
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log(`⏰ API call timeout after 30 seconds`);
+        controller.abort();
+      }, 30000); // 30 second timeout
 
       const response = await fetch(sendMailUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
+          'User-Agent': 'Wabco-Mobility-App/1.0',
+          'Accept': 'application/json',
         },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+      console.log(`📡 API Response received - Status: ${response.status}`);
+      console.log(`📡 Response Headers:`, Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Graph API Error Details:`);
+        console.error(`❌ Graph API Error Details:`);
         console.error(`- Status: ${response.status}`);
-        console.error(`- Response: ${errorText}`);
+        console.error(`- Status Text: ${response.statusText}`);
+        console.error(`- Response Headers:`, Object.fromEntries(response.headers.entries()));
+        console.error(`- Response Body:`, errorText);
+        
+        // Try to parse error as JSON for more details
+        try {
+          const errorJson = JSON.parse(errorText);
+          console.error(`- Parsed Error:`, errorJson);
+        } catch {
+          console.error(`- Raw Error Text:`, errorText);
+        }
+        
         throw new Error(`Send mail failed: ${response.status} - ${errorText}`);
       }
 
+      // Log successful response
+      const responseText = await response.text();
       console.log(`✅ Email sent successfully via Graph API`);
+      console.log(`📧 Response body:`, responseText || 'Empty response (normal for sendMail)');
+      
       return true;
-    } catch (error) {
-      console.error('❌ Error sending email:', error);
+    } catch (error: any) {
+      console.error('❌ CRITICAL EMAIL SEND ERROR:');
+      
+      if (error.name === 'AbortError') {
+        console.error('- Type: Timeout Error');
+        console.error('- Message: API call took longer than 30 seconds');
+        console.error('- Suggestion: Microsoft Graph API may be slow or blocked');
+      } else if (error.response) {
+        console.error('- Type: HTTP Response Error');
+        console.error('- Status:', error.response.status);
+        console.error('- Data:', error.response.data || error.response.statusText);
+      } else if (error.message) {
+        console.error('- Type: General Error');
+        console.error('- Message:', error.message);
+      } else {
+        console.error('- Type: Unknown Error');
+        console.error('- Full Error:', error);
+      }
+      
+      // Vercel-specific debugging suggestions
+      if (this.isProduction) {
+        console.error('🔧 VERCEL DEBUGGING SUGGESTIONS:');
+        console.error('1. Check if Vercel IP is blocked by Microsoft');
+        console.error('2. Verify Azure app permissions in production');
+        console.error('3. Check serverless function timeout limits');
+        console.error('4. Verify all environment variables are set correctly');
+      }
+      
       return false;
     }
+  }
+
+  /**
+   * Send email with retry logic for better reliability on Vercel
+   */
+  private async sendEmailWithRetry(payload: GraphEmailPayload, maxRetries: number = 3): Promise<boolean> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔄 Email send attempt ${attempt}/${maxRetries}`);
+        
+        const result = await this.sendEmail(payload);
+        
+        if (result) {
+          console.log(`✅ Email sent successfully on attempt ${attempt}`);
+          return true;
+        } else {
+          console.log(`❌ Email failed on attempt ${attempt}, trying again...`);
+        }
+      } catch (error: any) {
+        console.error(`❌ Attempt ${attempt} failed:`, error.message);
+        
+        if (attempt === maxRetries) {
+          console.error(`❌ All ${maxRetries} attempts failed. Giving up.`);
+          return false;
+        }
+        
+        // Exponential backoff: wait 1s, 2s, 4s between retries
+        const delay = Math.pow(2, attempt - 1) * 1000;
+        console.log(`⏳ Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    
+    return false;
   }
 
   /**
@@ -310,12 +462,12 @@ class EmailService {
       try {
         // Send customer email synchronously
         console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
-        const customerSuccess = await this.sendEmail(customerEmailPayload);
+        const customerSuccess = await this.sendEmailWithRetry(customerEmailPayload);
         console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
 
         // Send admin email synchronously
         console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
-        const adminSuccess = await this.sendEmail(adminEmailPayload);
+        const adminSuccess = await this.sendEmailWithRetry(adminEmailPayload);
         console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
 
         console.log(`✅ Email sending process completed for ${data.referenceNumber}`);
@@ -359,7 +511,7 @@ class EmailService {
     };
 
     const payload: GraphEmailPayload = { message: testMessage };
-    return await this.sendEmail(payload);
+    return await this.sendEmailWithRetry(payload);
   }
 
   /**
@@ -519,12 +671,12 @@ class EmailService {
       try {
         // Send customer email synchronously
         console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
-        const customerSuccess = await this.sendEmail(customerEmailPayload);
+        const customerSuccess = await this.sendEmailWithRetry(customerEmailPayload);
         console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
 
         // Send admin email synchronously
         console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
-        const adminSuccess = await this.sendEmail(adminEmailPayload);
+        const adminSuccess = await this.sendEmailWithRetry(adminEmailPayload);
         console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
 
         console.log(`✅ Email sending process completed for ${data.referenceNumber}`);
