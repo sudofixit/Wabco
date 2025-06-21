@@ -112,6 +112,14 @@ class EmailService {
 
     try {
       console.log('🌐 Making token request to Microsoft...');
+      
+      // Add shorter timeout for token request to identify hanging
+      const tokenController = new AbortController();
+      const tokenTimeoutId = setTimeout(() => {
+        console.log(`⏰ Token request timeout after 10 seconds`);
+        tokenController.abort();
+      }, 10000); // 10 second timeout for token request
+      
       const response = await fetch(tokenUrl, {
         method: 'POST',
         headers: {
@@ -119,7 +127,10 @@ class EmailService {
           'User-Agent': 'Wabco-Mobility-App/1.0',
         },
         body: params,
+        signal: tokenController.signal,
       });
+
+      clearTimeout(tokenTimeoutId);
 
       console.log('📡 Token Response Status:', response.status);
       console.log('📡 Token Response Headers:', Object.fromEntries(response.headers.entries()));
@@ -141,11 +152,25 @@ class EmailService {
 
       return tokenData.access_token;
     } catch (error: any) {
-      console.error('❌ Token request error:', {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data || 'No response data'
-      });
+      console.error('❌ Token request error:');
+      
+      if (error.name === 'AbortError') {
+        console.error('- Type: TOKEN REQUEST TIMEOUT');
+        console.error('- Message: Microsoft token endpoint took longer than 10 seconds');
+        console.error('- Likely Cause: Azure Conditional Access blocking Vercel IPs');
+      } else {
+        console.error('- Type: Network/Authentication Error');  
+        console.error('- Message:', error.message);
+        console.error('- Status:', error.response?.status);
+        console.error('- Data:', error.response?.data || 'No response data');
+      }
+      
+      console.error('🔧 AZURE TROUBLESHOOTING SUGGESTIONS:');
+      console.error('1. Check Azure Conditional Access policies');
+      console.error('2. Verify Azure app has no IP restrictions');
+      console.error('3. Create dedicated production Azure app registration');
+      console.error('4. Test with temporary unrestricted access');
+      
       throw error;
     }
   }
