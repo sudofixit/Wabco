@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NODE_ENV === 'production' ? 'https://wabco-mobility.com' : 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NODE_ENV === 'production' ? 'https://wabco.vercel.app' : 'http://localhost:3000'),
   title: "WABCO Mobility",
   description: "WABCO Mobility - Your trusted partner in automotive solutions",
 };

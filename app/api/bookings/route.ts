@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { emailService, TireBookingEmailData, ServiceBookingEmailData } from '@/lib/emailService';
+
+// Force Node.js runtime for proper email service execution on Vercel
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {

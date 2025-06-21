@@ -6,4 +6,4 @@ Disallow: /admin*
 Disallow: /api*
 
 # Sitemap
-Sitemap: https://wabco-mobility.com/sitemap.xml 
+Sitemap: https://wabco.vercel.app/sitemap.xml 

@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://wabco-mobility.com' 
+    ? 'https://wabco.vercel.app' 
     : 'http://localhost:3000'
 
   // Get all locations and services from database
