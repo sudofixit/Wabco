@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force Node.js runtime for proper email service execution on Vercel
+export const runtime = 'nodejs';
+
 interface ContactFormData {
   name: string;
   email: string;
@@ -318,26 +321,40 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Send emails (fire and forget)
-    contactEmailService.sendContactFormEmails({
-      name,
-      email,
-      phone,
-      message,
-      vehicleBrand,
-      vehicleModel,
-      vehicleYear,
-      subscribeToOffers
-    }).catch(error => {
-      console.error('Error sending contact form emails:', error);
-    });
+    // Send emails and wait for completion
+    try {
+      console.log('🚀 Starting email send process...');
+      const emailResult = await contactEmailService.sendContactFormEmails({
+        name,
+        email,
+        phone,
+        message,
+        vehicleBrand,
+        vehicleModel,
+        vehicleYear,
+        subscribeToOffers
+      });
 
-    // Return success immediately (don't wait for email sending)
-    return NextResponse.json({
-      success: true,
-      message: 'Thank you for your message! We will get back to you within 24 hours.',
-      timestamp: new Date().toISOString()
-    });
+      console.log(`📧 Email results - Customer: ${emailResult.customerSent ? '✅' : '❌'}, Admin: ${emailResult.adminSent ? '✅' : '❌'}`);
+
+      return NextResponse.json({
+        success: true,
+        message: 'Thank you for your message! We will get back to you within 24 hours.',
+        timestamp: new Date().toISOString(),
+        emailSent: emailResult.customerSent && emailResult.adminSent
+      });
+    } catch (emailError) {
+      console.error('❌ Email sending failed, but form submission successful:', emailError);
+      
+      // Return success even if email fails - don't block user experience
+      return NextResponse.json({
+        success: true,
+        message: 'Thank you for your message! We will get back to you within 24 hours.',
+        timestamp: new Date().toISOString(),
+        emailSent: false,
+        note: 'Form submitted successfully, but email notification may be delayed'
+      });
+    }
 
   } catch (error) {
     console.error('Contact form submission error:', error);
