@@ -125,6 +125,9 @@ class EmailService {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'User-Agent': 'Wabco-Mobility-App/1.0',
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Cache-Control': 'no-cache',
         },
         body: params,
         signal: tokenController.signal,
@@ -134,6 +137,15 @@ class EmailService {
 
       console.log('📡 Token Response Status:', response.status);
       console.log('📡 Token Response Headers:', Object.fromEntries(response.headers.entries()));
+      
+      // Check if response is compressed and log decompression info
+      const contentEncoding = response.headers.get('content-encoding');
+      const contentLength = response.headers.get('content-length');
+      console.log('📦 Response Compression Info:');
+      console.log('- Content-Encoding:', contentEncoding || 'none');
+      console.log('- Content-Length:', contentLength || 'unknown');
+      console.log('- Response.ok:', response.ok);
+      console.log('- Response.bodyUsed:', response.bodyUsed);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -230,6 +242,8 @@ class EmailService {
           'Content-Type': 'application/json',
           'User-Agent': 'Wabco-Mobility-App/1.0',
           'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Cache-Control': 'no-cache',
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
@@ -238,6 +252,15 @@ class EmailService {
       clearTimeout(timeoutId);
       console.log(`📡 API Response received - Status: ${response.status}`);
       console.log(`📡 Response Headers:`, Object.fromEntries(response.headers.entries()));
+      
+      // Check if response is compressed and log decompression info
+      const contentEncoding = response.headers.get('content-encoding');
+      const contentLength = response.headers.get('content-length');
+      console.log('📦 Email Response Compression Info:');
+      console.log('- Content-Encoding:', contentEncoding || 'none');
+      console.log('- Content-Length:', contentLength || 'unknown');
+      console.log('- Response.ok:', response.ok);
+      console.log('- Response.bodyUsed:', response.bodyUsed);
 
       if (!response.ok) {
         const errorText = await response.text();
