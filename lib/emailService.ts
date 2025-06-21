@@ -74,12 +74,20 @@ class EmailService {
 
     // Debug: Log environment variables safely
     if (process.env.NODE_ENV === 'production') {
-      console.log('🌐 Running on Vercel Production');
-      console.log('DEBUG - Environment Variables:');
-      console.log('TENANT_ID:', this.tenantId ? `${this.tenantId.substring(0, 8)}...` : 'NOT SET');
-      console.log('CLIENT_ID:', this.clientId ? `${this.clientId.substring(0, 8)}...` : 'NOT SET');
-      console.log('CLIENT_SECRET:', this.clientSecret ? `${this.clientSecret.substring(0, 8)}...` : 'NOT SET');
-      console.log('SENDER_EMAIL:', this.senderEmail || 'NOT SET');
+          console.log('🌐 Running on Vercel Production');
+    console.log('DEBUG - Environment Variables:');
+    console.log('TENANT_ID:', this.tenantId ? `${this.tenantId.substring(0, 8)}...` : 'NOT SET');
+    console.log('CLIENT_ID:', this.clientId ? `${this.clientId.substring(0, 8)}...` : 'NOT SET');
+    console.log('CLIENT_SECRET:', this.clientSecret ? `${this.clientSecret.substring(0, 8)}...` : 'NOT SET');
+    console.log('SENDER_EMAIL:', this.senderEmail || 'NOT SET');
+    
+    // Debug: Log Vercel environment info
+    console.log('🏗️ VERCEL ENVIRONMENT DEBUG:');
+    console.log('- VERCEL_URL:', process.env.VERCEL_URL || 'NOT SET');
+    console.log('- VERCEL_REGION:', process.env.VERCEL_REGION || 'NOT SET');
+    console.log('- NODE_ENV:', process.env.NODE_ENV);
+    console.log('- Time Zone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    console.log('- User Agent Context: Wabco-Mobility-App/1.0');
     } else {
       console.log('🏠 Running on localhost development');
       console.log('CLIENT_ID:', process.env.CLIENT_ID);
@@ -244,6 +252,9 @@ class EmailService {
           'Accept': 'application/json',
           'Accept-Encoding': 'gzip, deflate, br',
           'Cache-Control': 'no-cache',
+          'X-Forwarded-For': this.isProduction ? 'wabcomobility.com' : 'localhost',
+          'Origin': this.isProduction ? 'https://wabcomobility.com' : 'http://localhost:3000',
+          'Referer': this.isProduction ? 'https://wabcomobility.com' : 'http://localhost:3000',
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
