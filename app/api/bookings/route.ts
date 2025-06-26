@@ -4,6 +4,336 @@ import { emailService, TireBookingEmailData, ServiceBookingEmailData } from '@/l
 
 // Force Node.js runtime for proper email service execution on Vercel
 export const runtime = 'nodejs';
+
+// Simple Email Service for Vercel Production (same approach as contact-us)
+interface EmailRecipient {
+  emailAddress: {
+    address: string;
+  };
+}
+
+interface EmailMessage {
+  subject: string;
+  body: {
+    contentType: 'HTML' | 'Text';
+    content: string;
+  };
+  toRecipients: EmailRecipient[];
+  from?: {
+    emailAddress: {
+      address: string;
+      name?: string;
+    };
+  };
+}
+
+interface GraphEmailPayload {
+  message: EmailMessage;
+}
+
+class SimpleEmailService {
+  private tenantId: string;
+  private clientId: string;
+  private clientSecret: string;
+  private senderEmail: string;
+
+  constructor() {
+    this.tenantId = process.env.TENANT_ID || '';
+    this.clientId = process.env.CLIENT_ID || '';
+    this.clientSecret = process.env.CLIENT_SECRET || '';
+    this.senderEmail = process.env.SENDER_EMAIL || '';
+  }
+
+  /**
+   * Get access token using Client Credentials Flow
+   */
+  private async getAccessToken(): Promise<string> {
+    const tokenUrl = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`;
+    
+    const params = new URLSearchParams();
+    params.append('client_id', this.clientId);
+    params.append('client_secret', this.clientSecret);
+    params.append('scope', 'https://graph.microsoft.com/.default');
+    params.append('grant_type', 'client_credentials');
+
+    const response = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Token request failed: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.access_token;
+  }
+
+  /**
+   * Send email using Microsoft Graph API
+   */
+  private async sendEmail(payload: GraphEmailPayload): Promise<boolean> {
+    try {
+      const accessToken = await this.getAccessToken();
+      const sendMailUrl = `https://graph.microsoft.com/v1.0/users/${this.senderEmail}/sendMail`;
+
+      const response = await fetch(sendMailUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Send mail failed: ${response.status} - ${errorText}`);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error sending email:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Send tire booking/quotation emails
+   */
+  async sendTireBookingEmails(data: TireBookingEmailData): Promise<void> {
+    const isBooking = data.requestType === 'booking';
+    console.log(`🚀 [Simple] Starting email send for ${data.requestType} ${data.referenceNumber}`);
+    console.log(`📧 [Simple] Customer: ${data.customerName} (${data.customerEmail})`);
+
+    try {
+      // Customer Email
+      const customerSubject = isBooking 
+        ? 'Your Tire Booking is Confirmed' 
+        : 'Your Tire Quotation Request has been submitted';
+
+      let customerContent = `
+        <p>Dear ${data.customerName},</p>
+        <p>${isBooking ? 'Your tire booking is confirmed:' : 'Your tire quotation request has been received:'}</p>
+        <ul>
+          <li><strong>Reference Number:</strong> ${data.referenceNumber}</li>
+          <li><strong>Tire:</strong> ${data.tireBrand} ${data.tirePattern} - ${data.tireSize}</li>
+          <li><strong>Quantity:</strong> ${data.quantity}</li>
+          <li><strong>Branch:</strong> ${data.branchName}</li>
+          <li><strong>Address:</strong> ${data.branchAddress}</li>
+          <li><strong>Phone:</strong> ${data.branchPhone}</li>
+      `;
+
+      if (isBooking && data.bookingDate && data.bookingTime) {
+        customerContent += `<li><strong>Date & Time:</strong> ${data.bookingDate} at ${data.bookingTime}</li>`;
+      }
+
+      customerContent += `
+        </ul>
+        <p>${isBooking 
+          ? 'Thank you for choosing us. Please arrive 10 minutes before your appointment.' 
+          : 'We will get back to you shortly with pricing details.'
+        }</p>
+        <p>Best regards,<br/>Wabco Mobility Team</p>
+      `;
+
+      const customerEmailPayload: GraphEmailPayload = {
+        message: {
+          subject: customerSubject,
+          body: {
+            contentType: 'HTML',
+            content: customerContent,
+          },
+          toRecipients: [{
+            emailAddress: { address: data.customerEmail }
+          }],
+          from: {
+            emailAddress: {
+              address: this.senderEmail,
+              name: 'Wabco Mobility'
+            }
+          }
+        }
+      };
+
+      // Admin Email
+      const adminSubject = isBooking 
+        ? 'New Tire Booking Received' 
+        : 'New Tire Quotation Request Received';
+
+      let adminContent = `
+        <p>A new tire ${isBooking ? 'booking' : 'quotation request'} has been received:</p>
+        <ul>
+          <li><strong>Reference Number:</strong> ${data.referenceNumber}</li>
+          <li><strong>Customer:</strong> ${data.customerName} (${data.customerEmail})</li>
+          <li><strong>Tire:</strong> ${data.tireBrand} ${data.tirePattern} - ${data.tireSize}</li>
+          <li><strong>Quantity:</strong> ${data.quantity}</li>
+          <li><strong>Branch:</strong> ${data.branchName}</li>
+      `;
+
+      if (isBooking && data.bookingDate && data.bookingTime) {
+        adminContent += `<li><strong>Date & Time:</strong> ${data.bookingDate} at ${data.bookingTime}</li>`;
+      }
+
+      adminContent += `
+        </ul>
+        <p>Please follow up with the customer accordingly.</p>
+        <p>Wabco Mobility System</p>
+      `;
+
+      const adminEmailPayload: GraphEmailPayload = {
+        message: {
+          subject: adminSubject,
+          body: {
+            contentType: 'HTML',
+            content: adminContent,
+          },
+          toRecipients: [{
+            emailAddress: { address: this.senderEmail }
+          }],
+          from: {
+            emailAddress: {
+              address: this.senderEmail,
+              name: 'Wabco Mobility System'
+            }
+          }
+        }
+      };
+
+      // Send emails in parallel (like contact-us)
+      const [customerSent, adminSent] = await Promise.all([
+        this.sendEmail(customerEmailPayload),
+        this.sendEmail(adminEmailPayload)
+      ]);
+
+      console.log(`📧 [Simple] Email results - Customer: ${customerSent ? '✅' : '❌'}, Admin: ${adminSent ? '✅' : '❌'}`);
+
+    } catch (error) {
+      console.error(`❌ [Simple] Email sending failed for ${data.referenceNumber}:`, error);
+    }
+  }
+
+  /**
+   * Send service booking/quotation emails
+   */
+  async sendServiceBookingEmails(data: ServiceBookingEmailData): Promise<void> {
+    const isBooking = data.requestType === 'booking';
+    console.log(`🚀 [Simple] Starting email send for ${data.requestType} ${data.referenceNumber}`);
+    console.log(`📧 [Simple] Customer: ${data.customerName} (${data.customerEmail})`);
+
+    try {
+      // Customer Email
+      const customerSubject = isBooking 
+        ? 'Your Service Booking is Confirmed' 
+        : 'Your Service Quotation Request has been submitted';
+
+      let customerContent = `
+        <p>Dear ${data.customerName},</p>
+        <p>${isBooking ? 'Your service booking is confirmed:' : 'Your service quotation request has been received:'}</p>
+        <ul>
+          <li><strong>Reference Number:</strong> ${data.referenceNumber}</li>
+          <li><strong>Services:</strong> ${data.serviceNames}</li>
+          <li><strong>Vehicle:</strong> ${data.carYear} ${data.carMake} ${data.carModel}</li>
+          <li><strong>Branch:</strong> ${data.branchName}</li>
+          <li><strong>Address:</strong> ${data.branchAddress}</li>
+          <li><strong>Phone:</strong> ${data.branchPhone}</li>
+      `;
+
+      if (isBooking && data.bookingDate && data.bookingTime) {
+        customerContent += `<li><strong>Date & Time:</strong> ${data.bookingDate} at ${data.bookingTime}</li>`;
+      }
+
+      customerContent += `
+        </ul>
+        <p>${isBooking 
+          ? 'Thank you for choosing us. Please arrive 10 minutes before your appointment.' 
+          : 'We will get back to you shortly with pricing details.'
+        }</p>
+        <p>Best regards,<br/>Wabco Mobility Team</p>
+      `;
+
+      const customerEmailPayload: GraphEmailPayload = {
+        message: {
+          subject: customerSubject,
+          body: {
+            contentType: 'HTML',
+            content: customerContent,
+          },
+          toRecipients: [{
+            emailAddress: { address: data.customerEmail }
+          }],
+          from: {
+            emailAddress: {
+              address: this.senderEmail,
+              name: 'Wabco Mobility'
+            }
+          }
+        }
+      };
+
+      // Admin Email
+      const adminSubject = isBooking 
+        ? 'New Service Booking Received' 
+        : 'New Service Quotation Request Received';
+
+      let adminContent = `
+        <p>A new service ${isBooking ? 'booking' : 'quotation request'} has been received:</p>
+        <ul>
+          <li><strong>Reference Number:</strong> ${data.referenceNumber}</li>
+          <li><strong>Customer:</strong> ${data.customerName} (${data.customerEmail})</li>
+          <li><strong>Services:</strong> ${data.serviceNames}</li>
+          <li><strong>Vehicle:</strong> ${data.carYear} ${data.carMake} ${data.carModel}</li>
+          <li><strong>Branch:</strong> ${data.branchName}</li>
+      `;
+
+      if (isBooking && data.bookingDate && data.bookingTime) {
+        adminContent += `<li><strong>Date & Time:</strong> ${data.bookingDate} at ${data.bookingTime}</li>`;
+      }
+
+      adminContent += `
+        </ul>
+        <p>Please follow up with the customer accordingly.</p>
+        <p>Wabco Mobility System</p>
+      `;
+
+      const adminEmailPayload: GraphEmailPayload = {
+        message: {
+          subject: adminSubject,
+          body: {
+            contentType: 'HTML',
+            content: adminContent,
+          },
+          toRecipients: [{
+            emailAddress: { address: this.senderEmail }
+          }],
+          from: {
+            emailAddress: {
+              address: this.senderEmail,
+              name: 'Wabco Mobility System'
+            }
+          }
+        }
+      };
+
+      // Send emails in parallel (like contact-us)
+      const [customerSent, adminSent] = await Promise.all([
+        this.sendEmail(customerEmailPayload),
+        this.sendEmail(adminEmailPayload)
+      ]);
+
+      console.log(`📧 [Simple] Email results - Customer: ${customerSent ? '✅' : '❌'}, Admin: ${adminSent ? '✅' : '❌'}`);
+
+    } catch (error) {
+      console.error(`❌ [Simple] Email sending failed for ${data.referenceNumber}:`, error);
+    }
+  }
+}
+
+const simpleEmailService = new SimpleEmailService();
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
@@ -161,9 +491,17 @@ export async function POST(request: Request) {
             requestType: booking.requestType as 'booking' | 'quotation'
           };
 
-          // Send emails asynchronously
-          emailService.sendTireBookingEmails(emailData);
-          console.log(`Email sending initiated for ${booking.requestType} ${referenceNumber}`);
+          // Send emails using simple service (same approach as contact-us)
+          try {
+            await simpleEmailService.sendTireBookingEmails(emailData);
+            console.log(`✅ [Simple] Email sending completed for ${booking.requestType} ${referenceNumber}`);
+          } catch (simpleEmailError) {
+            console.error(`❌ [Simple] Email sending failed for ${booking.requestType} ${referenceNumber}:`, simpleEmailError);
+            // Fallback: try original service
+            console.log(`🔄 Attempting fallback to original email service...`);
+            emailService.sendTireBookingEmails(emailData);
+            console.log(`Email sending initiated (fallback) for ${booking.requestType} ${referenceNumber}`);
+          }
         }
       } catch (emailError) {
         console.error('Error preparing tire booking emails:', emailError);
@@ -196,9 +534,17 @@ export async function POST(request: Request) {
           requestType: booking.requestType as 'booking' | 'quotation'
         };
 
-        // Send emails asynchronously
-        emailService.sendServiceBookingEmails(emailData);
-        console.log(`Email sending initiated for ${booking.requestType} ${referenceNumber}`);
+        // Send emails using simple service (same approach as contact-us)
+        try {
+          await simpleEmailService.sendServiceBookingEmails(emailData);
+          console.log(`✅ [Simple] Email sending completed for ${booking.requestType} ${referenceNumber}`);
+        } catch (simpleEmailError) {
+          console.error(`❌ [Simple] Email sending failed for ${booking.requestType} ${referenceNumber}:`, simpleEmailError);
+          // Fallback: try original service
+          console.log(`🔄 Attempting fallback to original email service...`);
+          emailService.sendServiceBookingEmails(emailData);
+          console.log(`Email sending initiated (fallback) for ${booking.requestType} ${referenceNumber}`);
+        }
       } catch (emailError) {
         console.error('Error preparing service booking emails:', emailError);
         // Don't fail the booking if email fails
