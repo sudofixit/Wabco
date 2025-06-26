@@ -81,13 +81,44 @@ class SimpleEmailService {
       const accessToken = await this.getAccessToken();
       const sendMailUrl = `https://graph.microsoft.com/v1.0/users/${this.senderEmail}/sendMail`;
 
+      // Add proper headers for better deliverability
+      const enhancedPayload = {
+        ...payload,
+        message: {
+          ...payload.message,
+          // Add proper headers to avoid spam filters
+          internetMessageHeaders: [
+            {
+              name: 'X-Mailer',
+              value: 'Wabco-Mobility-App/1.0'
+            },
+            {
+              name: 'X-Priority',
+              value: '3'
+            },
+            {
+              name: 'X-MSMail-Priority',
+              value: 'Normal'
+            },
+            {
+              name: 'Importance',
+              value: 'Normal'
+            },
+            {
+              name: 'X-Report-Abuse',
+              value: 'Please report abuse here: admin@wabcomobility.com'
+            }
+          ]
+        }
+      };
+
       const response = await fetch(sendMailUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(enhancedPayload),
       });
 
       if (!response.ok) {
@@ -117,28 +148,98 @@ class SimpleEmailService {
         : 'Your Tire Quotation Request has been submitted';
 
       let customerContent = `
-        <p>Dear ${data.customerName},</p>
-        <p>${isBooking ? 'Your tire booking is confirmed:' : 'Your tire quotation request has been received:'}</p>
-        <ul>
-          <li><strong>Reference Number:</strong> ${data.referenceNumber}</li>
-          <li><strong>Tire:</strong> ${data.tireBrand} ${data.tirePattern} - ${data.tireSize}</li>
-          <li><strong>Quantity:</strong> ${data.quantity}</li>
-          <li><strong>Branch:</strong> ${data.branchName}</li>
-          <li><strong>Address:</strong> ${data.branchAddress}</li>
-          <li><strong>Phone:</strong> ${data.branchPhone}</li>
-      `;
-
-      if (isBooking && data.bookingDate && data.bookingTime) {
-        customerContent += `<li><strong>Date & Time:</strong> ${data.bookingDate} at ${data.bookingTime}</li>`;
-      }
-
-      customerContent += `
-        </ul>
-        <p>${isBooking 
-          ? 'Thank you for choosing us. Please arrive 10 minutes before your appointment.' 
-          : 'We will get back to you shortly with pricing details.'
-        }</p>
-        <p>Best regards,<br/>Wabco Mobility Team</p>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${customerSubject}</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #0a1c58; margin: 0; font-size: 24px;">WABCO Mobility</h1>
+              <p style="color: #666; margin: 10px 0 0 0;">Your Trusted Automotive Partner</p>
+            </div>
+            
+            <div style="background-color: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h2 style="color: #0a1c58; margin-top: 0;">Dear ${data.customerName},</h2>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">
+                ${isBooking ? 'Your tire booking has been confirmed successfully.' : 'Thank you for your tire quotation request. We have received your inquiry and will process it promptly.'}
+              </p>
+              
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h3 style="color: #0a1c58; margin-top: 0;">Request Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Reference Number:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.referenceNumber}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Tire:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.tireBrand} ${data.tirePattern} - ${data.tireSize}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Quantity:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.quantity}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Branch:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.branchName}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Address:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.branchAddress}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Phone:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.branchPhone}</td>
+                  </tr>
+                  ${isBooking && data.bookingDate && data.bookingTime ? `
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Date & Time:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.bookingDate} at ${data.bookingTime}</td>
+                  </tr>
+                  ` : ''}
+                </table>
+              </div>
+              
+              <div style="margin: 25px 0;">
+                <p style="font-size: 16px; margin-bottom: 15px;">
+                  ${isBooking 
+                    ? 'Please arrive 10 minutes before your scheduled appointment time. Our team will be ready to assist you with your tire installation.'
+                    : 'Our team will review your request and contact you within 24 hours with detailed pricing and availability information.'
+                  }
+                </p>
+              </div>
+              
+              <div style="background-color: #e8f4fd; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h4 style="color: #0a1c58; margin-top: 0;">Contact Information</h4>
+                <p style="margin: 5px 0;"><strong>Phone:</strong> +971 04 746 8773</p>
+                <p style="margin: 5px 0;"><strong>Email:</strong> admin@wabcomobility.com</p>
+                <p style="margin: 5px 0;"><strong>Website:</strong> www.wabcomobility.com</p>
+              </div>
+              
+              <p style="margin: 25px 0 0 0;">
+                Thank you for choosing WABCO Mobility for your automotive needs.
+              </p>
+              
+              <p style="margin: 10px 0 0 0;">
+                Best regards,<br>
+                <strong>The WABCO Mobility Team</strong>
+              </p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+              <p style="font-size: 12px; color: #666; margin: 0;">
+                This is an automated message. Please do not reply to this email.<br>
+                For inquiries, please contact us at admin@wabcomobility.com
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
       `;
 
       const customerEmailPayload: GraphEmailPayload = {
@@ -154,7 +255,7 @@ class SimpleEmailService {
           from: {
             emailAddress: {
               address: this.senderEmail,
-              name: 'Wabco Mobility'
+              name: 'WABCO Mobility'
             }
           }
         }
@@ -166,23 +267,84 @@ class SimpleEmailService {
         : 'New Tire Quotation Request Received';
 
       let adminContent = `
-        <p>A new tire ${isBooking ? 'booking' : 'quotation request'} has been received:</p>
-        <ul>
-          <li><strong>Reference Number:</strong> ${data.referenceNumber}</li>
-          <li><strong>Customer:</strong> ${data.customerName} (${data.customerEmail})</li>
-          <li><strong>Tire:</strong> ${data.tireBrand} ${data.tirePattern} - ${data.tireSize}</li>
-          <li><strong>Quantity:</strong> ${data.quantity}</li>
-          <li><strong>Branch:</strong> ${data.branchName}</li>
-      `;
-
-      if (isBooking && data.bookingDate && data.bookingTime) {
-        adminContent += `<li><strong>Date & Time:</strong> ${data.bookingDate} at ${data.bookingTime}</li>`;
-      }
-
-      adminContent += `
-        </ul>
-        <p>Please follow up with the customer accordingly.</p>
-        <p>Wabco Mobility System</p>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${adminSubject}</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #0a1c58; margin: 0; font-size: 24px;">WABCO Mobility</h1>
+              <p style="color: #666; margin: 10px 0 0 0;">System Notification</p>
+            </div>
+            
+            <div style="background-color: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h2 style="color: #0a1c58; margin-top: 0;">${adminSubject}</h2>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">
+                A new tire ${isBooking ? 'booking' : 'quotation request'} has been submitted through the website.
+              </p>
+              
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h3 style="color: #0a1c58; margin-top: 0;">Customer Information</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Reference Number:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.referenceNumber}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Customer Name:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.customerName}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Customer Email:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.customerEmail}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Tire:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.tireBrand} ${data.tirePattern} - ${data.tireSize}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Quantity:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.quantity}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Branch:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.branchName}</td>
+                  </tr>
+                  ${isBooking && data.bookingDate && data.bookingTime ? `
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Date & Time:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.bookingDate} at ${data.bookingTime}</td>
+                  </tr>
+                  ` : ''}
+                </table>
+              </div>
+              
+              <div style="background-color: #fff3cd; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                <h4 style="color: #856404; margin-top: 0;">Action Required</h4>
+                <p style="margin: 5px 0; color: #856404;">
+                  ${isBooking 
+                    ? 'Please prepare for the customer appointment and ensure all necessary equipment is available.'
+                    : 'Please review the quotation request and contact the customer within 24 hours with pricing details.'
+                  }
+                </p>
+              </div>
+              
+              <p style="margin: 25px 0 0 0;">
+                <strong>Submission Time:</strong> ${new Date().toLocaleString()}
+              </p>
+              
+              <p style="margin: 10px 0 0 0;">
+                WABCO Mobility System
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
       `;
 
       const adminEmailPayload: GraphEmailPayload = {
@@ -198,7 +360,7 @@ class SimpleEmailService {
           from: {
             emailAddress: {
               address: this.senderEmail,
-              name: 'Wabco Mobility System'
+              name: 'WABCO Mobility System'
             }
           }
         }
@@ -232,28 +394,98 @@ class SimpleEmailService {
         : 'Your Service Quotation Request has been submitted';
 
       let customerContent = `
-        <p>Dear ${data.customerName},</p>
-        <p>${isBooking ? 'Your service booking is confirmed:' : 'Your service quotation request has been received:'}</p>
-        <ul>
-          <li><strong>Reference Number:</strong> ${data.referenceNumber}</li>
-          <li><strong>Services:</strong> ${data.serviceNames}</li>
-          <li><strong>Vehicle:</strong> ${data.carYear} ${data.carMake} ${data.carModel}</li>
-          <li><strong>Branch:</strong> ${data.branchName}</li>
-          <li><strong>Address:</strong> ${data.branchAddress}</li>
-          <li><strong>Phone:</strong> ${data.branchPhone}</li>
-      `;
-
-      if (isBooking && data.bookingDate && data.bookingTime) {
-        customerContent += `<li><strong>Date & Time:</strong> ${data.bookingDate} at ${data.bookingTime}</li>`;
-      }
-
-      customerContent += `
-        </ul>
-        <p>${isBooking 
-          ? 'Thank you for choosing us. Please arrive 10 minutes before your appointment.' 
-          : 'We will get back to you shortly with pricing details.'
-        }</p>
-        <p>Best regards,<br/>Wabco Mobility Team</p>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${customerSubject}</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #0a1c58; margin: 0; font-size: 24px;">WABCO Mobility</h1>
+              <p style="color: #666; margin: 10px 0 0 0;">Your Trusted Automotive Partner</p>
+            </div>
+            
+            <div style="background-color: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h2 style="color: #0a1c58; margin-top: 0;">Dear ${data.customerName},</h2>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">
+                ${isBooking ? 'Your service booking has been confirmed successfully.' : 'Thank you for your service quotation request. We have received your inquiry and will process it promptly.'}
+              </p>
+              
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h3 style="color: #0a1c58; margin-top: 0;">Request Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Reference Number:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.referenceNumber}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Services:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.serviceNames}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Vehicle:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.carYear} ${data.carMake} ${data.carModel}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Branch:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.branchName}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Address:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.branchAddress}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Phone:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.branchPhone}</td>
+                  </tr>
+                  ${isBooking && data.bookingDate && data.bookingTime ? `
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Date & Time:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.bookingDate} at ${data.bookingTime}</td>
+                  </tr>
+                  ` : ''}
+                </table>
+              </div>
+              
+              <div style="margin: 25px 0;">
+                <p style="font-size: 16px; margin-bottom: 15px;">
+                  ${isBooking 
+                    ? 'Please arrive 10 minutes before your scheduled appointment time. Our team will be ready to assist you with your vehicle service.'
+                    : 'Our team will review your request and contact you within 24 hours with detailed pricing and availability information.'
+                  }
+                </p>
+              </div>
+              
+              <div style="background-color: #e8f4fd; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h4 style="color: #0a1c58; margin-top: 0;">Contact Information</h4>
+                <p style="margin: 5px 0;"><strong>Phone:</strong> +971 04 746 8773</p>
+                <p style="margin: 5px 0;"><strong>Email:</strong> admin@wabcomobility.com</p>
+                <p style="margin: 5px 0;"><strong>Website:</strong> www.wabcomobility.com</p>
+              </div>
+              
+              <p style="margin: 25px 0 0 0;">
+                Thank you for choosing WABCO Mobility for your automotive needs.
+              </p>
+              
+              <p style="margin: 10px 0 0 0;">
+                Best regards,<br>
+                <strong>The WABCO Mobility Team</strong>
+              </p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+              <p style="font-size: 12px; color: #666; margin: 0;">
+                This is an automated message. Please do not reply to this email.<br>
+                For inquiries, please contact us at admin@wabcomobility.com
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
       `;
 
       const customerEmailPayload: GraphEmailPayload = {
@@ -269,7 +501,7 @@ class SimpleEmailService {
           from: {
             emailAddress: {
               address: this.senderEmail,
-              name: 'Wabco Mobility'
+              name: 'WABCO Mobility'
             }
           }
         }
@@ -281,23 +513,84 @@ class SimpleEmailService {
         : 'New Service Quotation Request Received';
 
       let adminContent = `
-        <p>A new service ${isBooking ? 'booking' : 'quotation request'} has been received:</p>
-        <ul>
-          <li><strong>Reference Number:</strong> ${data.referenceNumber}</li>
-          <li><strong>Customer:</strong> ${data.customerName} (${data.customerEmail})</li>
-          <li><strong>Services:</strong> ${data.serviceNames}</li>
-          <li><strong>Vehicle:</strong> ${data.carYear} ${data.carMake} ${data.carModel}</li>
-          <li><strong>Branch:</strong> ${data.branchName}</li>
-      `;
-
-      if (isBooking && data.bookingDate && data.bookingTime) {
-        adminContent += `<li><strong>Date & Time:</strong> ${data.bookingDate} at ${data.bookingTime}</li>`;
-      }
-
-      adminContent += `
-        </ul>
-        <p>Please follow up with the customer accordingly.</p>
-        <p>Wabco Mobility System</p>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${adminSubject}</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #0a1c58; margin: 0; font-size: 24px;">WABCO Mobility</h1>
+              <p style="color: #666; margin: 10px 0 0 0;">System Notification</p>
+            </div>
+            
+            <div style="background-color: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h2 style="color: #0a1c58; margin-top: 0;">${adminSubject}</h2>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">
+                A new service ${isBooking ? 'booking' : 'quotation request'} has been submitted through the website.
+              </p>
+              
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h3 style="color: #0a1c58; margin-top: 0;">Customer Information</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Reference Number:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.referenceNumber}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Customer Name:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.customerName}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Customer Email:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.customerEmail}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Services:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.serviceNames}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Vehicle:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.carYear} ${data.carMake} ${data.carModel}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Branch:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.branchName}</td>
+                  </tr>
+                  ${isBooking && data.bookingDate && data.bookingTime ? `
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555;">Date & Time:</td>
+                    <td style="padding: 8px 0; color: #333;">${data.bookingDate} at ${data.bookingTime}</td>
+                  </tr>
+                  ` : ''}
+                </table>
+              </div>
+              
+              <div style="background-color: #fff3cd; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                <h4 style="color: #856404; margin-top: 0;">Action Required</h4>
+                <p style="margin: 5px 0; color: #856404;">
+                  ${isBooking 
+                    ? 'Please prepare for the customer appointment and ensure all necessary equipment is available.'
+                    : 'Please review the quotation request and contact the customer within 24 hours with pricing details.'
+                  }
+                </p>
+              </div>
+              
+              <p style="margin: 25px 0 0 0;">
+                <strong>Submission Time:</strong> ${new Date().toLocaleString()}
+              </p>
+              
+              <p style="margin: 10px 0 0 0;">
+                WABCO Mobility System
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
       `;
 
       const adminEmailPayload: GraphEmailPayload = {
@@ -313,7 +606,7 @@ class SimpleEmailService {
           from: {
             emailAddress: {
               address: this.senderEmail,
-              name: 'Wabco Mobility System'
+              name: 'WABCO Mobility System'
             }
           }
         }
@@ -392,8 +685,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    // Log only non-sensitive booking info for debugging
-    console.log(`Creating ${body.requestType}:`, {
+    console.log('Creating quotation:', {
       services: body.services,
       branchId: body.branchId,
       branchName: body.branchName,
@@ -556,4 +848,4 @@ export async function POST(request: Request) {
     console.error("Error creating booking:", error);
     return NextResponse.json({ error: 'Failed to create booking', details: error?.message || error }, { status: 500 });
   }
-} 
+}
