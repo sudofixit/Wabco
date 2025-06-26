@@ -86,7 +86,7 @@ class SimpleEmailService {
         ...payload,
         message: {
           ...payload.message,
-          // Add proper headers to avoid spam filters
+          // Add proper headers to avoid spam filters (only valid ones)
           internetMessageHeaders: [
             {
               name: 'X-Mailer',
@@ -98,10 +98,6 @@ class SimpleEmailService {
             },
             {
               name: 'X-MSMail-Priority',
-              value: 'Normal'
-            },
-            {
-              name: 'Importance',
               value: 'Normal'
             },
             {
