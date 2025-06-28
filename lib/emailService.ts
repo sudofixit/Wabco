@@ -56,6 +56,17 @@ interface ServiceBookingEmailData {
   requestType: 'booking' | 'quotation';
 }
 
+interface ContactFormData {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  vehicleBrand?: string;
+  vehicleModel?: string;
+  vehicleYear?: string;
+  subscribeToOffers?: boolean;
+}
+
 class EmailService {
   private tenantId: string;
   private clientId: string;
@@ -239,17 +250,17 @@ class EmailService {
       // Add timeout and extra headers for Vercel
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
-        console.log(`⏰ API call timeout after 30 seconds`);
+        console.error("EMAIL_ERROR_GRAPH_TIMEOUT", `API call timeout after 20 seconds`);
         controller.abort();
-      }, 30000); // 30 second timeout
+      }, 20000); // 20 second timeout (reduced from 30s)
 
       const response = await fetch(sendMailUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
-          'User-Agent': 'Wabco-Mobility-App/1.0',
           'Accept': 'application/json',
+          'User-Agent': 'Wabco-Mobility-App/1.0',
           'Accept-Encoding': 'gzip, deflate, br',
           'Cache-Control': 'no-cache',
           'X-Forwarded-For': this.isProduction ? 'wabcomobility.com' : 'localhost',
@@ -261,7 +272,7 @@ class EmailService {
       });
 
       clearTimeout(timeoutId);
-      console.log(`📡 API Response received - Status: ${response.status}`);
+      console.info("EMAIL_SUCCESS_GRAPH_RESPONSE", `API Response received - Status: ${response.status}`);
       console.log(`📡 Response Headers:`, Object.fromEntries(response.headers.entries()));
       
       // Check if response is compressed and log decompression info
@@ -275,7 +286,7 @@ class EmailService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`❌ Graph API Error Details:`);
+        console.error("EMAIL_ERROR_GRAPH_API", `Graph API Error Details:`);
         console.error(`- Status: ${response.status}`);
         console.error(`- Status Text: ${response.statusText}`);
         console.error(`- Response Headers:`, Object.fromEntries(response.headers.entries()));
@@ -284,9 +295,9 @@ class EmailService {
         // Try to parse error as JSON for more details
         try {
           const errorJson = JSON.parse(errorText);
-          console.error(`- Parsed Error:`, errorJson);
+          console.error("EMAIL_ERROR_GRAPH_PARSED", errorJson);
         } catch {
-          console.error(`- Raw Error Text:`, errorText);
+          console.error("EMAIL_ERROR_GRAPH_RAW", errorText);
         }
         
         throw new Error(`Send mail failed: ${response.status} - ${errorText}`);
@@ -294,26 +305,26 @@ class EmailService {
 
       // Log successful response
       const responseText = await response.text();
-      console.log(`✅ Email sent successfully via Graph API`);
+      console.info("EMAIL_SUCCESS_SENT", `Email sent successfully via Graph API`);
       console.log(`📧 Response body:`, responseText || 'Empty response (normal for sendMail)');
       
       return true;
     } catch (error: any) {
-      console.error('❌ CRITICAL EMAIL SEND ERROR:');
+      console.error("EMAIL_ERROR_CRITICAL", 'CRITICAL EMAIL SEND ERROR:');
       
       if (error.name === 'AbortError') {
-        console.error('- Type: Timeout Error');
-        console.error('- Message: API call took longer than 30 seconds');
+        console.error("EMAIL_ERROR_TIMEOUT", 'Timeout Error');
+        console.error('- Message: API call took longer than 20 seconds');
         console.error('- Suggestion: Microsoft Graph API may be slow or blocked');
       } else if (error.response) {
-        console.error('- Type: HTTP Response Error');
+        console.error("EMAIL_ERROR_HTTP", 'HTTP Response Error');
         console.error('- Status:', error.response.status);
         console.error('- Data:', error.response.data || error.response.statusText);
       } else if (error.message) {
-        console.error('- Type: General Error');
+        console.error("EMAIL_ERROR_GENERAL", 'General Error');
         console.error('- Message:', error.message);
       } else {
-        console.error('- Type: Unknown Error');
+        console.error("EMAIL_ERROR_UNKNOWN", 'Unknown Error');
         console.error('- Full Error:', error);
       }
       
@@ -336,27 +347,27 @@ class EmailService {
   private async sendEmailWithRetry(payload: GraphEmailPayload, maxRetries: number = 3): Promise<boolean> {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        console.log(`🔄 Email send attempt ${attempt}/${maxRetries}`);
+        console.info("EMAIL_RETRY_ATTEMPT", `Email send attempt ${attempt}/${maxRetries}`);
         
         const result = await this.sendEmail(payload);
         
         if (result) {
-          console.log(`✅ Email sent successfully on attempt ${attempt}`);
+          console.info("EMAIL_SUCCESS_RETRY", `Email sent successfully on attempt ${attempt}`);
           return true;
         } else {
-          console.log(`❌ Email failed on attempt ${attempt}, trying again...`);
+          console.error("EMAIL_ERROR_RETRY_FAILED", `Email failed on attempt ${attempt}, trying again...`);
         }
       } catch (error: any) {
-        console.error(`❌ Attempt ${attempt} failed:`, error.message);
+        console.error("EMAIL_ERROR_RETRY_EXCEPTION", `Attempt ${attempt} failed:`, error.message);
         
         if (attempt === maxRetries) {
-          console.error(`❌ All ${maxRetries} attempts failed. Giving up.`);
+          console.error("EMAIL_ERROR_RETRY_EXHAUSTED", `All ${maxRetries} attempts failed. Giving up.`);
           return false;
         }
         
         // Exponential backoff: wait 1s, 2s, 4s between retries
         const delay = Math.pow(2, attempt - 1) * 1000;
-        console.log(`⏳ Waiting ${delay}ms before retry...`);
+        console.info("EMAIL_RETRY_BACKOFF", `Waiting ${delay}ms before retry...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
@@ -543,34 +554,42 @@ class EmailService {
    * Test email functionality
    */
   async sendTestEmail(testRecipient: string): Promise<boolean> {
-    const testMessage: EmailMessage = {
-      subject: 'Test Email from Wabco Mobility',
-      body: {
-        contentType: 'HTML',
-        content: `
-          <p>This is a test email to verify Microsoft Graph API integration.</p>
-          <p>If you receive this email, the email service is working correctly.</p>
-          <p>Environment: ${this.isProduction ? 'Production' : 'Development'}</p>
-          <p>Timestamp: ${new Date().toISOString()}</p>
-        `,
-      },
-      from: {
-        emailAddress: {
-          address: this.senderEmail,
-          name: 'Wabco Mobility'
-        }
-      },
-      toRecipients: [
-        {
-          emailAddress: {
-            address: testRecipient,
-          },
+    console.info("EMAIL_TEST_START", `Sending test email to: ${testRecipient}`);
+
+    const testEmailPayload: GraphEmailPayload = {
+      message: {
+        subject: 'Test Email from WABCO Mobility',
+        body: {
+          contentType: 'HTML',
+          content: `
+            <h2>Test Email Successful!</h2>
+            <p>This is a test email from the WABCO Mobility system.</p>
+            <p>If you received this email, the email configuration is working correctly.</p>
+            <p>Sent at: ${new Date().toISOString()}</p>
+            <p>Environment: ${this.isProduction ? 'Production' : 'Development'}</p>
+          `,
         },
-      ],
+        toRecipients: [{
+          emailAddress: { address: testRecipient }
+        }],
+        from: {
+          emailAddress: {
+            address: this.senderEmail,
+            name: 'WABCO Mobility Test'
+          }
+        }
+      }
     };
 
-    const payload: GraphEmailPayload = { message: testMessage };
-    return await this.sendEmailWithRetry(payload);
+    const result = await this.sendEmailWithRetry(testEmailPayload);
+    
+    if (result) {
+      console.info("EMAIL_TEST_SUCCESS", `Test email sent successfully to ${testRecipient}`);
+    } else {
+      console.error("EMAIL_TEST_FAILED", `Failed to send test email to ${testRecipient}`);
+    }
+    
+    return result;
   }
 
   /**
@@ -694,61 +713,194 @@ class EmailService {
    * Send service booking/quotation emails (customer + admin)
    */
   async sendServiceBookingEmails(data: ServiceBookingEmailData): Promise<void> {
-    if (!this.isProduction && process.env.SKIP_EMAILS === 'true') {
-      console.log('Email sending skipped in development mode');
-      return;
+    console.log(`Processing service booking for: ${data.customerName} (${data.customerEmail})`);
+
+    // Send customer confirmation email
+    const customerEmailPayload: GraphEmailPayload = {
+      message: this.generateServiceBookingEmail(data)
+    };
+
+    // Send admin notification email
+    const adminEmailPayload: GraphEmailPayload = {
+      message: this.generateServiceAdminNotificationEmail(data)
+    };
+
+    // Send emails in parallel
+    const [customerSent, adminSent] = await Promise.all([
+      this.sendEmailWithRetry(customerEmailPayload),
+      this.sendEmailWithRetry(adminEmailPayload)
+    ]);
+
+    console.log(`Service booking emails sent - Customer: ${customerSent ? '✅' : '❌'}, Admin: ${adminSent ? '✅' : '❌'}`);
+
+    if (!customerSent) {
+      console.error('Failed to send customer confirmation email for service booking');
     }
-
-    // Check if email service is properly configured
-    if (!this.tenantId || !this.clientId || !this.clientSecret || !this.senderEmail) {
-      console.error('❌ Email service not configured - missing environment variables');
-      console.error(`Missing: ${[
-        !this.tenantId && 'TENANT_ID',
-        !this.clientId && 'CLIENT_ID', 
-        !this.clientSecret && 'CLIENT_SECRET',
-        !this.senderEmail && 'SENDER_EMAIL'
-      ].filter(Boolean).join(', ')}`);
-      return;
+    if (!adminSent) {
+      console.error('Failed to send admin notification email for service booking');
     }
+  }
 
-    console.log(`🚀 Starting email send process for ${data.requestType} ${data.referenceNumber}`);
-    console.log(`📧 Customer: ${data.customerName} (${data.customerEmail})`);
-    console.log(`🏢 Environment: ${this.isProduction ? 'Production' : 'Development'}`);
+  /**
+   * Generate contact form confirmation email content
+   */
+  private generateContactFormConfirmationEmail(data: ContactFormData): EmailMessage {
+    const vehicleInfo = data.vehicleBrand || data.vehicleModel || data.vehicleYear
+      ? `
+        <h3>Vehicle Information:</h3>
+        <ul>
+          ${data.vehicleBrand ? `<li><strong>Brand:</strong> ${data.vehicleBrand}</li>` : ''}
+          ${data.vehicleModel ? `<li><strong>Model:</strong> ${data.vehicleModel}</li>` : ''}
+          ${data.vehicleYear ? `<li><strong>Year:</strong> ${data.vehicleYear}</li>` : ''}
+        </ul>`
+      : '';
 
-    try {
-      // Send customer email
-      const customerEmail = this.generateServiceBookingEmail(data);
-      const customerEmailPayload: GraphEmailPayload = { message: customerEmail };
+    const content = `
+      <h2>Thank you for contacting WABCO Mobility!</h2>
+      <p>Dear ${data.name},</p>
+      <p>We have received your inquiry and our team will get back to you within 24 hours.</p>
       
-      // Send admin notification
-      const adminEmail = this.generateServiceAdminNotificationEmail(data);
-      const adminEmailPayload: GraphEmailPayload = { message: adminEmail };
-
-      // Send emails synchronously for better error tracking in production
-      console.log(`🔄 Initiating email sends for ${data.referenceNumber}...`);
+      <h3>Your Message:</h3>
+      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
+        <p>${data.message}</p>
+      </div>
       
-      try {
-        // Send customer email synchronously
-        console.log(`📤 Sending customer email for ${data.referenceNumber}...`);
-        const customerSuccess = await this.sendEmailWithRetry(customerEmailPayload);
-        console.log(`Customer email sent: ${customerSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
+      ${vehicleInfo}
+      
+      <h3>Contact Information:</h3>
+      <ul>
+        <li><strong>Phone:</strong> +971 04 746 8773</li>
+        <li><strong>Email:</strong> wabcomobility@tire.com</li>
+      </ul>
+      
+      <p>Thank you for choosing WABCO Mobility for your automotive needs.</p>
+      <p>Best regards,<br/>The WABCO Mobility Team</p>
+      
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+      <p style="font-size: 12px; color: #666;">
+        This is an automated confirmation. Please do not reply to this email.
+      </p>
+    `;
 
-        // Send admin email synchronously
-        console.log(`📤 Sending admin email for ${data.referenceNumber}...`);
-        const adminSuccess = await this.sendEmailWithRetry(adminEmailPayload);
-        console.log(`Admin email sent: ${adminSuccess ? '✅ SUCCESS' : '❌ FAILED'} - ${data.referenceNumber}`);
-
-        console.log(`✅ Email sending process completed for ${data.referenceNumber}`);
-      } catch (emailSendError) {
-        console.error(`❌ Critical email sending error for ${data.referenceNumber}:`, emailSendError);
+    return {
+      subject: 'Thank you for contacting WABCO Mobility',
+      body: {
+        contentType: 'HTML',
+        content,
+      },
+      toRecipients: [{
+        emailAddress: { address: data.email }
+      }],
+      from: {
+        emailAddress: {
+          address: this.senderEmail,
+          name: 'WABCO Mobility'
+        }
       }
+    };
+  }
 
-    } catch (error) {
-      console.error(`❌ Error in sendServiceBookingEmails for ${data.referenceNumber}:`, error);
+  /**
+   * Generate contact form admin notification email
+   */
+  private generateContactFormAdminEmail(data: ContactFormData): EmailMessage {
+    const vehicleInfo = data.vehicleBrand || data.vehicleModel || data.vehicleYear
+      ? `
+        <h3>Vehicle Information:</h3>
+        <ul>
+          ${data.vehicleBrand ? `<li><strong>Brand:</strong> ${data.vehicleBrand}</li>` : ''}
+          ${data.vehicleModel ? `<li><strong>Model:</strong> ${data.vehicleModel}</li>` : ''}
+          ${data.vehicleYear ? `<li><strong>Year:</strong> ${data.vehicleYear}</li>` : ''}
+        </ul>`
+      : '';
+
+    const content = `
+      <h2>New Contact Form Submission</h2>
+      <p>A new customer has submitted a contact form on the WABCO Mobility website.</p>
+      
+      <h3>Customer Information:</h3>
+      <ul>
+        <li><strong>Name:</strong> ${data.name}</li>
+        <li><strong>Email:</strong> ${data.email}</li>
+        <li><strong>Phone:</strong> ${data.phone}</li>
+        <li><strong>Subscribed to offers:</strong> ${data.subscribeToOffers ? 'Yes' : 'No'}</li>
+      </ul>
+      
+      ${vehicleInfo}
+      
+      <h3>Customer Message:</h3>
+      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
+        <p>${data.message}</p>
+      </div>
+      
+      <h3>Next Steps:</h3>
+      <ul>
+        <li>Reply to the customer within 24 hours</li>
+        <li>Use customer email: <a href="mailto:${data.email}">${data.email}</a></li>
+        <li>Customer phone: <a href="tel:${data.phone}">${data.phone}</a></li>
+      </ul>
+      
+      <p>Submission received at: ${new Date().toLocaleString()}</p>
+    `;
+
+    return {
+      subject: `New Contact Form Submission - ${data.name}`,
+      body: {
+        contentType: 'HTML',
+        content,
+      },
+      toRecipients: [{
+        emailAddress: { address: this.testEmail } // Use admin/test email
+      }],
+      from: {
+        emailAddress: {
+          address: this.senderEmail,
+          name: 'WABCO Mobility Website'
+        }
+      }
+    };
+  }
+
+  /**
+   * Send contact form emails
+   */
+  async sendContactFormEmails(data: ContactFormData): Promise<{ customerSent: boolean; adminSent: boolean }> {
+    console.info("EMAIL_CONTACT_START", `Processing contact form submission from: ${data.name} (${data.email})`);
+
+    // Send customer confirmation email
+    const customerEmailPayload: GraphEmailPayload = {
+      message: this.generateContactFormConfirmationEmail(data)
+    };
+
+    // Send admin notification email
+    const adminEmailPayload: GraphEmailPayload = {
+      message: this.generateContactFormAdminEmail(data)
+    };
+
+    // Send emails in parallel
+    const [customerSent, adminSent] = await Promise.all([
+      this.sendEmailWithRetry(customerEmailPayload),
+      this.sendEmailWithRetry(adminEmailPayload)
+    ]);
+
+    if (customerSent) {
+      console.info("EMAIL_SUCCESS_CUSTOMER", `Customer confirmation sent to ${data.email}`);
+    } else {
+      console.error("EMAIL_ERROR_CUSTOMER", `Failed to send customer confirmation to ${data.email}`);
     }
+
+    if (adminSent) {
+      console.info("EMAIL_SUCCESS_ADMIN", `Admin notification sent for contact from ${data.name}`);
+    } else {
+      console.error("EMAIL_ERROR_ADMIN", `Failed to send admin notification for contact from ${data.name}`);
+    }
+
+    console.info("EMAIL_CONTACT_COMPLETE", `Contact form emails sent - Customer: ${customerSent ? '✅' : '❌'}, Admin: ${adminSent ? '✅' : '❌'}`);
+
+    return { customerSent, adminSent };
   }
 }
 
 // Export singleton instance
 export const emailService = new EmailService();
-export type { TireBookingEmailData, ServiceBookingEmailData }; 
+export type { TireBookingEmailData, ServiceBookingEmailData, ContactFormData }; 
