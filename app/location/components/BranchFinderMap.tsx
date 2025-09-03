@@ -11,11 +11,11 @@ interface BranchFinderMapProps {
   onLocationSelect: (locationId: number) => void;
 }
 
-export default function BranchFinderMap({ 
-  locations, 
-  userLocation, 
-  selectedLocationId, 
-  onLocationSelect 
+export default function BranchFinderMap({
+  locations,
+  userLocation,
+  selectedLocationId,
+  onLocationSelect
 }: BranchFinderMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -61,7 +61,7 @@ export default function BranchFinderMap({
     // EMERGENCY fallback - ultra-fast polling for only 1 second
     let attempts = 0;
     const maxAttempts = 50; // 1 second max (50 * 20ms = 1000ms)
-    
+
     const emergencyInterval = setInterval(() => {
       attempts++;
       if (checkGoogleMapsLoaded()) {
@@ -94,7 +94,7 @@ export default function BranchFinderMap({
       // Clear existing markers
       markersRef.current.forEach(marker => marker.setMap(null));
       markersRef.current = [];
-      
+
       if (userMarkerRef.current) {
         userMarkerRef.current.setMap(null);
         userMarkerRef.current = null;
@@ -111,9 +111,9 @@ export default function BranchFinderMap({
         // Center on locations
         const locationsWithCoords = locations.filter(loc => loc.lat && loc.lng);
         if (locationsWithCoords.length === 1) {
-          center = { 
-            lat: parseFloat(locationsWithCoords[0].lat!.toString()), 
-            lng: parseFloat(locationsWithCoords[0].lng!.toString()) 
+          center = {
+            lat: parseFloat(locationsWithCoords[0].lat!.toString()),
+            lng: parseFloat(locationsWithCoords[0].lng!.toString())
           };
           zoom = 15;
         } else if (locationsWithCoords.length > 1) {
@@ -209,17 +209,17 @@ export default function BranchFinderMap({
       const locationsWithCoords = locations.filter(loc => loc.lat && loc.lng);
       locationsWithCoords.forEach((location, index) => {
         const isSelected = selectedLocationId === location.id;
-        
+
         // Create smaller custom marker with tire center icon
         const marker = new google.maps.Marker({
-          position: { 
-            lat: parseFloat(location.lat!.toString()), 
-            lng: parseFloat(location.lng!.toString()) 
+          position: {
+            lat: parseFloat(location.lat!.toString()),
+            lng: parseFloat(location.lng!.toString())
           },
           map: map,
           title: location.name,
           icon: {
-            url: isSelected 
+            url: isSelected
               ? 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'  // Red for selected
               : 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', // Blue for normal
             scaledSize: new google.maps.Size(isSelected ? 28 : 24, isSelected ? 28 : 24),
@@ -231,7 +231,7 @@ export default function BranchFinderMap({
 
         // Create smaller label overlay for branch name
         const labelOverlay = new google.maps.OverlayView();
-        labelOverlay.onAdd = function() {
+        labelOverlay.onAdd = function () {
           const div = document.createElement('div');
           div.style.position = 'absolute';
           div.style.backgroundColor = isSelected ? '#dc2626' : '#0a1c58';
@@ -248,11 +248,11 @@ export default function BranchFinderMap({
           div.style.maxWidth = '80px';
           div.style.overflow = 'hidden';
           div.style.textOverflow = 'ellipsis';
-          
+
           // Truncate long names
           const displayName = location.name.length > 12 ? location.name.substring(0, 12) + '...' : location.name;
           div.textContent = displayName;
-          
+
           const panes = this.getPanes();
           if (panes && panes.overlayLayer) {
             panes.overlayLayer.appendChild(div);
@@ -260,7 +260,7 @@ export default function BranchFinderMap({
           (this as any).div = div;
         };
 
-        labelOverlay.draw = function() {
+        labelOverlay.draw = function () {
           const overlayProjection = this.getProjection();
           const position = overlayProjection.fromLatLngToDivPixel(marker.getPosition()!);
           if ((this as any).div && position) {
@@ -269,7 +269,7 @@ export default function BranchFinderMap({
           }
         };
 
-        labelOverlay.onRemove = function() {
+        labelOverlay.onRemove = function () {
           if ((this as any).div) {
             (this as any).div.parentNode?.removeChild((this as any).div);
             (this as any).div = null;
@@ -282,38 +282,50 @@ export default function BranchFinderMap({
         // Create info window with location details
         const infoWindow = new google.maps.InfoWindow({
           content: `
-            <div style="font-family: 'Poppins', sans-serif; max-width: 280px;">
-              <div style="background: linear-gradient(135deg, #0a1c58, #132b7c); color: white; padding: 12px; margin: -8px -8px 12px -8px; border-radius: 8px 8px 0 0;">
-                <h3 style="margin: 0; font-size: 16px; font-weight: 600; display: flex; align-items: center;">
-                  <span style="margin-right: 8px;">🏢</span>
-                  ${location.name}
-                </h3>
-              </div>
-              <div style="padding: 0 4px;">
-                <div style="margin: 8px 0;">
-                  <p style="margin: 4px 0; font-size: 14px; color: #333; display: flex; align-items: start; line-height: 1.4;">
-                    <span style="margin-right: 6px; margin-top: 2px;">📍</span>
-                    ${location.address}
-                  </p>
-                  <p style="margin: 4px 0; font-size: 14px; color: #333; display: flex; align-items: center;">
-                    <span style="margin-right: 6px;">📞</span>
-                    <a href="tel:${location.phone}" style="color: #0a1c58; text-decoration: none;">${location.phone}</a>
-                  </p>
-                  ${location.workingHours ? `
-                    <p style="margin: 4px 0; font-size: 14px; color: #333; display: flex; align-items: center;">
-                      <span style="margin-right: 6px;">🕒</span>
-                      ${location.workingHours}
-                    </p>
-                  ` : ''}
-                </div>
-                <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid #eee; text-align: center;">
-                  <p style="margin: 0; font-size: 12px; color: #666; font-style: italic;">
-                    🔧 Professional tire services available
-                  </p>
-                </div>
-              </div>
-            </div>
-          `,
+      <div style="font-family: 'Poppins', sans-serif; max-width: 280px;">
+        <div style="background: linear-gradient(135deg, #0a1c58, #132b7c); color: white; padding: 12px; margin: -8px -8px 12px -8px; border-radius: 8px 8px 0 0;">
+          <h3 style="margin: 0; font-size: 16px; font-weight: 600; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">🏢</span>
+            ${location.name}
+          </h3>
+        </div>
+        <div style="padding: 0 4px;">
+          <div style="margin: 8px 0;">
+            <p style="margin: 4px 0; font-size: 14px; color: #333; display: flex; align-items: start; line-height: 1.4;">
+              <span style="margin-right: 6px; margin-top: 2px;">📍</span>
+              ${location.address}
+            </p>
+            <p style="margin: 4px 0; font-size: 14px; color: #333; display: flex; align-items: center;">
+              <span style="margin-right: 6px;">📞</span>
+              <a href="tel:${location.phone}" style="color: #0a1c58; text-decoration: none;">${location.phone}</a>
+            </p>
+            ${location.workingHours ? `
+              <p style="margin: 4px 0; font-size: 14px; color: #333; display: flex; align-items: center;">
+                <span style="margin-right: 6px;">🕒</span>
+                ${location.workingHours}
+              </p>
+            ` : ''}
+          </div>
+          <div style="margin: 12px 0 8px; text-align: center;">
+            <a href="${location.subdomain ? `${location.subdomain}` : '#'}" 
+               style="display: inline-block; background: linear-gradient(135deg, #0a1c58, #132b7c); 
+                      color: white; padding: 8px 16px; border-radius: 6px; 
+                      text-decoration: none; font-weight: 600; font-size: 14px;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s;
+                      border: 2px solid #0a1c58;"
+               onmouseover="this.style.background='linear-gradient(135deg, #132b7c, #0a1c58)'; this.style.transform='scale(1.02)'"
+               onmouseout="this.style.background='linear-gradient(135deg, #0a1c58, #132b7c)'; this.style.transform='scale(1)'">
+              Visit Branch Page
+            </a>
+          </div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; text-align: center;">
+            <p style="margin: 0; font-size: 12px; color: #666; font-style: italic;">
+              🔧 Professional tire services available
+            </p>
+          </div>
+        </div>
+      </div>
+    `,
         });
 
         // Show info window on marker click and update selection
@@ -324,10 +336,10 @@ export default function BranchFinderMap({
               (m as any).infoWindow.close();
             }
           });
-          
+
           // Open this marker's info window
           infoWindow.open(map, marker);
-          
+
           // Update selection in parent component
           onLocationSelect(location.id);
         });
@@ -348,7 +360,7 @@ export default function BranchFinderMap({
           ));
         });
         map.fitBounds(bounds);
-        
+
         // Ensure minimum zoom level
         const listener = google.maps.event.addListener(map, 'idle', () => {
           if (map.getZoom()! > 15) map.setZoom(15);
@@ -404,7 +416,7 @@ export default function BranchFinderMap({
             <p className="text-sm text-gray-500 mt-1">Should load in 1-2 seconds</p>
           </div>
         </div>
-        
+
         {/* Subtle pulsing background */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-gray-50 animate-pulse" style={{ animationDuration: '1.5s' }}></div>
       </div>
@@ -414,30 +426,30 @@ export default function BranchFinderMap({
   return (
     <div className="relative w-full h-full" style={{ minHeight: '600px' }}>
       {/* Google Map Container */}
-      <div 
+      <div
         ref={mapRef}
         className="w-full h-full"
         style={{ minHeight: '600px' }}
       />
-      
+
       {/* Custom Zoom Controls */}
       <div className="absolute right-6 top-6 flex flex-col gap-2 z-10">
-        <button 
+        <button
           onClick={handleZoomIn}
-          className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-2xl font-bold shadow hover:bg-gray-100 transition-colors"
+          className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-2xl font-bold shadow hover:bg-gray-100 transition-colors text-gray-600"
           aria-label="Zoom in"
         >
           +
         </button>
-        <button 
+        <button
           onClick={handleZoomOut}
-          className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-2xl font-bold shadow hover:bg-gray-100 transition-colors"
+          className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-2xl font-bold shadow hover:bg-gray-100 transition-colors text-gray-600"
           aria-label="Zoom out"
         >
           -
         </button>
       </div>
-      
+
       {/* Location Count Badge */}
       {isGoogleMapsLoaded && locations.length > 0 && (
         <div className="absolute left-6 top-6 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow z-10">

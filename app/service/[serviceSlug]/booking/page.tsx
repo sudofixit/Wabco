@@ -21,17 +21,17 @@ async function findServiceBySlug(slug: string) {
   const services = await prisma.service.findMany({
     where: { isActive: true }
   });
-  
+
   return services.find((service: any) => generateSlug(service.title) === slug);
 }
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata({ params }: BookingPageProps): Promise<Metadata> {
   const { serviceSlug } = await params;
-  
+
   try {
     const service = await findServiceBySlug(serviceSlug);
-    
+
     if (!service) {
       return {
         title: "Service Not Found | WABCO Mobility",
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
 
     const serviceTitle = service.title;
     const servicePrice = service.price ? `KES ${Number(service.price).toLocaleString()}` : 'Contact for pricing';
-    
+
     return {
       title: `Book ${serviceTitle} - Professional Auto Service | WABCO Mobility`,
       description: `Book professional ${serviceTitle.toLowerCase()} service at WABCO Mobility. Expert technicians, quality service, competitive pricing starting at ${servicePrice}. Book your appointment today.`,
@@ -80,11 +80,11 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
 
 export default async function BookingPage({ params }: BookingPageProps) {
   const { serviceSlug } = await params;
-  
+
   try {
     // Find the service by slug
     const service = await findServiceBySlug(serviceSlug);
-    
+
     if (!service) {
       notFound();
     }
@@ -117,8 +117,8 @@ export default async function BookingPage({ params }: BookingPageProps) {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
         }>
-          <BookingFlow 
-            service={serializedService} 
+          <BookingFlow
+            service={serializedService}
             locations={serializedLocations}
           />
         </Suspense>

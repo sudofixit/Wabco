@@ -9,7 +9,7 @@ interface MultiBookingPageProps {
 
 export default async function MultiBookingPage({ searchParams }: MultiBookingPageProps) {
   const { services: serviceIds } = await searchParams;
-  
+
   if (!serviceIds) {
     notFound();
   }
@@ -17,7 +17,7 @@ export default async function MultiBookingPage({ searchParams }: MultiBookingPag
   try {
     // Parse service IDs from URL parameter
     const ids = serviceIds.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
-    
+
     if (ids.length === 0) {
       notFound();
     }
@@ -63,8 +63,8 @@ export default async function MultiBookingPage({ searchParams }: MultiBookingPag
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
         }>
-          <BookingFlow 
-            services={serializedServices} 
+          <BookingFlow
+            services={serializedServices}
             locations={serializedLocations}
           />
         </Suspense>

@@ -11,12 +11,12 @@ export default function LocationCard({ location }: LocationCardProps) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 flex flex-col shadow-sm overflow-hidden p-6">
       <div className="w-full rounded-xl overflow-hidden mb-4" style={{ height: 180, minHeight: 180, maxHeight: 180 }}>
-        <Image 
-          src={location.image || "/branch.png"} 
-          alt={location.name} 
-          width={400} 
-          height={180} 
-          className="object-cover w-full h-full" 
+        <Image
+          src={location.image || "/branch.png"}
+          alt={location.name}
+          width={400}
+          height={180}
+          className="object-cover w-full h-full"
           style={{ maxWidth: '100%', maxHeight: '100%' }}
         />
       </div>
@@ -37,15 +37,15 @@ export default function LocationCard({ location }: LocationCardProps) {
       )}
       {/* Buttons */}
       <div className="flex flex-col gap-2 mt-auto">
-        <button 
+        <button
           className="w-full border-2 border-[#0a1c58] text-[#0a1c58] py-2 rounded-lg font-semibold text-base bg-white hover:bg-[#0a1c58] hover:text-white transition"
-          onClick={() => window.location.href = '/contact-us'}
+          onClick={() => window.location.href = '/service'}
         >
           Get a Service Quote
         </button>
-        <button 
+        <button
           className="w-full bg-[#0a1c58] text-white py-2 rounded-lg font-semibold text-base hover:bg-[#132b7c] transition"
-          onClick={() => window.location.href = '/contact-us'}
+          onClick={() => window.location.href = '/service'}
         >
           Book a Service
         </button>

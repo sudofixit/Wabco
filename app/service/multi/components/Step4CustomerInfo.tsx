@@ -51,20 +51,25 @@ interface Step4CustomerInfoProps {
   flowType?: 'booking' | 'quotation';
 }
 
-export default function Step4CustomerInfo({ 
-  bookingData, 
-  updateBookingData, 
-  onPrev, 
-  onSubmit, 
-  isSubmitting, 
+export default function Step4CustomerInfo({
+  bookingData,
+  updateBookingData,
+  onPrev,
+  onSubmit,
+  isSubmitting,
   services,
   selectedLocation,
   flowType = 'booking'
 }: Step4CustomerInfoProps) {
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const validatePhone = (phone: string): boolean => {
+    // only digits, 7 to 15 digits long
+    const phoneRegex = /^\d{7,15}$/;
+    return phoneRegex.test(phone);
+  };
 
   const validateAndSubmit = () => {
-    const newErrors: {[key: string]: string} = {};
+    const newErrors: { [key: string]: string } = {};
 
     if (!bookingData.customerName.trim()) {
       newErrors.customerName = 'Name is required';
@@ -76,6 +81,8 @@ export default function Step4CustomerInfo({
     }
     if (!bookingData.customerPhone.trim()) {
       newErrors.customerPhone = 'Phone number is required';
+    } else if (!validatePhone(bookingData.customerPhone)) {
+      newErrors.customerPhone = 'Please enter a valid phone number (7–15 digits)';
     }
 
     setErrors(newErrors);
@@ -87,11 +94,11 @@ export default function Step4CustomerInfo({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
@@ -99,10 +106,10 @@ export default function Step4CustomerInfo({
     const [hours, minutes] = timeString.split(':');
     const date = new Date();
     date.setHours(parseInt(hours), parseInt(minutes));
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     });
   };
 
@@ -113,7 +120,7 @@ export default function Step4CustomerInfo({
       {/* Customer Information Form */}
       <div className="bg-white rounded-lg shadow-sm p-8">
         <h2 className="text-2xl font-bold text-[#0a1c58] mb-6">Customer Information</h2>
-        
+
         <div className="space-y-6">
           <div>
             <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -124,9 +131,8 @@ export default function Step4CustomerInfo({
               id="customerName"
               value={bookingData.customerName}
               onChange={(e) => updateBookingData({ customerName: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerName ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerName ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter your full name"
             />
             {errors.customerName && <p className="mt-1 text-sm text-red-600">{errors.customerName}</p>}
@@ -141,9 +147,8 @@ export default function Step4CustomerInfo({
               id="customerEmail"
               value={bookingData.customerEmail}
               onChange={(e) => updateBookingData({ customerEmail: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerEmail ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerEmail ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter your email address"
             />
             {errors.customerEmail && <p className="mt-1 text-sm text-red-600">{errors.customerEmail}</p>}
@@ -156,11 +161,11 @@ export default function Step4CustomerInfo({
             <input
               type="tel"
               id="customerPhone"
+              maxLength={15}
               value={bookingData.customerPhone}
               onChange={(e) => updateBookingData({ customerPhone: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerPhone ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerPhone ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter your phone number"
             />
             {errors.customerPhone && <p className="mt-1 text-sm text-red-600">{errors.customerPhone}</p>}
@@ -180,8 +185,8 @@ export default function Step4CustomerInfo({
             disabled={isSubmitting}
             className="bg-[#0a1c58] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#132b7c] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting 
-              ? (flowType === 'booking' ? 'Creating Booking...' : 'Submitting Quote Request...') 
+            {isSubmitting
+              ? (flowType === 'booking' ? 'Creating Booking...' : 'Submitting Quote Request...')
               : (flowType === 'booking' ? 'Confirm Booking' : 'Submit Quote Request')
             }
           </button>
@@ -193,7 +198,7 @@ export default function Step4CustomerInfo({
         <h2 className="text-2xl font-bold text-[#0a1c58] mb-6">
           {flowType === 'booking' ? 'Booking Summary' : 'Quote Request Summary'}
         </h2>
-        
+
         {/* Selected Services */}
         <div className="mb-6">
           <h3 className="font-semibold text-gray-900 mb-3">Selected Services ({services.length})</h3>

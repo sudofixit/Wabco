@@ -22,12 +22,12 @@ export default function ServiceCard({ service }: ServiceCardProps) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 flex flex-col shadow-sm overflow-hidden">
       <div className="w-full rounded-t-2xl overflow-hidden" style={{ height: 180, minHeight: 180, maxHeight: 180 }}>
-        <Image 
-          src={service.image || "/service card picture.png"} 
-          alt={service.title} 
-          width={500} 
-          height={180} 
-          className="object-cover w-full h-full" 
+        <Image
+          src={service.image || "/service card picture.png"}
+          alt={service.title}
+          width={500}
+          height={180}
+          className="object-cover w-full h-full"
           style={{ maxWidth: '100%', maxHeight: '100%' }}
         />
       </div>
@@ -40,14 +40,14 @@ export default function ServiceCard({ service }: ServiceCardProps) {
           </div>
           <div className="flex flex-col gap-3">
             <Link href={`/service/${serviceSlug}/quote`}>
-              <button 
+              <button
                 className="w-full border-2 border-[#232f53] text-[#232f53] py-2 rounded-lg font-semibold text-base bg-white hover:bg-[#232f53] hover:text-white transition"
               >
                 Get a Service Quote
               </button>
             </Link>
             <Link href={`/service/${serviceSlug}/booking`}>
-              <button 
+              <button
                 className="w-full bg-[#232f53] text-white py-2 rounded-lg font-semibold text-base hover:bg-[#1a2542] transition"
               >
                 Book a Service

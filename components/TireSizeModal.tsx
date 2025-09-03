@@ -75,7 +75,7 @@ export default function TireSizeModal({ isOpen, onClose, availableSizes }: TireS
     if (selectedWidth) params.append('width', selectedWidth);
     if (selectedProfile) params.append('ratio', selectedProfile); // Note: using 'ratio' to match TireClientPage
     if (selectedDiameter) params.append('rimSize', selectedDiameter); // Note: using 'rimSize' to match TireClientPage
-    
+
     const queryString = params.toString();
     router.push(`/tire${queryString ? '?' + queryString : ''}`);
     onClose();
@@ -116,15 +116,14 @@ export default function TireSizeModal({ isOpen, onClose, availableSizes }: TireS
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
     >
       {/* Modal Content */}
-      <div 
-        className={`bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden transform transition-all duration-300 ${
-          isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
+      <div
+        className={`bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden transform transition-all duration-300 ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+          }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with breadcrumb and close button */}
@@ -193,18 +192,23 @@ export default function TireSizeModal({ isOpen, onClose, availableSizes }: TireS
 
         {/* Actions */}
         <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             {step !== 'width' && (
               <button
                 onClick={handleBackStep}
-                className="px-6 py-2 text-[#0a1c58] border border-[#0a1c58] rounded-lg hover:bg-[#0a1c58] hover:text-white transition-all font-poppins font-semibold"
+                className="px-5 py-2.5 text-[#0a1c58] border border-gray-300 rounded-lg hover:border-[#0a1c58] hover:bg-[#f8f9ff] transition-all duration-200 font-poppins font-medium flex items-center gap-2 min-w-[90px] cursor-pointer"
               >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
                 Back
               </button>
             )}
+
             <div className="flex-1" />
+
             <div className="flex gap-3">
-              {/* Skip/Next button for current step */}
+              {/* Skip button */}
               {step !== 'diameter' && (
                 <button
                   onClick={() => {
@@ -214,16 +218,23 @@ export default function TireSizeModal({ isOpen, onClose, availableSizes }: TireS
                       setStep('diameter');
                     }
                   }}
-                  className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-poppins font-semibold"
+                  className="px-5 py-2.5 text-gray-700 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition-all duration-200 font-poppins font-medium flex items-center gap-2 min-w-[90px] cursor-pointer"
                 >
                   Skip
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </button>
               )}
-              {/* Search button - available at any step */}
+
+              {/* Search button */}
               <button
                 onClick={handleSearchTires}
-                className="px-8 py-3 bg-[#0a1c58] text-white rounded-lg hover:bg-[#132b7c] transition-all font-poppins font-semibold"
+                className="px-6 py-3 bg-[#0a1c58] text-white rounded-lg hover:bg-[#132b7c] transition-all duration-200 font-poppins font-semibold flex items-center gap-2 shadow-sm hover:shadow-md min-w-[140px] justify-center cursor-pointer"
               >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
                 Search Tires
               </button>
             </div>

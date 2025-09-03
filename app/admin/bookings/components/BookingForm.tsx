@@ -63,8 +63,8 @@ export default function BookingForm({
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
 
   // Memoize active services to prevent infinite re-renders
-  const activeServices = useMemo(() => 
-    services.filter(service => service.isActive), 
+  const activeServices = useMemo(() =>
+    services.filter(service => service.isActive),
     [services]
   );
 
@@ -149,7 +149,7 @@ export default function BookingForm({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
+
     if (name === 'branchId') {
       const selectedLocation = locations.find(loc => loc.id === parseInt(value));
       setFormData(prev => ({
@@ -163,7 +163,7 @@ export default function BookingForm({
         [name]: value
       }));
     }
-    
+
     // Clear error when user starts typing
     if (touched[name]) {
       const error = validateField(name, value);
@@ -176,13 +176,13 @@ export default function BookingForm({
       const newSelected = prev.includes(serviceId)
         ? prev.filter(id => id !== serviceId)
         : [...prev, serviceId];
-      
+
       // Update the services string in formData
       const selectedServiceNames = activeServices
         .filter(service => newSelected.includes(service.id))
         .map(service => service.title)
         .join(', ');
-      
+
       setFormData(prevData => ({
         ...prevData,
         services: selectedServiceNames
@@ -192,7 +192,7 @@ export default function BookingForm({
       if (newSelected.length > 0 && touched.services) {
         setErrors(prev => ({ ...prev, services: undefined }));
       }
-      
+
       return newSelected;
     });
   };
@@ -245,7 +245,7 @@ export default function BookingForm({
           />
           {errors.carYear && <FormError message={errors.carYear} />}
         </div>
-        
+
         <div>
           <label htmlFor="carMake" className="block text-sm font-semibold text-gray-900 mb-2">Car Make</label>
           <input
@@ -370,8 +370,8 @@ export default function BookingForm({
                 />
                 <div className="flex-1">
                   <span className="text-sm font-medium text-gray-900">{service.title}</span>
-                                        {service.price && (
-                        <span className="text-sm text-gray-700 ml-2">KES {service.price}</span>
+                  {service.price && (
+                    <span className="text-sm text-gray-700 ml-2">KES {service.price}</span>
                   )}
                   {service.description && (
                     <p className="text-xs text-gray-600 mt-1">{service.description}</p>
@@ -442,17 +442,17 @@ export default function BookingForm({
 
       {/* Action buttons */}
       <div className="flex justify-end space-x-4">
-        <button 
-          type="button" 
-          onClick={onCancel} 
+        <button
+          type="button"
+          onClick={onCancel}
           className="rounded-md border border-gray-300 bg-white px-8 py-3 text-sm font-semibold text-gray-700 shadow-lg hover:bg-gray-50 hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:ring-offset-2"
         >
           Cancel
         </button>
-        <LoadingButton 
-          type="submit" 
-          isLoading={isLoading} 
-          loadingText="Saving..." 
+        <LoadingButton
+          type="submit"
+          isLoading={isLoading}
+          loadingText="Saving..."
           className="rounded-md bg-[#0a1c58] px-8 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#132b7c] hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:ring-offset-2"
         >
           {booking ? "Update" : "Save"}

@@ -4,6 +4,7 @@ export interface Location {
   address: string;
   phone: string;
   image: string;
+  subdomain?: string;
   createdAt: Date;
   updatedAt: Date;
   workingHours: string | null;

@@ -40,7 +40,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    
+
     // Log only non-sensitive update info
     console.log('Updating booking:', {
       id,
@@ -83,7 +83,7 @@ export async function PUT(
       bookingDate: booking.bookingDate,
       bookingTime: booking.bookingTime
     });
-    
+
     return NextResponse.json(booking);
   } catch (error: any) {
     console.error("Error updating booking:", error);

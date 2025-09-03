@@ -68,7 +68,7 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
     const { name, value, type } = e.target;
     const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     setFormData(prev => ({ ...prev, [name]: newValue }));
-    
+
     // Clear error when user starts typing
     if (touched[name]) {
       const error = validateField(name, newValue);
@@ -81,11 +81,11 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
     if (file) {
       setIsUploadingImage(true);
       setErrors(prev => ({ ...prev, image: undefined })); // Clear any previous image errors
-      
+
       try {
         const uploadFormData = new FormData();
         uploadFormData.append('file', file);
-        
+
         // If we're updating an existing service and it has an image, pass the old image URL for deletion
         if (service?.image) {
           uploadFormData.append('oldImageUrl', service.image);
@@ -104,16 +104,16 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
         } else {
           const err = await response.json();
           console.error('Failed to upload file - Response:', response.status, err);
-          setErrors(prev => ({ 
-            ...prev, 
-            image: `Upload failed: ${err?.error || 'Server error'} (${response.status})` 
+          setErrors(prev => ({
+            ...prev,
+            image: `Upload failed: ${err?.error || 'Server error'} (${response.status})`
           }));
         }
       } catch (error: any) {
         console.error('Error uploading file - Network/Other error:', error);
-        setErrors(prev => ({ 
-          ...prev, 
-          image: `Upload failed: ${error?.message || 'Network error'}` 
+        setErrors(prev => ({
+          ...prev,
+          image: `Upload failed: ${error?.message || 'Network error'}`
         }));
       } finally {
         setIsUploadingImage(false);
@@ -227,9 +227,9 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
               </div>
             ) : formData.image ? (
               <div className="mb-4">
-                <img 
+                <img
                   src={formData.image.startsWith('http') ? formData.image : (formData.image.startsWith('/') ? formData.image : `/${formData.image}`)}
-                  alt="Service preview" 
+                  alt="Service preview"
                   className="mx-auto h-[180px] w-[180px] object-cover rounded-lg border-4 border-gray-300 shadow-md"
                   onError={(e) => {
                     console.error('Image failed to load:', formData.image);

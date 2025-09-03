@@ -49,7 +49,7 @@ class SimpleEmailService {
    */
   private async getAccessToken(): Promise<string> {
     const tokenUrl = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`;
-    
+
     const params = new URLSearchParams();
     params.append('client_id', this.clientId);
     params.append('client_secret', this.clientSecret);
@@ -139,8 +139,8 @@ class SimpleEmailService {
 
     try {
       // Customer Email
-      const customerSubject = isBooking 
-        ? 'Your Tire Booking is Confirmed' 
+      const customerSubject = isBooking
+        ? 'Your Tire Booking is Confirmed'
         : 'Your Tire Quotation Request has been submitted';
 
       let customerContent = `
@@ -203,10 +203,10 @@ class SimpleEmailService {
               
               <div style="margin: 25px 0;">
                 <p style="font-size: 16px; margin-bottom: 15px;">
-                  ${isBooking 
-                    ? 'Please arrive 10 minutes before your scheduled appointment time. Our team will be ready to assist you with your tire installation.'
-                    : 'Our team will review your request and contact you within 24 hours with detailed pricing and availability information.'
-                  }
+                  ${isBooking
+          ? 'Please arrive 10 minutes before your scheduled appointment time. Our team will be ready to assist you with your tire installation.'
+          : 'Our team will review your request and contact you within 24 hours with detailed pricing and availability information.'
+        }
                 </p>
               </div>
               
@@ -258,8 +258,8 @@ class SimpleEmailService {
       };
 
       // Admin Email
-      const adminSubject = isBooking 
-        ? 'New Tire Booking Received' 
+      const adminSubject = isBooking
+        ? 'New Tire Booking Received'
         : 'New Tire Quotation Request Received';
 
       let adminContent = `
@@ -323,10 +323,10 @@ class SimpleEmailService {
               <div style="background-color: #fff3cd; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #ffc107;">
                 <h4 style="color: #856404; margin-top: 0;">Action Required</h4>
                 <p style="margin: 5px 0; color: #856404;">
-                  ${isBooking 
-                    ? 'Please prepare for the customer appointment and ensure all necessary equipment is available.'
-                    : 'Please review the quotation request and contact the customer within 24 hours with pricing details.'
-                  }
+                  ${isBooking
+          ? 'Please prepare for the customer appointment and ensure all necessary equipment is available.'
+          : 'Please review the quotation request and contact the customer within 24 hours with pricing details.'
+        }
                 </p>
               </div>
               
@@ -385,8 +385,8 @@ class SimpleEmailService {
 
     try {
       // Customer Email
-      const customerSubject = isBooking 
-        ? 'Your Service Booking is Confirmed' 
+      const customerSubject = isBooking
+        ? 'Your Service Booking is Confirmed'
         : 'Your Service Quotation Request has been submitted';
 
       let customerContent = `
@@ -449,10 +449,10 @@ class SimpleEmailService {
               
               <div style="margin: 25px 0;">
                 <p style="font-size: 16px; margin-bottom: 15px;">
-                  ${isBooking 
-                    ? 'Please arrive 10 minutes before your scheduled appointment time. Our team will be ready to assist you with your vehicle service.'
-                    : 'Our team will review your request and contact you within 24 hours with detailed pricing and availability information.'
-                  }
+                  ${isBooking
+          ? 'Please arrive 10 minutes before your scheduled appointment time. Our team will be ready to assist you with your vehicle service.'
+          : 'Our team will review your request and contact you within 24 hours with detailed pricing and availability information.'
+        }
                 </p>
               </div>
               
@@ -504,8 +504,8 @@ class SimpleEmailService {
       };
 
       // Admin Email
-      const adminSubject = isBooking 
-        ? 'New Service Booking Received' 
+      const adminSubject = isBooking
+        ? 'New Service Booking Received'
         : 'New Service Quotation Request Received';
 
       let adminContent = `
@@ -569,10 +569,10 @@ class SimpleEmailService {
               <div style="background-color: #fff3cd; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #ffc107;">
                 <h4 style="color: #856404; margin-top: 0;">Action Required</h4>
                 <p style="margin: 5px 0; color: #856404;">
-                  ${isBooking 
-                    ? 'Please prepare for the customer appointment and ensure all necessary equipment is available.'
-                    : 'Please review the quotation request and contact the customer within 24 hours with pricing details.'
-                  }
+                  ${isBooking
+          ? 'Please prepare for the customer appointment and ensure all necessary equipment is available.'
+          : 'Please review the quotation request and contact the customer within 24 hours with pricing details.'
+        }
                 </p>
               </div>
               
@@ -680,7 +680,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
+
     console.log('Creating quotation:', {
       services: body.services,
       branchId: body.branchId,
@@ -697,7 +697,7 @@ export async function POST(request: Request) {
 
     // Convert bookingDate to Date object
     const bookingDate = body.bookingDate ? new Date(body.bookingDate) : null;
-    
+
     const bookingRaw = await prisma.booking.create({
       data: {
         carYear: body.carYear,
@@ -755,7 +755,7 @@ export async function POST(request: Request) {
 
         if (product) {
           // Generate reference number
-          const referenceNumber = booking.requestType === 'booking' 
+          const referenceNumber = booking.requestType === 'booking'
             ? `WM-${booking.id.toString().padStart(6, '0')}`
             : `QT-${booking.id.toString().padStart(6, '0')}`;
 
@@ -801,7 +801,7 @@ export async function POST(request: Request) {
     if (booking.requestSource === 'service') {
       try {
         // Generate reference number
-        const referenceNumber = booking.requestType === 'booking' 
+        const referenceNumber = booking.requestType === 'booking'
           ? `WM-${booking.id.toString().padStart(6, '0')}`
           : `QT-${booking.id.toString().padStart(6, '0')}`;
 
@@ -838,7 +838,7 @@ export async function POST(request: Request) {
         // Don't fail the booking if email fails
       }
     }
-    
+
     return NextResponse.json(booking);
   } catch (error: any) {
     console.error("Error creating booking:", error);

@@ -30,7 +30,7 @@ interface Location {
 function MultiQuotePageContent() {
   const searchParams = useSearchParams();
   const serviceIds = searchParams.get('services')?.split(',').map(id => parseInt(id)) || [];
-  
+
   const [services, setServices] = useState<Service[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,17 +42,17 @@ function MultiQuotePageContent() {
         const servicesResponse = await fetch('/api/services');
         if (!servicesResponse.ok) throw new Error('Failed to fetch services');
         const allServices = await servicesResponse.json();
-        
+
         // Filter to get only selected services
-        const selectedServices = allServices.filter((service: Service) => 
+        const selectedServices = allServices.filter((service: Service) =>
           serviceIds.includes(service.id)
         );
-        
+
         if (selectedServices.length === 0) {
           toast.error('No services selected');
           return;
         }
-        
+
         setServices(selectedServices);
 
         // Fetch locations
@@ -60,7 +60,7 @@ function MultiQuotePageContent() {
         if (!locationsResponse.ok) throw new Error('Failed to fetch locations');
         const locationsData = await locationsResponse.json();
         setLocations(locationsData);
-        
+
       } catch (error) {
         console.error('Error fetching data:', error);
         toast.error('Failed to load quote page');
@@ -95,9 +95,9 @@ function MultiQuotePageContent() {
   }
 
   return (
-    <MultiBookingFlow 
-      services={services} 
-      locations={locations} 
+    <MultiBookingFlow
+      services={services}
+      locations={locations}
       flowType="quotation"
     />
   );

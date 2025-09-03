@@ -31,38 +31,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const password = credentials.password as string;
 
         try {
-        const user = await prisma.user.findUnique({
-          where: {
-            email
-          }
-        });
+          const user = await prisma.user.findUnique({
+            where: {
+              email
+            }
+          });
 
           // Return null for user not found (handled as CredentialsSignin)
-        if (!user || !user?.passwordHash) {
+          if (!user || !user?.passwordHash) {
             return null;
           }
 
           // Safety check: ensure user is active (this is a fallback in case login action is bypassed)
           if (!user.isActive) {
             return null;
-        }
+          }
 
-        const isCorrectPassword = await bcrypt.compare(
-          password,
-          user.passwordHash
-        );
+          const isCorrectPassword = await bcrypt.compare(
+            password,
+            user.passwordHash
+          );
 
           // Return null for wrong password (handled as CredentialsSignin)
-        if (!isCorrectPassword) {
+          if (!isCorrectPassword) {
             return null;
-        }
+          }
 
-        return {
-          id: String(user.id),
-          email: user.email,
-          name: user.name,
-          role: user.role
-        };
+          return {
+            id: String(user.id),
+            email: user.email,
+            name: user.name,
+            role: user.role
+          };
         } catch (error) {
           console.error("Authentication error occurred");
           // Return null for any database/system errors

@@ -41,12 +41,12 @@ export default function ServicesPage() {
   // Filter services based on search term
   const filteredServices = serviceCards.filter((service) => {
     if (searchTerm.trim() === "") return true;
-    
+
     const term = searchTerm.trim().toLowerCase();
     const titleMatch = service.title.toLowerCase().includes(term);
     const descriptionMatch = service.description.toLowerCase().includes(term);
     const priceMatch = service.price.toString().includes(term);
-    
+
     return titleMatch || descriptionMatch || priceMatch;
   });
 
@@ -194,7 +194,7 @@ export default function ServicesPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
             {searchTerm && (
               <button
                 type="button"
@@ -202,7 +202,7 @@ export default function ServicesPage() {
                 onClick={() => setSearchTerm("")}
                 aria-label="Clear search"
               >
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               </button>
             )}
           </div>
@@ -241,29 +241,28 @@ export default function ServicesPage() {
                   </thead>
                   <tbody>
                     {filteredServices.map((card, idx) => (
-                      <tr key={card.id} className={`border-b last:border-0 hover:bg-gray-50 transition text-base ${idx === 0 ? 'rounded-t-lg' : ''} ${idx === serviceCards.length-1 ? 'rounded-b-lg' : ''}`}> 
+                      <tr key={card.id} className={`border-b last:border-0 hover:bg-gray-50 transition text-base ${idx === 0 ? 'rounded-t-lg' : ''} ${idx === serviceCards.length - 1 ? 'rounded-b-lg' : ''}`}>
                         <td className="py-3 pl-6 pr-4 align-middle">
                           <img src={card.image} alt={card.title} className="w-12 h-12 object-cover rounded-lg" />
                         </td>
-                        <td className="py-3 px-4 font-semibold text-[#222] align-middle break-words whitespace-normal text-base" style={{fontSize:'14px', fontWeight:600, lineHeight:'1.3'}}>{card.title}</td>
+                        <td className="py-3 px-4 font-semibold text-[#222] align-middle break-words whitespace-normal text-base" style={{ fontSize: '14px', fontWeight: 600, lineHeight: '1.3' }}>{card.title}</td>
                         <td className="py-3 px-4 text-gray-700 font-medium text-sm align-middle break-words whitespace-normal">{card.description}</td>
                         <td className="py-3 px-4 text-gray-700 font-medium text-sm align-middle whitespace-nowrap">KES {card.price}</td>
                         <td className="py-3 px-4 align-middle">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            card.isActive 
-                              ? 'bg-green-100 text-green-800' 
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${card.isActive
+                              ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
-                          }`}>
+                            }`}>
                             {card.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </td>
                         <td className="py-3 pr-6 pl-4 text-right align-middle">
                           <div className="flex gap-2 justify-end">
                             <button className="hover:bg-gray-100 p-2 rounded-full transition" onClick={() => handleEditService(card)} title="Edit">
-                              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.94l-4.243 1.415 1.415-4.243a4 4 0 01.94-1.414z" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.94l-4.243 1.415 1.415-4.243a4 4 0 01.94-1.414z" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </button>
                             <button className="hover:bg-gray-100 p-2 rounded-full transition" onClick={() => setDeleteService(card)} title="Delete">
-                              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 7V5a2 2 0 00-2-2H7a2 2 0 00-2 2v2m5 4v6m4-6v6" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 7V5a2 2 0 00-2-2H7a2 2 0 00-2 2v2m5 4v6m4-6v6" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </button>
                           </div>
                         </td>

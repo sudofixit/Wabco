@@ -35,12 +35,12 @@ export default function LocationsPage() {
   // Filter locations based on search term
   const filteredLocations = locationCards.filter((location) => {
     if (searchTerm.trim() === "") return true;
-    
+
     const term = searchTerm.trim().toLowerCase();
     const nameMatch = location.name.toLowerCase().includes(term);
     const addressMatch = location.address.toLowerCase().includes(term);
     const phoneMatch = location.phone.toLowerCase().includes(term);
-    
+
     return nameMatch || addressMatch || phoneMatch;
   });
 
@@ -135,12 +135,12 @@ export default function LocationsPage() {
       const response = await fetch(`/api/locations/${deleteLocation.id}`, {
         method: 'DELETE',
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to delete location');
       }
-      
+
       setLocationCards(locationCards.filter(l => l.id !== deleteLocation.id));
       toast.success('Location deleted successfully');
     } catch (error) {
@@ -181,7 +181,7 @@ export default function LocationsPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
             {searchTerm && (
               <button
                 type="button"
@@ -189,7 +189,7 @@ export default function LocationsPage() {
                 onClick={() => setSearchTerm("")}
                 aria-label="Clear search"
               >
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               </button>
             )}
           </div>

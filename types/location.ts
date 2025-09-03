@@ -5,6 +5,7 @@ export interface Location {
   address: string;
   phone: string;
   image: string | null;
+  subdomain?: string;
   workingHours: string | null;
   lat: number | null;
   lng: number | null;

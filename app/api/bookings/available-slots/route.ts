@@ -7,27 +7,36 @@ export async function GET(request: NextRequest) {
     const branchId = searchParams.get('branchId');
     const bookingDate = searchParams.get('bookingDate');
 
-    if (!branchId || !bookingDate) {
+    // Collect serviceId (single) and serviceIds (multiple)
+    const serviceId = searchParams.get('serviceId');
+    const serviceIds = searchParams.getAll('serviceIds'); // handles ?serviceIds=1&serviceIds=2
+
+    if (!branchId || !bookingDate || (!serviceId && serviceIds.length === 0)) {
       return NextResponse.json(
-        { error: 'branchId and bookingDate are required' },
+        { error: 'branchId, bookingDate, and at least one serviceId are required' },
         { status: 400 }
       );
     }
 
-    // Get all active bookings for the specified branch and date
+    // Normalize service IDs (single or multiple) into array of numbers
+    const serviceIdsToCheck = serviceId
+      ? [parseInt(serviceId)]
+      : serviceIds.map((id) => parseInt(id));
+
     const existingBookings = await prisma.booking.findMany({
       where: {
         branchId: parseInt(branchId),
         bookingDate: new Date(bookingDate),
-        isActive: true, // Only consider active bookings
+        serviceId: { in: serviceIdsToCheck },
+        isActive: true,
       },
-      select: {
-        bookingTime: true,
-      },
+      select: { bookingTime: true, serviceId: true },
     });
 
-    // Extract booked time slots
-    const bookedSlots = existingBookings.map((booking: { bookingTime: string | null }) => booking.bookingTime).filter(Boolean);
+    // Extract booked slots
+    const bookedSlots = existingBookings
+      .map((b) => b.bookingTime)
+      .filter(Boolean) as string[];
 
     // Generate all possible time slots (9:00 to 17:30)
     const allSlots: string[] = [];
@@ -42,13 +51,18 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Return available and booked slots
-    const availableSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
+    // Available slots = all slots minus ones booked for these services
+    const availableSlots = allSlots.filter((slot) => !bookedSlots.includes(slot));
 
     return NextResponse.json({
       availableSlots,
       bookedSlots,
       allSlots,
+      conflictType: serviceIdsToCheck.length > 1 ? 'multi-service' : 'same-service-only',
+      message:
+        serviceIdsToCheck.length > 1
+          ? 'Conflicts checked across selected services. Different services not in this list can still be booked simultaneously.'
+          : 'Conflicts checked only for the same service.',
     });
   } catch (error) {
     console.error('Error fetching available slots:', error);
@@ -57,4 +71,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

@@ -76,6 +76,13 @@ export default function Step4CustomerInfo({
     return emailRegex.test(email);
   };
 
+  const validatePhone = (phone: string): boolean => {
+    // only digits, 7 to 15 digits long
+    const phoneRegex = /^\d{7,15}$/;
+    return phoneRegex.test(phone);
+  };
+
+  // FIXED: Enhanced validation with error navigation
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -91,10 +98,38 @@ export default function Step4CustomerInfo({
 
     if (!bookingData.customerPhone.trim()) {
       newErrors.customerPhone = 'Phone number is required';
+    } else if (!validatePhone(bookingData.customerPhone)) {
+      newErrors.customerPhone = 'Please enter a valid phone number (7–15 digits)';
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    // FIXED: Navigate to first error field with smooth scrolling
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      const errorElement = document.getElementById(firstErrorField);
+      if (errorElement) {
+        // Smooth scroll to the error field
+        errorElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+
+        // Add a slight delay to ensure scroll is complete, then focus
+        setTimeout(() => {
+          errorElement.focus();
+          // Add visual emphasis by briefly highlighting the field
+          errorElement.classList.add('ring-4', 'ring-red-200');
+          setTimeout(() => {
+            errorElement.classList.remove('ring-4', 'ring-red-200');
+          }, 2000);
+        }, 300);
+      }
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = () => {
@@ -120,7 +155,7 @@ export default function Step4CustomerInfo({
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#0a1c58] mb-2">Customer Information</h2>
         <p className="text-gray-600">
-          {flowType === 'booking' 
+          {flowType === 'booking'
             ? 'Provide your contact details to complete the booking'
             : 'Provide your contact details to complete the quote request'
           }
@@ -131,7 +166,7 @@ export default function Step4CustomerInfo({
         {/* Customer Information Form */}
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-[#0a1c58]">Your Details</h3>
-          
+
           {/* Full Name */}
           <div>
             <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -142,13 +177,17 @@ export default function Step4CustomerInfo({
               id="customerName"
               value={bookingData.customerName}
               onChange={(e) => handleInputChange('customerName', e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerName ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 transition-all duration-200 ${errors.customerName ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
+                }`}
               placeholder="John Doe"
             />
             {errors.customerName && (
-              <p className="text-red-500 text-sm mt-1">{errors.customerName}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.customerName}</p>
+              </div>
             )}
           </div>
 
@@ -162,13 +201,17 @@ export default function Step4CustomerInfo({
               id="customerEmail"
               value={bookingData.customerEmail}
               onChange={(e) => handleInputChange('customerEmail', e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerEmail ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 transition-all duration-200 ${errors.customerEmail ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
+                }`}
               placeholder="john@example.com"
             />
             {errors.customerEmail && (
-              <p className="text-red-500 text-sm mt-1">{errors.customerEmail}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.customerEmail}</p>
+              </div>
             )}
           </div>
 
@@ -180,22 +223,27 @@ export default function Step4CustomerInfo({
             <input
               type="tel"
               id="customerPhone"
+              maxLength={15}
               value={bookingData.customerPhone}
               onChange={(e) => handleInputChange('customerPhone', e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerPhone ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 transition-all duration-200 ${errors.customerPhone ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
+                }`}
               placeholder="+254 700 000 000"
             />
             {errors.customerPhone && (
-              <p className="text-red-500 text-sm mt-1">{errors.customerPhone}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.customerPhone}</p>
+              </div>
             )}
           </div>
 
           <div className="text-sm text-gray-500">
             <p>* Required fields</p>
             <p>
-              {flowType === 'booking' 
+              {flowType === 'booking'
                 ? 'We\'ll use this information to send you booking confirmations and updates.'
                 : 'We\'ll use this information to send you quote details and updates.'
               }
@@ -208,7 +256,7 @@ export default function Step4CustomerInfo({
           <h3 className="text-lg font-semibold text-[#0a1c58]">
             {flowType === 'booking' ? 'Booking Summary' : 'Quote Request Summary'}
           </h3>
-          
+
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 space-y-6">
             {/* Service Details */}
             <div>
@@ -293,15 +341,14 @@ export default function Step4CustomerInfo({
         >
           {flowType === 'booking' ? '← Back to Date & Time' : '← Back to Branch Selection'}
         </button>
-        
+
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className={`px-8 py-3 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center gap-2 ${
-            isSubmitting
-              ? 'bg-gray-400 text-white cursor-not-allowed'
-              : 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-600'
-          }`}
+          className={`px-8 py-3 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center gap-2 ${isSubmitting
+            ? 'bg-gray-400 text-white cursor-not-allowed'
+            : 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-600'
+            }`}
         >
           {isSubmitting ? (
             <>
@@ -313,6 +360,18 @@ export default function Step4CustomerInfo({
           )}
         </button>
       </div>
+
+      {/* CSS for shake animation */}
+      <style jsx>{`
+        .shake {
+          animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+      `}</style>
     </div>
   );
-} 
+}

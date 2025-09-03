@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Location } from '@/types/location';
 
 interface GoogleMapContainerProps {
@@ -11,29 +11,45 @@ export default function GoogleMapContainer({ locations = [] }: GoogleMapContaine
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
+  const [mapReady, setMapReady] = useState(false);
+
+  // Wait for Google Maps script to be fully ready
+  useEffect(() => {
+    const handleMapsReady = () => {
+      setMapReady(true);
+    };
+
+    if (typeof window !== "undefined" && (window as any).googleMapsReady) {
+      setMapReady(true);
+    } else {
+      window.addEventListener("googleMapsReady", handleMapsReady);
+    }
+
+    return () => {
+      window.removeEventListener("googleMapsReady", handleMapsReady);
+    };
+  }, []);
 
   useEffect(() => {
-    if (!mapRef.current || !window.google) return;
+    if (!mapRef.current || !window.google || !mapReady) return;
 
     // Clear existing markers
     markersRef.current.forEach(marker => marker.setMap(null));
     markersRef.current = [];
 
-    // Determine map center based on locations or default to Nairobi (where your locations are)
-    let center = { lat: -1.2921, lng: 36.8219 }; // Nairobi center
+    // Determine map center
+    let center = { lat: -1.2921, lng: 36.8219 };
     let zoom = 10;
 
-    // If we have locations with coordinates, center on them
     const locationsWithCoords = locations.filter(loc => loc.lat && loc.lng);
     if (locationsWithCoords.length > 0) {
       if (locationsWithCoords.length === 1) {
-        center = { 
-          lat: parseFloat(locationsWithCoords[0].lat!.toString()), 
-          lng: parseFloat(locationsWithCoords[0].lng!.toString()) 
+        center = {
+          lat: parseFloat(locationsWithCoords[0].lat!.toString()),
+          lng: parseFloat(locationsWithCoords[0].lng!.toString()),
         };
         zoom = 15;
       } else {
-        // Calculate center of all locations
         const avgLat = locationsWithCoords.reduce((sum, loc) => sum + parseFloat(loc.lat!.toString()), 0) / locationsWithCoords.length;
         const avgLng = locationsWithCoords.reduce((sum, loc) => sum + parseFloat(loc.lng!.toString()), 0) / locationsWithCoords.length;
         center = { lat: avgLat, lng: avgLng };
@@ -43,27 +59,25 @@ export default function GoogleMapContainer({ locations = [] }: GoogleMapContaine
 
     // Initialize the map
     const map = new google.maps.Map(mapRef.current, {
-      center: center,
-      zoom: zoom,
-      zoomControl: false, // Disable default zoom controls (we have custom ones)
+      center,
+      zoom,
+      zoomControl: false,
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: false,
-      styles: [
-        // Optional: Add custom styling here later for brand consistency
-      ],
+      styles: [],
     });
 
     mapInstanceRef.current = map;
 
-    // Add markers for each location with coordinates
+    // Add markers
     locationsWithCoords.forEach((location) => {
       const marker = new google.maps.Marker({
-        position: { 
-          lat: parseFloat(location.lat!.toString()), 
-          lng: parseFloat(location.lng!.toString()) 
+        position: {
+          lat: parseFloat(location.lat!.toString()),
+          lng: parseFloat(location.lng!.toString()),
         },
-        map: map,
+        map,
         title: location.name,
         icon: {
           url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
@@ -77,7 +91,6 @@ export default function GoogleMapContainer({ locations = [] }: GoogleMapContaine
         },
       });
 
-      // Create info window with location details
       const infoWindow = new google.maps.InfoWindow({
         content: `
           <div style="font-family: 'Poppins', sans-serif; max-width: 250px;">
@@ -93,9 +106,7 @@ export default function GoogleMapContainer({ locations = [] }: GoogleMapContaine
         `,
       });
 
-      // Show info window on marker click
       marker.addListener('click', () => {
-        // Close any open info windows
         markersRef.current.forEach(m => {
           if ((m as any).infoWindow) {
             (m as any).infoWindow.close();
@@ -104,12 +115,11 @@ export default function GoogleMapContainer({ locations = [] }: GoogleMapContaine
         infoWindow.open(map, marker);
       });
 
-      // Store info window reference
       (marker as any).infoWindow = infoWindow;
       markersRef.current.push(marker);
     });
 
-  }, [locations]);
+  }, [locations, mapReady]);
 
   const handleZoomIn = () => {
     if (mapInstanceRef.current) {
@@ -127,32 +137,17 @@ export default function GoogleMapContainer({ locations = [] }: GoogleMapContaine
 
   return (
     <div className="relative w-full max-w-[1303px]" style={{ height: 550 }}>
-      {/* Google Map Container */}
-      <div 
-        ref={mapRef}
-        className="w-full h-full rounded-2xl"
-        style={{ borderRadius: 16 }}
-      />
-      
-      {/* Custom Zoom Controls */}
+      <div ref={mapRef} className="w-full h-full rounded-2xl" style={{ borderRadius: 16 }} />
+
       <div className="absolute right-6 top-6 flex flex-col gap-2 z-10">
-        <button 
-          onClick={handleZoomIn}
-          className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-2xl font-bold shadow hover:bg-gray-100 transition-colors"
-          aria-label="Zoom in"
-        >
+        <button onClick={handleZoomIn} className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-2xl font-bold shadow hover:bg-gray-100 transition-colors text-black" aria-label="Zoom in">
           +
         </button>
-        <button 
-          onClick={handleZoomOut}
-          className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-2xl font-bold shadow hover:bg-gray-100 transition-colors"
-          aria-label="Zoom out"
-        >
+        <button onClick={handleZoomOut} className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-2xl font-bold shadow hover:bg-gray-100 transition-colors text-black" aria-label="Zoom out">
           -
         </button>
       </div>
-      
-      {/* Location Count Badge */}
+
       {locations.length > 0 && (
         <div className="absolute left-6 top-6 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow z-10">
           <div className="text-sm font-semibold text-[#0a1c58]">
@@ -162,4 +157,4 @@ export default function GoogleMapContainer({ locations = [] }: GoogleMapContaine
       )}
     </div>
   );
-} 
+}

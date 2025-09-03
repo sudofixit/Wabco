@@ -16,6 +16,7 @@ interface FormData {
   address: string;
   phone: string;
   image: string;
+  subdomain?: string;
   workingHours: string;
   lat: string;
   lng: string;
@@ -30,6 +31,7 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
     address: location?.address || "",
     phone: location?.phone || "",
     image: location?.image || "",
+    subdomain: location?.subdomain || "",
     workingHours: location?.workingHours || "",
     lat: location?.lat?.toString() || "",
     lng: location?.lng?.toString() || "",
@@ -41,15 +43,15 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
 
   const validateCoordinates = (lat: string, lng: string): Record<string, string> => {
     const newErrors: Record<string, string> = {};
-    
+
     if (lat && (isNaN(parseFloat(lat)) || parseFloat(lat) < -90 || parseFloat(lat) > 90)) {
       newErrors.lat = 'Latitude must be between -90 and 90';
     }
-    
+
     if (lng && (isNaN(parseFloat(lng)) || parseFloat(lng) < -180 || parseFloat(lng) > 180)) {
       newErrors.lng = 'Longitude must be between -180 and 180';
     }
-    
+
     return newErrors;
   };
 
@@ -58,12 +60,12 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
     // Clear specific error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
-    
+
     // Validate coordinates in real-time
     if (name === 'lat' || name === 'lng') {
       const latValue = name === 'lat' ? value : formData.lat;
@@ -75,14 +77,14 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate coordinates before submitting
     const coordErrors = validateCoordinates(formData.lat, formData.lng);
     if (Object.keys(coordErrors).length > 0) {
       setErrors(coordErrors);
       return;
     }
-    
+
     setIsLoading(true);
     try {
       await onSubmit(formData);
@@ -126,7 +128,7 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
     try {
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
-      
+
       // If we're updating an existing location and it has an image, pass the old image URL for deletion
       if (location?.image) {
         uploadFormData.append('oldImageUrl', location.image);
@@ -179,6 +181,25 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#0a1c58] focus:border-[#0a1c58] text-gray-900"
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor="subdomain"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Subdomain
+          </label>
+          <input
+            type="text"
+            id="subdomain"
+            name="subdomain"
+            value={formData.subdomain}
+            onChange={handleInputChange}
+            placeholder="e.g., abu-dhabi"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#0a1c58] focus:border-[#0a1c58] text-gray-900"
+          />
+          <p className="text-xs text-gray-500 mt-1">This will create a subdomain like https://wabco.com/abu-dhabi</p>
         </div>
 
         <div>
@@ -291,9 +312,9 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
               </div>
             ) : imagePreview ? (
               <div className="mb-4">
-                <img 
+                <img
                   src={imagePreview.startsWith('http') ? imagePreview : (imagePreview.startsWith('/') ? imagePreview : `/${imagePreview}`)}
-                  alt="Location preview" 
+                  alt="Location preview"
                   className="mx-auto h-[180px] w-[180px] object-cover rounded-lg border-4 border-gray-300 shadow-md"
                   onError={(e) => {
                     console.error('Image failed to load:', imagePreview);
@@ -359,4 +380,4 @@ export default function LocationForm({ location, onSubmit }: LocationFormProps) 
       </div>
     </form>
   );
-} 
+}

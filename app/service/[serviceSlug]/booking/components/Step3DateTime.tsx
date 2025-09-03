@@ -43,7 +43,9 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [allSlots, setAllSlots] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [apiMessage, setApiMessage] = useState<string>('');
   const timeSlots = generateTimeSlots();
 
   // Calculate min and max dates (today to 1 month from now)
@@ -54,43 +56,76 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
   const minDateString = today.toISOString().split('T')[0];
   const maxDateString = maxDate.toISOString().split('T')[0];
 
-  // Fetch available slots when date or branch changes
+  // Fetch available slots when date, branch, or service changes
   useEffect(() => {
     const fetchAvailableSlots = async () => {
       if (!bookingData.bookingDate || !bookingData.branchId) {
         setAvailableSlots(timeSlots);
         setBookedSlots([]);
+        setAllSlots(timeSlots);
         return;
       }
 
       setIsLoadingSlots(true);
       try {
-        const response = await fetch(
-          `/api/bookings/available-slots?branchId=${bookingData.branchId}&bookingDate=${bookingData.bookingDate}`
-        );
-        
+        const queryParams = new URLSearchParams({
+          branchId: bookingData.branchId.toString(),
+          bookingDate: bookingData.bookingDate,
+        });
+
+        // Handle multiple services
+        if (bookingData.services && bookingData.services.length > 0) {
+          bookingData.services.forEach((s) => {
+            queryParams.append('serviceIds', s.id.toString());
+          });
+        }
+        // fallback: support single legacy serviceId if still present
+        else if (bookingData.serviceId) {
+          queryParams.append('serviceId', bookingData.serviceId.toString());
+        }
+
+        const response = await fetch(`/api/bookings/available-slots?${queryParams}`);
+
         if (!response.ok) {
           throw new Error('Failed to fetch available slots');
         }
 
         const data = await response.json();
-        setAvailableSlots(data.availableSlots);
-        setBookedSlots(data.bookedSlots);
+        setAvailableSlots(data.availableSlots || timeSlots);
+        setBookedSlots(data.bookedSlots || []);
+        setAllSlots(data.allSlots || timeSlots);
+        setApiMessage(data.message || '');
+
+        // Clear any existing time conflict errors when new data loads
+        if (errors.timeConflict) {
+          setErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors.timeConflict;
+            return newErrors;
+          });
+        }
+
       } catch (error) {
         console.error('Error fetching available slots:', error);
         // Fallback to all slots if API fails
         setAvailableSlots(timeSlots);
         setBookedSlots([]);
+        setAllSlots(timeSlots);
+        setApiMessage('Failed to load booking data. All slots shown as available.');
       } finally {
         setIsLoadingSlots(false);
       }
     };
 
     fetchAvailableSlots();
-  }, [bookingData.bookingDate, bookingData.branchId]);
+  }, [bookingData.bookingDate, bookingData.branchId, bookingData.serviceId]);
 
   const handleDateChange = (date: string) => {
     updateBookingData({ bookingDate: date });
+    // Clear time selection when date changes
+    if (bookingData.bookingTime) {
+      updateBookingData({ bookingTime: '' });
+    }
     // Clear error when user selects a date
     if (errors.bookingDate) {
       setErrors(prev => ({ ...prev, bookingDate: '' }));
@@ -98,13 +133,35 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
   };
 
   const handleTimeChange = (time: string) => {
+    // Check if this time slot is booked for the same service
+    const isBookedForSameService = bookedSlots.includes(time);
+
+    if (isBookedForSameService) {
+      // Show inline error for same-service conflict
+      setErrors(prev => ({
+        ...prev,
+        timeConflict: `This time slot (${time}) is already booked for "${bookingData.serviceTitle ? bookingData.serviceTitle : 'the same service'}". Please choose a different time. Note: Different services can be booked at the same time.`
+      }));
+
+      // Don't select the time slot
+      return;
+    }
+
+    // Time slot is available - proceed with selection
     updateBookingData({ bookingTime: time });
-    // Clear error when user selects a time
-    if (errors.bookingTime) {
-      setErrors(prev => ({ ...prev, bookingTime: '' }));
+
+    // Clear any existing errors
+    if (errors.bookingTime || errors.timeConflict) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.bookingTime;
+        delete newErrors.timeConflict;
+        return newErrors;
+      });
     }
   };
 
+  // Enhanced validation with error navigation for TC-054
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -116,7 +173,30 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    // Navigate to first error field
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      const errorElement = document.getElementById(firstErrorField);
+      if (errorElement) {
+        errorElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+
+        setTimeout(() => {
+          errorElement.focus();
+          errorElement.classList.add('ring-4', 'ring-red-200');
+          setTimeout(() => {
+            errorElement.classList.remove('ring-4', 'ring-red-200');
+          }, 2000);
+        }, 300);
+      }
+      return false;
+    }
+
+    return true;
   };
 
   const handleNext = () => {
@@ -137,7 +217,7 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-14">
       {/* Step Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#0a1c58] mb-2">Select Date & Time</h2>
@@ -148,7 +228,7 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
         {/* Date Selection */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-[#0a1c58]">Select Date</h3>
-          
+
           <div>
             <label htmlFor="bookingDate" className="block text-sm font-medium text-gray-700 mb-2">
               Booking Date *
@@ -160,13 +240,17 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
               onChange={(e) => handleDateChange(e.target.value)}
               min={minDateString}
               max={maxDateString}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${
-                errors.bookingDate ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${errors.bookingDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
               style={{ colorScheme: 'light' }}
             />
             {errors.bookingDate && (
-              <p className="text-red-500 text-sm mt-1">{errors.bookingDate}</p>
+              <p className="text-red-500 text-sm mt-1 font-medium animate-pulse flex items-center gap-2">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                {errors.bookingDate}
+              </p>
             )}
           </div>
 
@@ -186,10 +270,31 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
         {/* Time Selection */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-[#0a1c58]">Select Time</h3>
-          
-          {errors.bookingTime && (
-            <div className="text-red-500 text-sm p-3 bg-red-50 border border-red-200 rounded-lg">
-              {errors.bookingTime}
+
+          {/* Time Conflict Error */}
+          {errors.timeConflict && (
+            <div className="text-red-600 text-sm p-4 bg-red-50 border border-red-200 rounded-lg font-medium">
+              <div className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <p className="font-semibold mb-1">Service Booking Conflict</p>
+                  <p>{errors.timeConflict}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* General Time Error */}
+          {errors.bookingTime && !errors.timeConflict && (
+            <div className="text-red-500 text-sm p-3 bg-red-50 border border-red-200 rounded-lg font-medium animate-pulse">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <span>{errors.bookingTime}</span>
+              </div>
             </div>
           )}
 
@@ -199,28 +304,35 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
               <span className="ml-2 text-gray-600">Loading available slots...</span>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto">
-              {timeSlots.map((time) => {
-                const isBooked = bookedSlots.includes(time);
+            <div id="bookingTime" className="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4">
+              {allSlots.map((time) => {
+                const isBookedForSameService = bookedSlots.includes(time);
                 const isSelected = bookingData.bookingTime === time;
-                
+                const isAvailable = availableSlots.includes(time);
+
                 return (
                   <button
                     key={time}
-                    onClick={() => !isBooked && handleTimeChange(time)}
-                    disabled={isBooked}
-                    className={`p-3 text-sm font-medium rounded-lg border-2 transition-all ${
-                      isSelected
-                        ? 'border-[#0a1c58] bg-[#0a1c58] text-white'
-                        : isBooked
-                        ? 'border-red-200 bg-red-50 text-red-400 cursor-not-allowed'
-                        : 'border-gray-200 text-gray-700 hover:border-[#0a1c58] hover:bg-blue-50'
-                    }`}
-                    title={isBooked ? 'This time slot is already booked' : ''}
+                    onClick={() => handleTimeChange(time)}
+                    className={`p-3 text-sm font-medium rounded-lg border-2 transition-all relative ${isSelected
+                      ? 'border-[#0a1c58] bg-[#0a1c58] text-white shadow-md'
+                      : isBookedForSameService
+                        ? 'border-orange-300 bg-orange-50 text-orange-700 cursor-pointer hover:border-orange-400 hover:bg-orange-100'
+                        : isAvailable
+                          ? 'border-gray-200 text-gray-700 hover:border-[#0a1c58] hover:bg-blue-50'
+                          : 'border-gray-200 bg-gray-100 text-gray-400'
+                      }`}
+                    title={
+                      isBookedForSameService
+                        ? `This time is already booked for "${bookingData.serviceTitle}". Click to see details.`
+                        : isAvailable
+                          ? `Available time slot - book "${bookingData.serviceTitle}"`
+                          : 'Time slot unavailable'
+                    }
                   >
                     {time}
-                    {isBooked && (
-                      <div className="text-xs mt-1 text-red-500">Booked</div>
+                    {isBookedForSameService && (
+                      <div className="text-xs mt-1 text-orange-600 font-medium">Same Service Conflict</div>
                     )}
                   </button>
                 );
@@ -230,15 +342,26 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
 
           {bookingData.bookingTime && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <h4 className="font-semibold text-green-800 mb-2">Selected Time</h4>
-              <p className="text-green-700">{bookingData.bookingTime}</p>
+              <h4 className="font-semibold text-green-800 mb-2">✓ Selected Time</h4>
+              <p className="text-green-700 font-medium">{bookingData.bookingTime}</p>
+              <p className="text-green-600 text-sm mt-1">
+                Ready to book "{bookingData.serviceTitle}" at this time
+              </p>
+            </div>
+          )}
+
+          {/* API Status Message */}
+          {apiMessage && (
+            <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded border">
+              <strong>System Info:</strong> {apiMessage}
             </div>
           )}
 
           <div className="text-sm text-gray-500">
             <p>• Available hours: 9:00 AM - 5:30 PM</p>
             <p>• 30-minute appointment slots</p>
-            <p>• All times are shown in local time</p>
+            <p className="text-green-600">• Different services can share time slots</p>
+            <p className="text-orange-600">• Same service bookings create conflicts</p>
           </div>
         </div>
       </div>
@@ -248,7 +371,7 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-[#0a1c58] mb-4">Appointment Summary</h3>
           <div className="space-y-2 text-gray-700">
-            <p><span className="font-medium">Service:</span> {bookingData.serviceTitle}</p>
+            <p><span className="font-medium">Service:</span> {bookingData.serviceTitle ? bookingData.serviceTitle : bookingData.servicesTitles}</p>
             <p><span className="font-medium">Vehicle:</span> {bookingData.carYear} {bookingData.carMake} {bookingData.carModel}</p>
             <p><span className="font-medium">Location:</span> {bookingData.branchName}</p>
             <p><span className="font-medium">Date:</span> {formatDate(bookingData.bookingDate)}</p>
@@ -265,19 +388,18 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
         >
           ← Back to Branch Selection
         </button>
-        
+
         <button
           onClick={handleNext}
           disabled={!bookingData.bookingDate || !bookingData.bookingTime}
-          className={`px-8 py-3 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-            bookingData.bookingDate && bookingData.bookingTime
-              ? 'bg-[#0a1c58] text-white hover:bg-[#132b7c] focus:ring-[#0a1c58]'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+          className={`px-8 py-3 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${bookingData.bookingDate && bookingData.bookingTime
+            ? 'bg-[#0a1c58] text-white hover:bg-[#132b7c] focus:ring-[#0a1c58]'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
           Continue to Customer Info →
         </button>
       </div>
     </div>
   );
-} 
+}

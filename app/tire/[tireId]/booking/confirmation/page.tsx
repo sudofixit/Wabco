@@ -23,13 +23,13 @@ async function getBookingDetails(bookingId: string) {
 
 export default async function TireConfirmationPage({ searchParams }: ConfirmationPageProps) {
   const { bookingId } = await searchParams;
-  
+
   if (!bookingId) {
     notFound();
   }
 
   const booking = await getBookingDetails(bookingId);
-  
+
   if (!booking) {
     notFound();
   }
@@ -82,21 +82,21 @@ export default async function TireConfirmationPage({ searchParams }: Confirmatio
               </svg>
             </div>
             <h1 className="text-3xl font-bold text-[#0a1c58] mb-4">
-              {isTireBooking 
+              {isTireBooking
                 ? (booking.requestType === 'booking' ? 'Your Tire Booking is Confirmed!' : 'Your Tire Quotation Request has been submitted!')
                 : (booking.requestType === 'booking' ? 'Booking Confirmed!' : 'Quote Request Submitted!')
               }
             </h1>
             <p className="text-gray-600 text-lg">
-              {isTireBooking 
-                ? (booking.requestType === 'booking' 
-                    ? 'Your tire installation appointment has been successfully booked. We\'ll see you soon!'
-                    : 'Your tire quote request has been submitted. We\'ll contact you soon with pricing details!'
-                  )
-                : (booking.requestType === 'booking' 
-                    ? 'Your service appointment has been successfully booked. We\'ll see you soon!'
-                    : 'Your quote request has been submitted. We\'ll contact you soon with pricing details!'
-                  )
+              {isTireBooking
+                ? (booking.requestType === 'booking'
+                  ? 'Your tire installation appointment has been successfully booked. We\'ll see you soon!'
+                  : 'Your tire quote request has been submitted. We\'ll contact you soon with pricing details!'
+                )
+                : (booking.requestType === 'booking'
+                  ? 'Your service appointment has been successfully booked. We\'ll see you soon!'
+                  : 'Your quote request has been submitted. We\'ll contact you soon with pricing details!'
+                )
               }
             </p>
           </div>
@@ -104,12 +104,12 @@ export default async function TireConfirmationPage({ searchParams }: Confirmatio
           {/* Booking Details */}
           <div className="border border-gray-200 rounded-lg p-6 mb-8">
             <h2 className="text-xl font-semibold text-[#0a1c58] mb-6">
-              {isTireBooking 
+              {isTireBooking
                 ? (booking.requestType === 'booking' ? 'Tire Booking Details' : 'Tire Quote Request Details')
                 : (booking.requestType === 'booking' ? 'Booking Details' : 'Quote Request Details')
               }
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left Column */}
               <div className="space-y-4">
@@ -178,11 +178,10 @@ export default async function TireConfirmationPage({ searchParams }: Confirmatio
                   <p className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">
                     Status
                   </p>
-                  <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                    booking.requestType === 'booking' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-purple-100 text-purple-800'
-                  }`}>
+                  <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${booking.requestType === 'booking'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-purple-100 text-purple-800'
+                    }`}>
                     {booking.requestType === 'booking' ? 'Confirmed' : 'Quote Requested'}
                   </span>
                 </div>
@@ -211,7 +210,7 @@ export default async function TireConfirmationPage({ searchParams }: Confirmatio
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600 mt-1">•</span>
                     <span>
-                      {isTireBooking 
+                      {isTireBooking
                         ? 'Tire installation times may vary depending on your vehicle and tire type'
                         : 'Service completion times may vary depending on your vehicle\'s condition'
                       }
@@ -243,16 +242,16 @@ export default async function TireConfirmationPage({ searchParams }: Confirmatio
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
+            <Link
               href="/tire"
               className="bg-[#0a1c58] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#132b7c] transition text-center"
             >
-              {isTireBooking 
+              {isTireBooking
                 ? (booking.requestType === 'booking' ? 'Browse More Tires' : 'Back to Quote')
                 : 'Back to Services'
               }
             </Link>
-            <Link 
+            <Link
               href="/contact-us"
               className="border-2 border-[#0a1c58] text-[#0a1c58] px-8 py-3 rounded-lg font-semibold hover:bg-[#0a1c58] hover:text-white transition text-center"
             >

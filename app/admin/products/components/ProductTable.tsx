@@ -179,17 +179,16 @@ export default function ProductTable({
               {product.offer ? 'Yes' : 'No'}
             </td>
             <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-700">
-              <span className={`font-bold ${
-                product.availability === "In Stock"
-                  ? "text-green-700"
-                  : product.availability === "Contact Us"
+              <span className={`font-bold ${product.availability === "In Stock"
+                ? "text-green-700"
+                : product.availability === "Contact Us"
                   ? "text-red-600"
                   : "text-red-600" // For Low Stock, Out of Stock, etc.
-              }`}>
+                }`}>
                 {product.availability}
               </span>
             </td>
-            <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+            <td className=" whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
               <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => onEdit(product)}

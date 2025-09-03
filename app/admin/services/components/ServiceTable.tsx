@@ -77,11 +77,10 @@ export default function ServiceTable({
             </td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
               <span
-                className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                  service.isActive
+                className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${service.isActive
                     ? "bg-green-100 text-green-800"
                     : "bg-red-100 text-red-800"
-                }`}
+                  }`}
               >
                 {service.isActive ? "Active" : "Inactive"}
               </span>

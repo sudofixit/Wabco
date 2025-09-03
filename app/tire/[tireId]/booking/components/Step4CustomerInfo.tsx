@@ -76,11 +76,11 @@ export default function Step4CustomerInfo({
   selectedLocation,
   flowType = 'booking',
 }: Step4Props) {
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateAndSubmit = () => {
-    const newErrors: {[key: string]: string} = {};
-    
+    const newErrors: { [key: string]: string } = {};
+
     if (!bookingData.customerName.trim()) {
       newErrors.customerName = 'Name is required';
     }
@@ -115,7 +115,7 @@ export default function Step4CustomerInfo({
             {flowType === 'booking' ? 'Complete Your Tire Booking' : 'Complete Your Tire Quote Request'}
           </h2>
           <p className="text-gray-600">
-            {flowType === 'booking' 
+            {flowType === 'booking'
               ? 'Please provide your contact information to confirm your tire installation booking.'
               : 'Please provide your contact information to receive your tire quotation.'
             }
@@ -132,9 +132,8 @@ export default function Step4CustomerInfo({
               id="customerName"
               value={bookingData.customerName}
               onChange={(e) => updateBookingData({ customerName: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerName ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerName ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter your full name"
             />
             {errors.customerName && <p className="mt-1 text-sm text-red-600">{errors.customerName}</p>}
@@ -149,9 +148,8 @@ export default function Step4CustomerInfo({
               id="customerEmail"
               value={bookingData.customerEmail}
               onChange={(e) => updateBookingData({ customerEmail: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerEmail ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerEmail ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter your email address"
             />
             {errors.customerEmail && <p className="mt-1 text-sm text-red-600">{errors.customerEmail}</p>}
@@ -166,9 +164,8 @@ export default function Step4CustomerInfo({
               id="customerPhone"
               value={bookingData.customerPhone}
               onChange={(e) => updateBookingData({ customerPhone: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.customerPhone ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerPhone ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter your phone number"
             />
             {errors.customerPhone && <p className="mt-1 text-sm text-red-600">{errors.customerPhone}</p>}
@@ -178,7 +175,7 @@ export default function Step4CustomerInfo({
         <div className="text-sm text-gray-500">
           <p>* Required fields</p>
           <p>
-            {flowType === 'booking' 
+            {flowType === 'booking'
               ? 'We\'ll use this information to send you booking confirmations and updates.'
               : 'We\'ll use this information to send you quote details and updates.'
             }
@@ -191,7 +188,7 @@ export default function Step4CustomerInfo({
         <h3 className="text-lg font-semibold text-[#0a1c58]">
           {flowType === 'booking' ? 'Tire Booking Summary' : 'Tire Quote Request Summary'}
         </h3>
-        
+
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 space-y-6">
           {/* Tire Details */}
           <div>
@@ -286,15 +283,14 @@ export default function Step4CustomerInfo({
           >
             {flowType === 'booking' ? '← Back to Date & Time' : '← Back to Branch Selection'}
           </button>
-          
+
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className={`px-8 py-3 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center gap-2 ${
-              isSubmitting
+            className={`px-8 py-3 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center gap-2 ${isSubmitting
                 ? 'bg-gray-400 text-white cursor-not-allowed'
                 : 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-600'
-            }`}
+              }`}
           >
             {isSubmitting ? (
               <>

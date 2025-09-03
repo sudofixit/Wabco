@@ -52,15 +52,15 @@ interface BookingData {
   carYear: string;
   carMake: string;
   carModel: string;
-  
+
   // Step 2
   branchId: number;
   branchName: string;
-  
+
   // Step 3
   bookingDate: string;
   bookingTime: string;
-  
+
   // Step 4
   customerName: string;
   customerEmail: string;
@@ -79,7 +79,7 @@ const getSteps = (flowType: 'booking' | 'quotation') => {
     { number: 1, title: 'Tire & Car', description: 'Select tire and car details' },
     { number: 2, title: 'Branch', description: 'Choose Branch for Tire Installation' },
   ];
-  
+
   if (flowType === 'booking') {
     return [
       ...baseSteps,
@@ -98,10 +98,10 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const steps = getSteps(flowType);
   const maxSteps = steps.length;
-  
+
   const [bookingData, setBookingData] = useState<BookingData>({
     tireId: tire.id,
     tirePattern: tire.pattern,
@@ -167,7 +167,7 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
 
       const createdBooking = await response.json();
       toast.success(flowType === 'booking' ? 'Tire booking created successfully!' : 'Tire quote request submitted successfully!');
-      
+
       // Redirect to confirmation page
       router.push(`/tire/${tire.id}/booking/confirmation?bookingId=${createdBooking.id}`);
     } catch (error) {
@@ -256,9 +256,9 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
               <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={231} height={30} />
             </Link>
           </div>
-          <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
+          <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
             <Link href="/" className="hover:text-black transition">Home</Link>
-            <Link href="/tire" className="hover:text-black transition">Tires</Link>
+            <Link href="/tire" className="font-bold text-black transition">Tires</Link>
             <Link href="/service" className="hover:text-black transition">Services</Link>
             <Link href="/location" className="hover:text-black transition">Location</Link>
           </nav>
@@ -278,18 +278,16 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
               <div key={step.number} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
-                      currentStep >= step.number
-                        ? 'bg-[#0a1c58] text-white'
-                        : 'bg-gray-200 text-gray-600'
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${currentStep >= step.number
+                      ? 'bg-[#0a1c58] text-white'
+                      : 'bg-gray-200 text-gray-600'
+                      }`}
                   >
                     {step.number}
                   </div>
                   <div className="text-center mt-2">
-                    <div className={`text-sm font-medium ${
-                      currentStep >= step.number ? 'text-[#0a1c58]' : 'text-gray-500'
-                    }`}>
+                    <div className={`text-sm font-medium ${currentStep >= step.number ? 'text-[#0a1c58]' : 'text-gray-500'
+                      }`}>
                       {step.title}
                     </div>
                     <div className="text-xs text-gray-500 hidden md:block">
@@ -299,9 +297,8 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
                 </div>
                 {index < steps.length - 1 && (
                   <div
-                    className={`flex-1 h-0.5 mx-4 transition-colors ${
-                      currentStep > step.number ? 'bg-[#0a1c58]' : 'bg-gray-200'
-                    }`}
+                    className={`flex-1 h-0.5 mx-4 transition-colors ${currentStep > step.number ? 'bg-[#0a1c58]' : 'bg-gray-200'
+                      }`}
                   />
                 )}
               </div>

@@ -44,7 +44,7 @@ export default function TireQuotePage() {
   const searchParams = useSearchParams();
   const tireId = params.tireId as string;
   const quantity = parseInt(searchParams.get('quantity') || '1');
-  
+
   const [tire, setTire] = useState<Tire | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -118,9 +118,9 @@ export default function TireQuotePage() {
     const diameter = product.diameter || '';
     const loadIndex = product.loadIndex || '';
     const speedRating = product.speedRating || '';
-    
+
     if (!width || !diameter) return '';
-    
+
     if (profile) {
       return `${width}/${profile}R${diameter}${loadIndex ? ' ' + loadIndex : ''}${speedRating || ''}`;
     } else {
@@ -151,9 +151,9 @@ export default function TireQuotePage() {
   }
 
   return (
-    <TireBookingFlow 
-      tire={tire} 
-      locations={locations} 
+    <TireBookingFlow
+      tire={tire}
+      locations={locations}
       quantity={quantity}
       flowType="quotation"
     />

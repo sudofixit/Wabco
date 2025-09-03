@@ -33,21 +33,32 @@ export default function TireCard({ tire }: { tire: Tire }) {
   const handleIncrement = () => setQuantity(q => q + 1);
   const totalPrice = tire.price * quantity;
   const isOffer = tire.offer;
+
   return (
-    <div style={{ width: 330, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%' }}>
+    <div style={{ width: 330, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '100%', marginBottom: '20px' }}>
       {isOffer && (
-        <div
-          className="flex items-center justify-center"
-          style={{
-            height: 40,
-            background: '#0a1c58',
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-          }}
-        >
-          <span className="text-white font-bold text-[16px] leading-none font-poppins">
-            {tire.offerText}
-          </span>
+        <div className="relative bg-[#0a1c58] py-2 overflow-hidden">
+          {/* Subtle diagonal pattern */}
+          <div className="absolute inset-0 opacity-5 bg-[length:30px_30px] bg-[linear-gradient(45deg,transparent_48%,white_50%,transparent_52%)]"></div>
+
+          {/* Thin accent lines */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+
+          {/* Offer text with premium styling */}
+          <div className="relative text-center">
+            <span className="text-white font-semibold text-[15px] tracking-wide font-poppins uppercase flex items-center justify-center">
+              <span className="w-3 h-px bg-white/60 mx-2"></span>
+              {tire.offerText}
+              <span className="w-3 h-px bg-white/60 mx-2"></span>
+            </span>
+          </div>
+
+          {/* Subtle corner accents */}
+          <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white/30"></div>
+          <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-white/30"></div>
+          <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-white/30"></div>
+          <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/30"></div>
         </div>
       )}
       <div
@@ -81,18 +92,17 @@ export default function TireCard({ tire }: { tire: Tire }) {
             </div>
             <div className="text-[16px] mb-3 font-poppins">
               <span className="text-black font-bold">Availability: </span>
-              <span className={`font-bold ${
-                tire.availability === 'In Stock' || tire.availability === 'IN_STOCK'
-                  ? 'text-green-700'
-                  : tire.availability === 'Contact Us' || tire.availability === 'CONTACT_US'
+              <span className={`font-bold ${tire.availability === 'In Stock' || tire.availability === 'IN_STOCK'
+                ? 'text-green-700'
+                : tire.availability === 'Contact Us' || tire.availability === 'CONTACT_US'
                   ? 'text-red-600'
                   : 'text-red-600' // For Low Stock, Out of Stock, etc.
-              }`}>
-                {tire.availability === 'IN_STOCK' ? 'In Stock' : 
-                 tire.availability === 'LOW_STOCK' ? 'Low Stock' :
-                 tire.availability === 'OUT_OF_STOCK' ? 'No Stock' :
-                 tire.availability === 'CONTACT_US' ? 'Contact Us' :
-                 tire.availability}
+                }`}>
+                {tire.availability === 'IN_STOCK' ? 'In Stock' :
+                  tire.availability === 'LOW_STOCK' ? 'Low Stock' :
+                    tire.availability === 'OUT_OF_STOCK' ? 'No Stock' :
+                      tire.availability === 'CONTACT_US' ? 'Contact Us' :
+                        tire.availability}
               </span>
             </div>
             <div className="font-bold text-[26px] text-[#0a1c58] mb-3 font-poppins">KES {totalPrice.toLocaleString()}</div>
@@ -108,49 +118,57 @@ export default function TireCard({ tire }: { tire: Tire }) {
             </div>
           </div>
           {/* Divider */}
-          <div className="w-full border-t border-gray-200 my-0" />
-          {/* Button Row */}
-          <div className="flex w-full gap-2 pb-4 flex-nowrap overflow-hidden">
-            <Link 
+          <div className="w-full border-t border-gray-200 my-4" />
+
+          {/* Top Button Row - Half-width for Get Quotation and Quantity Controls */}
+          <div className="flex w-full gap-3 pb-3 flex-nowrap">
+            {/* Get Quotation Button - Half width */}
+            <Link
               href={`/tire/${tire.id}/quote?quantity=${quantity}`}
-              className="shared-btn flex-[1.5] border-2 border-[#0a1c58] text-[#0a1c58] h-[44px] rounded-full font-bold text-[12px] flex items-center justify-center font-poppins whitespace-nowrap bg-white px-3 min-w-0 hover:bg-[#0a1c58] hover:text-white transition no-underline" 
-              style={{lineHeight: '1.2'}}
+              className="shared-btn flex-1 border-2 border-[#0a1c58] text-[#0a1c58] h-[44px] rounded-full font-bold text-[12px] flex items-center justify-center font-poppins whitespace-nowrap bg-white px-3 min-w-0 hover:bg-[#0a1c58] hover:text-white transition no-underline"
+              style={{ lineHeight: '1.2' }}
             >
               Get Quotation
             </Link>
-            <Link 
+
+            {/* Quantity Controls - Half width */}
+            <div className="flex-1 h-[44px] flex items-center justify-center bg-[#f5f3fa] rounded-xl border border-[#e5e7eb]">
+              <div className="flex items-center justify-between w-full h-full px-2">
+                <button
+                  onClick={handleDecrement}
+                  disabled={quantity === 1}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#232f53] hover:bg-gray-100 border border-[#e5e7eb] transition-colors"
+                  aria-label="Decrease quantity"
+                >
+                  <span className="text-2xl font-bold">-</span>
+                </button>
+
+                <div className="text-2xl font-medium text-[#232f53] select-none mx-2 min-w-[30px] text-center">
+                  {quantity}
+                </div>
+
+                <button
+                  onClick={handleIncrement}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#232f53] hover:bg-gray-100 border border-[#e5e7eb] transition-colors"
+                  aria-label="Increase quantity"
+                >
+                  <span className="text-2xl font-bold">+</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Book Now Button - Full width */}
+          <div className="w-full pb-4">
+            <Link
               href={`/tire/${tire.id}/booking?quantity=${quantity}`}
-              className="flex-[1.2] h-[44px] rounded-full bg-[#0a1c58] text-white font-bold text-[12px] flex items-center justify-center font-poppins whitespace-nowrap px-3 min-w-0 hover:bg-[#132b7c] transition no-underline"
+              className="w-full h-[44px] rounded-full bg-[#0a1c58] text-white font-bold text-[14px] flex items-center justify-center font-poppins whitespace-nowrap px-3 hover:bg-[#132b7c] transition no-underline"
             >
               Book Now
             </Link>
-            <div className="flex-[0.6] h-[44px] flex items-center justify-center bg-[#f5f3fa] rounded-xl border border-[#f5f3fa] min-w-[70px] max-w-[90px]">
-              <div className="flex items-center w-full h-full">
-                <div className="flex items-center justify-center bg-white rounded-lg h-9 w-12 text-xl font-medium text-[#232f53] select-none border border-[#f5f3fa]">{quantity}</div>
-                <div className="flex flex-col ml-2 h-9 justify-center">
-                  <button
-                    onClick={handleIncrement}
-                    className="w-6 h-4 flex items-center justify-center text-[#232f53] hover:bg-gray-200 rounded-t"
-                    aria-label="Increase quantity"
-                    style={{lineHeight: 1, fontSize: '16px'}}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 12l5-5 5 5" stroke="#232f53" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                  <button
-                    onClick={handleDecrement}
-                    disabled={quantity === 1}
-                    className="w-6 h-4 flex items-center justify-center text-[#232f53] hover:bg-gray-200 rounded-b disabled:opacity-40"
-                    aria-label="Decrease quantity"
-                    style={{lineHeight: 1, fontSize: '16px'}}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#232f53" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}

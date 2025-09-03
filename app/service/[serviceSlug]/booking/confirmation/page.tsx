@@ -24,13 +24,13 @@ async function getBookingDetails(bookingId: string) {
 
 export default async function ConfirmationPage({ searchParams }: ConfirmationPageProps) {
   const { bookingId } = await searchParams;
-  
+
   if (!bookingId) {
     notFound();
   }
 
   const booking = await getBookingDetails(bookingId);
-  
+
   if (!booking) {
     notFound();
   }
@@ -58,7 +58,8 @@ export default async function ConfirmationPage({ searchParams }: ConfirmationPag
           <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
             <Link href="/" className="hover:text-black transition">Home</Link>
             <Link href="/tire" className="hover:text-black transition">Tires</Link>
-            <Link href="/service" className="hover:text-black transition">Services</Link>
+            <Link href="/car" className="hover:text-black transition">Cars</Link>
+            <Link href="/service" className="font-bold text-black transition">Services</Link>
             <Link href="/location" className="hover:text-black transition">Location</Link>
           </nav>
           <Link href="/contact-us">
@@ -83,7 +84,7 @@ export default async function ConfirmationPage({ searchParams }: ConfirmationPag
               {booking.requestType === 'booking' ? 'Booking Confirmed!' : 'Quote Request Submitted!'}
             </h1>
             <p className="text-gray-600 text-lg">
-              {booking.requestType === 'booking' 
+              {booking.requestType === 'booking'
                 ? 'Your service appointment has been successfully booked. We\'ll see you soon!'
                 : 'Your quote request has been submitted. We\'ll contact you soon with pricing details!'
               }
@@ -95,7 +96,7 @@ export default async function ConfirmationPage({ searchParams }: ConfirmationPag
             <h2 className="text-xl font-semibold text-[#0a1c58] mb-6">
               {booking.requestType === 'booking' ? 'Booking Details' : 'Quote Request Details'}
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left Column */}
               <div className="space-y-4">
@@ -164,11 +165,10 @@ export default async function ConfirmationPage({ searchParams }: ConfirmationPag
                   <p className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">
                     Status
                   </p>
-                  <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                    booking.requestType === 'booking' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-purple-100 text-purple-800'
-                  }`}>
+                  <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${booking.requestType === 'booking'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-purple-100 text-purple-800'
+                    }`}>
                     {booking.requestType === 'booking' ? 'Confirmed' : 'Quote Requested'}
                   </span>
                 </div>
@@ -233,13 +233,13 @@ export default async function ConfirmationPage({ searchParams }: ConfirmationPag
                 {booking.requestType === 'booking' ? 'Book Another Service' : 'Back to Quote'}
               </button>
             </Link>
-            
+
             <Link href="/">
               <button className="w-full sm:w-auto bg-[#0a1c58] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#132b7c] transition">
                 Back to Home
               </button>
             </Link>
-            
+
             <Link href="/contact-us">
               <button className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-gray-400 hover:bg-gray-50 transition">
                 Contact Support

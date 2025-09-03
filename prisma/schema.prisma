@@ -55,6 +55,7 @@ model Location {
   address      String
   phone        String
   image        String
+  subdomain    String?
   lat          Decimal?  @db.Decimal(9, 6)
   lng          Decimal?  @db.Decimal(9, 6)
   createdAt    DateTime  @default(now())

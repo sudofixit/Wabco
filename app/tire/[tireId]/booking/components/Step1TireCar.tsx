@@ -52,11 +52,11 @@ interface Step1Props {
 }
 
 export default function Step1TireCar({ tire, quantity, bookingData, updateBookingData, onNext, flowType = 'booking' }: Step1Props) {
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateAndNext = () => {
-    const newErrors: {[key: string]: string} = {};
-    
+    const newErrors: { [key: string]: string } = {};
+
     if (!bookingData.carYear.trim()) {
       newErrors.carYear = 'Car year is required';
     }
@@ -84,7 +84,7 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
           {flowType === 'booking' ? 'Select Tire & Car Details' : 'Request a Tire Quote'}
         </h2>
         <p className="text-gray-600">
-          {flowType === 'booking' 
+          {flowType === 'booking'
             ? 'Confirm your tire selection and provide your vehicle information'
             : 'Confirm your tire selection and provide your vehicle information for quotation'
           }
@@ -112,14 +112,13 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
             <p className="text-gray-600 text-sm mb-1">Size: {tire.tireSize}</p>
             <p className="text-gray-600 text-sm mb-1">Warranty: {tire.warranty}</p>
             <p className="text-gray-600 text-sm mb-2">
-              Availability: <span className={`font-semibold ${
-                tire.availability === 'IN_STOCK' ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {tire.availability === 'IN_STOCK' ? 'In Stock' : 
-                 tire.availability === 'LOW_STOCK' ? 'Low Stock' :
-                 tire.availability === 'OUT_OF_STOCK' ? 'No Stock' :
-                 tire.availability === 'CONTACT_US' ? 'Contact Us' :
-                 tire.availability}
+              Availability: <span className={`font-semibold ${tire.availability === 'IN_STOCK' ? 'text-green-600' : 'text-red-600'
+                }`}>
+                {tire.availability === 'IN_STOCK' ? 'In Stock' :
+                  tire.availability === 'LOW_STOCK' ? 'Low Stock' :
+                    tire.availability === 'OUT_OF_STOCK' ? 'No Stock' :
+                      tire.availability === 'CONTACT_US' ? 'Contact Us' :
+                        tire.availability}
               </span>
             </p>
             <div className="flex items-center justify-between">
@@ -141,7 +140,7 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-[#0a1c58] mb-4">Vehicle Information</h3>
         <p className="text-gray-600 mb-6">Please provide your vehicle details to ensure proper tire fitment and installation.</p>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label htmlFor="carYear" className="block text-sm font-medium text-gray-700 mb-2">
@@ -152,9 +151,8 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
               id="carYear"
               value={bookingData.carYear}
               onChange={(e) => updateBookingData({ carYear: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${
-                errors.carYear ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${errors.carYear ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="e.g., 2020"
             />
             {errors.carYear && <p className="mt-1 text-sm text-red-600">{errors.carYear}</p>}
@@ -169,9 +167,8 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
               id="carMake"
               value={bookingData.carMake}
               onChange={(e) => updateBookingData({ carMake: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${
-                errors.carMake ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${errors.carMake ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="e.g., Toyota"
             />
             {errors.carMake && <p className="mt-1 text-sm text-red-600">{errors.carMake}</p>}
@@ -186,9 +183,8 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
               id="carModel"
               value={bookingData.carModel}
               onChange={(e) => updateBookingData({ carModel: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${
-                errors.carModel ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${errors.carModel ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="e.g., Camry"
             />
             {errors.carModel && <p className="mt-1 text-sm text-red-600">{errors.carModel}</p>}
@@ -215,7 +211,7 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
       {/* Navigation */}
       <div className="flex justify-between pt-6 border-t">
         <div></div> {/* Empty div for spacing */}
-        
+
         <button
           onClick={validateAndNext}
           className="bg-[#0a1c58] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#132b7c] transition focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:ring-offset-2"

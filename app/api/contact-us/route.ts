@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       });
     } catch (emailError) {
       console.error("EMAIL_CONTACT_PROCESS_ERROR", '❌ Email sending failed, but form submission successful:', emailError);
-      
+
       // Return success even if email fails - don't block user experience
       return NextResponse.json({
         success: true,

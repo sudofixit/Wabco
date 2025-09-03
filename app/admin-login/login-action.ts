@@ -1,12 +1,15 @@
 "use server";
 
-import { signIn } from "@/auth";
+import { auth, signIn } from "@/auth";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+
+
 export async function loginAction(formData: FormData) {
+  const session = await auth();
   console.log("=== LOGIN ACTION STARTED ===");
-  
+
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -37,16 +40,16 @@ export async function loginAction(formData: FormData) {
 
     if (!user.isActive) {
       console.log("Returning error: User is inactive");
-      return { 
-        error: "This account has been deactivated. Please contact an administrator.", 
-        success: false 
+      return {
+        error: "This account has been deactivated. Please contact an administrator.",
+        success: false
       };
     }
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
     console.log("Password valid:", isValidPassword);
-    
+
     if (!isValidPassword) {
       console.log("Returning error: Invalid password");
       return { error: "Invalid email or password", success: false };
@@ -54,11 +57,17 @@ export async function loginAction(formData: FormData) {
 
     console.log("All checks passed, calling signIn");
     // If all checks pass, proceed with signIn
-    await signIn("credentials", {
+    const res = await signIn("credentials", {
       email,
       password,
-      redirectTo: "/admin/products",
+      redirect: false
     });
+
+    // Check if signIn was successful
+    if (res?.error) {
+      console.log("SignIn error:", res.error);
+      return { error: "Authentication failed", success: false };
+    }
 
     console.log("signIn completed successfully");
     return { success: true, error: null };

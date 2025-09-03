@@ -25,7 +25,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, status } = useSession();
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('sidebarOpen');
@@ -37,12 +37,12 @@ export default function AdminLayout({
   // Authentication check
   useEffect(() => {
     if (status === "loading") return; // Still loading
-    
+
     if (status === "unauthenticated" || !session?.user) {
       router.push("/admin-login");
       return;
     }
-    
+
     // Check if user has admin role
     if (session.user.role !== "ADMIN") {
       router.push("/admin-login");
@@ -111,7 +111,7 @@ export default function AdminLayout({
         {/* Top Navigation Bar */}
         <div className="fixed left-0 right-0 top-0 bg-white shadow flex items-center h-16 px-6 justify-between">
           <div className="flex items-center gap-4 w-full">
-            <button 
+            <button
               className="text-[#0a1c58] p-2 hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setSidebarOpen(!sidebarOpen)}
               aria-label="Toggle sidebar"
@@ -119,27 +119,21 @@ export default function AdminLayout({
               tabIndex={0}
             >
               <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
-                <path d="M4 6h16M4 12h16M4 18h16" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M4 6h16M4 12h16M4 18h16" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </button>
-            <div className="relative flex-1 max-w-xs">
-              <input type="text" placeholder="Search..." className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 bg-[#f7f7f7] focus:outline-none focus:ring-2 focus:ring-[#0a1c58]" disabled />
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="20" height="20" fill="none" viewBox="0 0 24 24">
-                <path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </div>
           </div>
           <div className="flex items-center gap-6">
-            <button className="relative">
+            {/* <button className="relative">
               <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </button>
+            </button> */}
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center">
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-                  <circle cx="12" cy="8" r="4" stroke="#0a1c58" strokeWidth="2"/>
-                  <path d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" stroke="#0a1c58" strokeWidth="2"/>
+                  <circle cx="12" cy="8" r="4" stroke="#0a1c58" strokeWidth="2" />
+                  <path d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" stroke="#0a1c58" strokeWidth="2" />
                 </svg>
               </div>
               <span className="font-semibold text-[#0a1c58]">{session.user.name || 'Admin'}</span>
@@ -154,10 +148,9 @@ export default function AdminLayout({
       </main>
 
       {/* Sidebar */}
-      <div 
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      <div
+        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
         style={{ zIndex: 40 }}
         onClick={e => e.stopPropagation()}
       >
@@ -168,9 +161,8 @@ export default function AdminLayout({
               <Link
                 key={item.key}
                 href={item.href}
-                className={`text-lg font-semibold rounded-lg px-4 py-3 text-left transition ${
-                  pathname === item.href ? "bg-[#0a1c58] text-white" : "text-[#0a1c58] hover:bg-[#e5e7eb]"
-                }`}
+                className={`text-lg font-semibold rounded-lg px-4 py-3 text-left transition ${pathname === item.href ? "bg-[#0a1c58] text-white" : "text-[#0a1c58] hover:bg-[#e5e7eb]"
+                  }`}
                 onClick={() => setSidebarOpen(false)}
               >
                 {item.label}

@@ -121,7 +121,7 @@ export default function ProductForm({
   ) => {
     const { name, value, type } = e.target;
     const newValue = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
-    
+
     setFormData((prev) => ({
       ...prev,
       [name]: newValue,
@@ -169,7 +169,7 @@ export default function ProductForm({
 
     const formDataObj = new FormData();
     formDataObj.append("file", file);
-    
+
     // If we're updating an existing product and it has an image, pass the old image URL for deletion
     if (product?.image) {
       formDataObj.append("oldImageUrl", product.image);
@@ -204,13 +204,13 @@ export default function ProductForm({
         {/* Pattern - Wider field */}
         <div className="md:col-span-2">
           <label htmlFor="pattern" className="block text-sm font-semibold text-gray-900 mb-2">Pattern</label>
-          <input 
-            type="text" 
-            name="pattern" 
-            id="pattern" 
-            value={formData.pattern} 
-            onChange={handleChange} 
-            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900" 
+          <input
+            type="text"
+            name="pattern"
+            id="pattern"
+            value={formData.pattern}
+            onChange={handleChange}
+            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900"
           />
           {errors.pattern && <FormError message={errors.pattern} />}
         </div>
@@ -218,13 +218,13 @@ export default function ProductForm({
         {/* Width - Smaller field */}
         <div>
           <label htmlFor="width" className="block text-sm font-semibold text-gray-900 mb-2">Width</label>
-          <input 
-            type="text" 
-            name="width" 
-            id="width" 
-            value={formData.width} 
-            onChange={handleChange} 
-            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900" 
+          <input
+            type="text"
+            name="width"
+            id="width"
+            value={formData.width}
+            onChange={handleChange}
+            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900"
           />
           {errors.width && <FormError message={errors.width} />}
         </div>
@@ -232,13 +232,13 @@ export default function ProductForm({
         {/* Profile - Smaller field */}
         <div>
           <label htmlFor="profile" className="block text-sm font-semibold text-gray-900 mb-2">Profile</label>
-          <input 
-            type="text" 
-            name="profile" 
-            id="profile" 
-            value={formData.profile} 
-            onChange={handleChange} 
-            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900" 
+          <input
+            type="text"
+            name="profile"
+            id="profile"
+            value={formData.profile}
+            onChange={handleChange}
+            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900"
           />
           {errors.profile && <FormError message={errors.profile} />}
         </div>
@@ -246,13 +246,13 @@ export default function ProductForm({
         {/* Diameter - Smaller field */}
         <div>
           <label htmlFor="diameter" className="block text-sm font-semibold text-gray-900 mb-2">Diameter</label>
-          <input 
-            type="text" 
-            name="diameter" 
-            id="diameter" 
-            value={formData.diameter} 
-            onChange={handleChange} 
-            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900" 
+          <input
+            type="text"
+            name="diameter"
+            id="diameter"
+            value={formData.diameter}
+            onChange={handleChange}
+            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900"
           />
           {errors.diameter && <FormError message={errors.diameter} />}
         </div>
@@ -260,13 +260,13 @@ export default function ProductForm({
         {/* Load Index - Smaller field */}
         <div>
           <label htmlFor="loadIndex" className="block text-sm font-semibold text-gray-900 mb-2">Load Index</label>
-          <input 
-            type="text" 
-            name="loadIndex" 
-            id="loadIndex" 
-            value={formData.loadIndex} 
-            onChange={handleChange} 
-            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900" 
+          <input
+            type="text"
+            name="loadIndex"
+            id="loadIndex"
+            value={formData.loadIndex}
+            onChange={handleChange}
+            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900"
           />
           {errors.loadIndex && <FormError message={errors.loadIndex} />}
         </div>
@@ -274,13 +274,13 @@ export default function ProductForm({
         {/* Speed Rating - Smaller field */}
         <div>
           <label htmlFor="speedRating" className="block text-sm font-semibold text-gray-900 mb-2">Speed Rating</label>
-          <input 
-            type="text" 
-            name="speedRating" 
-            id="speedRating" 
-            value={formData.speedRating} 
-            onChange={handleChange} 
-            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900" 
+          <input
+            type="text"
+            name="speedRating"
+            id="speedRating"
+            value={formData.speedRating}
+            onChange={handleChange}
+            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900"
           />
           {errors.speedRating && <FormError message={errors.speedRating} />}
         </div>
@@ -312,13 +312,13 @@ export default function ProductForm({
         {/* Warranty */}
         <div>
           <label htmlFor="warranty" className="block text-sm font-semibold text-gray-900 mb-2">Warranty</label>
-          <input 
-            type="text" 
-            name="warranty" 
-            id="warranty" 
-            value={formData.warranty} 
-            onChange={handleChange} 
-            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900" 
+          <input
+            type="text"
+            name="warranty"
+            id="warranty"
+            value={formData.warranty}
+            onChange={handleChange}
+            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900"
           />
           {errors.warranty && <FormError message={errors.warranty} />}
         </div>
@@ -326,17 +326,17 @@ export default function ProductForm({
         {/* Price */}
         <div>
           <label htmlFor="price" className="block text-sm font-semibold text-gray-900 mb-2">Price</label>
-          <input 
-            type="text" 
-            name="price" 
-            id="price" 
-            value={formData.price} 
-            onChange={handleChange} 
-            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900" 
+          <input
+            type="text"
+            name="price"
+            id="price"
+            value={formData.price}
+            onChange={handleChange}
+            className="block w-full px-4 py-3 text-base rounded-md border-gray-300 shadow-sm focus:border-[#0a1c58] focus:ring-[#0a1c58] text-gray-900"
           />
           {errors.price && <FormError message={errors.price} />}
         </div>
-        </div>
+      </div>
 
       {/* Row 3+: Keep existing layout exactly as is */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -393,7 +393,7 @@ export default function ProductForm({
             <img src={formData.image} alt="Product" className="object-cover rounded w-[153px] h-[168px] border border-gray-200" />
           ) : (
             <>
-              <svg className="text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              <svg className="text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               <p className="mt-2 text-sm text-gray-600">Upload a file or drag and drop</p>
               <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
             </>

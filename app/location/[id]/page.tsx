@@ -171,19 +171,19 @@ export default async function LocationDetailPage({ params }: PageProps) {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <Link 
+              <Link
                 href="/contact-us"
                 className="flex-1 bg-[#0a1c58] text-white text-center px-8 py-4 rounded-lg text-lg font-semibold hover:bg-[#132b7c] transition-colors"
               >
                 Book Service
               </Link>
-              <Link 
+              <Link
                 href="/contact-us"
                 className="flex-1 bg-white text-[#0a1c58] border-2 border-[#0a1c58] text-center px-8 py-4 rounded-lg text-lg font-semibold hover:bg-[#0a1c58] hover:text-white transition-colors"
               >
                 Get Quote
               </Link>
-              <Link 
+              <Link
                 href="/location"
                 className="flex-1 bg-gray-100 text-gray-700 text-center px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-200 transition-colors"
               >

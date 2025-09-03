@@ -38,10 +38,10 @@ interface Step1ServiceCarProps {
 }
 
 export default function Step1ServiceCar({ services, bookingData, updateBookingData, onNext, flowType = 'booking' }: Step1ServiceCarProps) {
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateAndNext = () => {
-    const newErrors: {[key: string]: string} = {};
+    const newErrors: { [key: string]: string } = {};
 
     if (!bookingData.carYear.trim()) {
       newErrors.carYear = 'Car year is required';
@@ -67,7 +67,7 @@ export default function Step1ServiceCar({ services, bookingData, updateBookingDa
       <h2 className="text-2xl font-bold text-[#0a1c58] mb-6">
         {flowType === 'booking' ? 'Selected Services & Car Details' : 'Request Quote for Services'}
       </h2>
-      
+
       {/* Selected Services Display */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Selected Services ({services.length})</h3>
@@ -97,7 +97,7 @@ export default function Step1ServiceCar({ services, bookingData, updateBookingDa
             </div>
           ))}
         </div>
-        
+
         {/* Total Price */}
         {totalPrice > 0 && (
           <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -122,14 +122,31 @@ export default function Step1ServiceCar({ services, bookingData, updateBookingDa
               type="text"
               id="carYear"
               value={bookingData.carYear}
-              onChange={(e) => updateBookingData({ carYear: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.carYear ? 'border-red-500' : 'border-gray-300'
-              }`}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Allow only digits, up to 4
+                if (/^\d{0,4}$/.test(value)) {
+                  updateBookingData({ carYear: value });
+
+                  if (value.length > 0 && value.length < 4) {
+                    // show immediate error if 1–3 digits
+                    setErrors((prev) => ({ ...prev, carYear: 'Year must be 4 digits' }));
+                  } else {
+                    // clear error if valid
+                    setErrors((prev) => ({ ...prev, carYear: '' }));
+                  }
+                }
+              }}
+              inputMode="numeric"
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 transition-all duration-200 ${errors.carYear ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
+                }`}
               placeholder="e.g., 2020"
             />
-            {errors.carYear && <p className="mt-1 text-sm text-red-600">{errors.carYear}</p>}
+            {errors.carYear && (
+              <p className="mt-1 text-sm text-red-600">{errors.carYear}</p>
+            )}
           </div>
+
 
           <div>
             <label htmlFor="carMake" className="block text-sm font-medium text-gray-700 mb-2">
@@ -140,9 +157,8 @@ export default function Step1ServiceCar({ services, bookingData, updateBookingDa
               id="carMake"
               value={bookingData.carMake}
               onChange={(e) => updateBookingData({ carMake: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.carMake ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.carMake ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="e.g., Toyota"
             />
             {errors.carMake && <p className="mt-1 text-sm text-red-600">{errors.carMake}</p>}
@@ -157,9 +173,8 @@ export default function Step1ServiceCar({ services, bookingData, updateBookingDa
               id="carModel"
               value={bookingData.carModel}
               onChange={(e) => updateBookingData({ carModel: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${
-                errors.carModel ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.carModel ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="e.g., Camry"
             />
             {errors.carModel && <p className="mt-1 text-sm text-red-600">{errors.carModel}</p>}

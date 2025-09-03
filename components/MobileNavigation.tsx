@@ -9,7 +9,7 @@ export default function MobileNavigation() {
   return (
     <>
       {/* Mobile Menu Button */}
-      <button 
+      <button
         onClick={() => setIsMobileMenuOpen(true)}
         className="lg:hidden flex flex-col items-center justify-center w-8 h-8 space-y-1"
         aria-label="Open mobile menu"
@@ -27,7 +27,7 @@ export default function MobileNavigation() {
             <div className="p-6">
               <div className="flex justify-between items-center mb-8">
                 <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={150} height={20} />
-                <button 
+                <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 rounded-md hover:bg-gray-100"
                   aria-label="Close mobile menu"
@@ -38,30 +38,37 @@ export default function MobileNavigation() {
                 </button>
               </div>
               <nav className="flex flex-col space-y-6">
-                <Link 
-                  href="/" 
-                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition" 
+                <Link
+                  href="/"
+                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Home
                 </Link>
-                <Link 
-                  href="/tire" 
-                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition" 
+                <Link
+                  href="/tire"
+                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Tires
                 </Link>
-                <Link 
-                  href="/service" 
-                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition" 
+                <Link
+                  href="/car"
+                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Cars
+                </Link>
+                <Link
+                  href="/service"
+                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Services
                 </Link>
-                <Link 
-                  href="/location" 
-                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition" 
+                <Link
+                  href="/location"
+                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Location

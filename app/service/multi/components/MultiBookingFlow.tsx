@@ -39,15 +39,15 @@ interface BookingData {
   carYear: string;
   carMake: string;
   carModel: string;
-  
+
   // Step 2
   branchId: number;
   branchName: string;
-  
+
   // Step 3
   bookingDate: string;
   bookingTime: string;
-  
+
   // Step 4
   customerName: string;
   customerEmail: string;
@@ -65,7 +65,7 @@ const getSteps = (flowType: 'booking' | 'quotation') => {
     { number: 1, title: 'Service & Car', description: 'Selected services and car details' },
     { number: 2, title: 'Branch', description: 'Choose your preferred location' },
   ];
-  
+
   if (flowType === 'booking') {
     return [
       ...baseSteps,
@@ -84,10 +84,10 @@ export default function BookingFlow({ services, locations, flowType = 'booking' 
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const steps = getSteps(flowType);
   const maxSteps = steps.length;
-  
+
   const [bookingData, setBookingData] = useState<BookingData>({
     services: services,
     servicesTitles: services.map(s => s.title).join(', '),
@@ -149,7 +149,7 @@ export default function BookingFlow({ services, locations, flowType = 'booking' 
 
       const createdBooking = await response.json();
       toast.success(flowType === 'booking' ? 'Booking created successfully!' : 'Quote request submitted successfully!');
-      
+
       // Redirect to confirmation page with first service slug for URL consistency
       const firstServiceSlug = generateSlug(services[0].title);
       router.push(`/service/${firstServiceSlug}/booking/confirmation?bookingId=${createdBooking.id}`);
@@ -259,11 +259,10 @@ export default function BookingFlow({ services, locations, flowType = 'booking' 
             {steps.map((step, index) => (
               <div key={step.number} className="flex items-center">
                 <div className="flex items-center">
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                    currentStep >= step.number 
-                      ? 'bg-[#0a1c58] border-[#0a1c58] text-white' 
-                      : 'border-gray-300 text-gray-500'
-                  }`}>
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${currentStep >= step.number
+                    ? 'bg-[#0a1c58] border-[#0a1c58] text-white'
+                    : 'border-gray-300 text-gray-500'
+                    }`}>
                     {currentStep > step.number ? (
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -273,18 +272,16 @@ export default function BookingFlow({ services, locations, flowType = 'booking' 
                     )}
                   </div>
                   <div className="ml-4 min-w-0">
-                    <p className={`text-sm font-medium ${
-                      currentStep >= step.number ? 'text-[#0a1c58]' : 'text-gray-500'
-                    }`}>
+                    <p className={`text-sm font-medium ${currentStep >= step.number ? 'text-[#0a1c58]' : 'text-gray-500'
+                      }`}>
                       {step.title}
                     </p>
                     <p className="text-sm text-gray-500">{step.description}</p>
                   </div>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`hidden sm:block w-16 h-0.5 ml-8 ${
-                    currentStep > step.number ? 'bg-[#0a1c58]' : 'bg-gray-300'
-                  }`} />
+                  <div className={`hidden sm:block w-16 h-0.5 ml-8 ${currentStep > step.number ? 'bg-[#0a1c58]' : 'bg-gray-300'
+                    }`} />
                 )}
               </div>
             ))}

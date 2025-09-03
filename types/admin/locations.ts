@@ -4,6 +4,7 @@ export interface Location {
   address: string;
   phone: string;
   image: string;
+  subdomain?: string;
   workingHours?: string;
   lat?: number | null;
   lng?: number | null;
@@ -16,6 +17,7 @@ export interface LocationFormData {
   address: string;
   phone: string;
   image: string;
+  subdomain?: string;
   workingHours?: string;
   lat?: string;
   lng?: string;

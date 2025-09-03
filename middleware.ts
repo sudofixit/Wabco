@@ -6,11 +6,11 @@ export async function middleware(request: NextRequest) {
   try {
     // Get session with error handling
     const session = await auth();
-    
+
     console.log(`Admin route access attempt: ${request.nextUrl.pathname}`);
     console.log(`Session exists: ${!!session}`);
     console.log(`User role: ${session?.user?.role || 'None'}`);
-    
+
     // If the user is not logged in, redirect to the login page
     if (!session?.user) {
       console.log(`Redirecting unauthenticated user from ${request.nextUrl.pathname}`);
@@ -39,5 +39,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"]
+  matcher: ["/admin", "/admin/((?!login).)*"],
 };

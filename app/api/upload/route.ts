@@ -8,7 +8,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg', 'image/svg+xml'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 export const runtime = 'nodejs';
@@ -18,34 +18,34 @@ function extractPublicIdFromUrl(url: string): string | null {
   try {
     // Cloudinary URL format: https://res.cloudinary.com/cloud_name/image/upload/v1234567890/public_id.extension
     // or: https://res.cloudinary.com/cloud_name/image/upload/public_id.extension
-    
+
     if (!url.includes('cloudinary.com')) {
       return null; // Not a Cloudinary URL
     }
-    
+
     const urlParts = url.split('/');
     const uploadIndex = urlParts.findIndex(part => part === 'upload');
-    
+
     if (uploadIndex === -1) {
       return null;
     }
-    
+
     // Get everything after 'upload/' 
     const afterUpload = urlParts.slice(uploadIndex + 1);
-    
+
     // Remove version if present (starts with 'v' followed by numbers)
-    const withoutVersion = afterUpload[0]?.startsWith('v') && /^v\d+$/.test(afterUpload[0]) 
-      ? afterUpload.slice(1) 
+    const withoutVersion = afterUpload[0]?.startsWith('v') && /^v\d+$/.test(afterUpload[0])
+      ? afterUpload.slice(1)
       : afterUpload;
-    
+
     if (withoutVersion.length === 0) {
       return null;
     }
-    
+
     // Join remaining parts and remove file extension
     const publicIdWithExtension = withoutVersion.join('/');
     const publicId = publicIdWithExtension.replace(/\.[^/.]+$/, '');
-    
+
     return publicId;
   } catch (error) {
     console.error('Error extracting public_id from URL:', error);
@@ -72,12 +72,11 @@ export async function POST(req: Request) {
       console.error('Cloudinary credentials are not configured');
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
-
     // Parse multipart form data
     const formData = await req.formData();
     const file = formData.get('file');
     const oldImageUrl = formData.get('oldImageUrl') as string | null;
-    
+
     if (!file || typeof file === 'string') {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
@@ -128,29 +127,30 @@ export async function POST(req: Request) {
       ).end(buffer);
     });
 
+
     // Return the Cloudinary URL
-    return NextResponse.json({ 
+    return NextResponse.json({
       path: (uploadResult as any).secure_url,
-      publicId: (uploadResult as any).public_id 
+      publicId: (uploadResult as any).public_id
     });
 
   } catch (error: any) {
     console.error('Upload error:', error);
-    
+
     // Handle specific Cloudinary errors
     if (error.message?.includes('Invalid API key')) {
       return NextResponse.json({ error: 'Invalid Cloudinary credentials' }, { status: 500 });
     }
-    
+
     if (error.message?.includes('timeout') || error.code === 'ETIMEDOUT') {
       return NextResponse.json({ error: 'Upload timeout. Please try again.' }, { status: 408 });
     }
-    
+
     if (error.http_code === 401) {
       return NextResponse.json({ error: 'Cloudinary authentication failed' }, { status: 500 });
     }
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       error: 'Upload failed. Please try again.',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     }, { status: 500 });
