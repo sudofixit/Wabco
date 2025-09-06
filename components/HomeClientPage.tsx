@@ -4,6 +4,7 @@ import Image from "next/image";
 import TireSizeModal from "./TireSizeModal";
 import { useRouter } from "next/navigation";
 
+
 interface Brand {
   id: number;
   name: string;
