@@ -4,6 +4,7 @@ import ClientSessionProvider from "@/components/ClientSessionProvider";
 import "./globals.css";
 import { ToastProvider } from "./components/ui/Toast";
 import { Toaster } from 'react-hot-toast';
+import GoogleMapsScript from "./location/components/GoogleMapsScript";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
       >
         <ClientSessionProvider>
           <ToastProvider>
+            <GoogleMapsScript />
             {children}
             <Toaster position="top-right" />
           </ToastProvider>

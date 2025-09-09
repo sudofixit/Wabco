@@ -53,13 +53,6 @@ export default function MobileNavigation() {
                   Tires
                 </Link>
                 <Link
-                  href="/car"
-                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Cars
-                </Link>
-                <Link
                   href="/service"
                   className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
                   onClick={() => setIsMobileMenuOpen(false)}

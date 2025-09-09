@@ -54,8 +54,17 @@ interface Step1Props {
 export default function Step1TireCar({ tire, quantity, bookingData, updateBookingData, onNext, flowType = 'booking' }: Step1Props) {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const validateAndNext = () => {
-    const newErrors: { [key: string]: string } = {};
+  const handleInputChange = (field: keyof BookingData, value: string | number) => {
+    updateBookingData({ [field]: value });
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  // Enhanced validation with error navigation
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
 
     if (!bookingData.carYear.trim()) {
       newErrors.carYear = 'Car year is required';
@@ -69,7 +78,36 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
+    // Navigate to first error field with smooth scrolling and visual feedback
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      const errorElement = document.getElementById(firstErrorField);
+      if (errorElement) {
+        // Smooth scroll to the error field
+        errorElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+
+        // Add a slight delay to ensure scroll is complete, then focus and highlight
+        setTimeout(() => {
+          errorElement.focus();
+          // Add visual emphasis by briefly highlighting the field
+          errorElement.classList.add('ring-4', 'ring-red-200');
+          setTimeout(() => {
+            errorElement.classList.remove('ring-4', 'ring-red-200');
+          }, 2000);
+        }, 300);
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateForm()) {
       onNext();
     }
   };
@@ -137,58 +175,105 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
       </div>
 
       {/* Car Details Form */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-[#0a1c58] mb-4">Vehicle Information</h3>
-        <p className="text-gray-600 mb-6">Please provide your vehicle details to ensure proper tire fitment and installation.</p>
+      <div className="space-y-6">
+        <h3 className="text-lg font-semibold text-[#0a1c58]">Vehicle Information</h3>
+        <p className="text-gray-600">Please provide your vehicle details to ensure proper tire fitment and installation.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Car Year */}
           <div>
             <label htmlFor="carYear" className="block text-sm font-medium text-gray-700 mb-2">
-              Year *
+              Car Year *
             </label>
             <input
               type="text"
               id="carYear"
               value={bookingData.carYear}
-              onChange={(e) => updateBookingData({ carYear: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${errors.carYear ? 'border-red-500' : 'border-gray-300'
+              onChange={(e) => {
+                const value = e.target.value;
+                // Only allow up to 4 digits
+                if (/^\d{0,4}$/.test(value)) {
+                  handleInputChange('carYear', value);
+
+                  // Show error immediately if input length is 1–3
+                  if (value.length > 0 && value.length < 4) {
+                    setErrors((prev) => ({ ...prev, carYear: 'Year must be 4 digits' }));
+                  } else {
+                    // Clear error when input is valid
+                    setErrors((prev) => ({ ...prev, carYear: '' }));
+                  }
+                }
+              }}
+              inputMode="numeric"
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 transition-all duration-200 ${errors.carYear ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
                 }`}
               placeholder="e.g., 2020"
             />
-            {errors.carYear && <p className="mt-1 text-sm text-red-600">{errors.carYear}</p>}
+            {errors.carYear && (
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.carYear}</p>
+              </div>
+            )}
           </div>
 
+          {/* Car Make */}
           <div>
             <label htmlFor="carMake" className="block text-sm font-medium text-gray-700 mb-2">
-              Make *
+              Car Make *
             </label>
             <input
               type="text"
               id="carMake"
               value={bookingData.carMake}
-              onChange={(e) => updateBookingData({ carMake: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${errors.carMake ? 'border-red-500' : 'border-gray-300'
+              onChange={(e) => handleInputChange('carMake', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 transition-all duration-200 ${errors.carMake ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
                 }`}
               placeholder="e.g., Toyota"
             />
-            {errors.carMake && <p className="mt-1 text-sm text-red-600">{errors.carMake}</p>}
+            {errors.carMake && (
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.carMake}</p>
+              </div>
+            )}
           </div>
 
+          {/* Car Model */}
           <div>
             <label htmlFor="carModel" className="block text-sm font-medium text-gray-700 mb-2">
-              Model *
+              Car Model *
             </label>
             <input
               type="text"
               id="carModel"
               value={bookingData.carModel}
-              onChange={(e) => updateBookingData({ carModel: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent text-gray-900 ${errors.carModel ? 'border-red-500' : 'border-gray-300'
+              onChange={(e) => handleInputChange('carModel', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 transition-all duration-200 ${errors.carModel ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
                 }`}
               placeholder="e.g., Camry"
             />
-            {errors.carModel && <p className="mt-1 text-sm text-red-600">{errors.carModel}</p>}
+            {errors.carModel && (
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.carModel}</p>
+              </div>
+            )}
           </div>
+        </div>
+
+        <div className="text-sm text-gray-500">
+          * Required fields
         </div>
 
         <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -209,16 +294,26 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between pt-6 border-t">
-        <div></div> {/* Empty div for spacing */}
-
+      <div className="flex justify-end pt-6 border-t">
         <button
-          onClick={validateAndNext}
+          onClick={handleNext}
           className="bg-[#0a1c58] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#132b7c] transition focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:ring-offset-2"
         >
-          Continue to Branch Selection →
+          {flowType === 'booking' ? 'Continue to Branch Selection →' : 'Continue to Branch Selection →'}
         </button>
       </div>
+
+      {/* CSS for shake animation */}
+      <style jsx>{`
+        .shake {
+          animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+      `}</style>
     </div>
   );
-} 
+}

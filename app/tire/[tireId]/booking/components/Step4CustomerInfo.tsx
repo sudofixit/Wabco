@@ -78,30 +78,79 @@ export default function Step4CustomerInfo({
 }: Step4Props) {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const validateAndSubmit = () => {
-    const newErrors: { [key: string]: string } = {};
+  const handleInputChange = (field: keyof BookingData, value: string) => {
+    updateBookingData({ [field]: value });
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    // only digits, 7 to 15 digits long
+    const phoneRegex = /^\d{7,15}$/;
+    return phoneRegex.test(phone);
+  };
+
+  // Enhanced validation with error navigation
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
 
     if (!bookingData.customerName.trim()) {
-      newErrors.customerName = 'Name is required';
+      newErrors.customerName = 'Full name is required';
     }
+
     if (!bookingData.customerEmail.trim()) {
-      newErrors.customerEmail = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(bookingData.customerEmail)) {
+      newErrors.customerEmail = 'Email address is required';
+    } else if (!validateEmail(bookingData.customerEmail)) {
       newErrors.customerEmail = 'Please enter a valid email address';
     }
+
     if (!bookingData.customerPhone.trim()) {
       newErrors.customerPhone = 'Phone number is required';
+    } else if (!validatePhone(bookingData.customerPhone)) {
+      newErrors.customerPhone = 'Please enter a valid phone number (7–15 digits)';
     }
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      onSubmit();
+    // Navigate to first error field with smooth scrolling and visual feedback
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      const errorElement = document.getElementById(firstErrorField);
+      if (errorElement) {
+        // Smooth scroll to the error field
+        errorElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+
+        // Add a slight delay to ensure scroll is complete, then focus and highlight
+        setTimeout(() => {
+          errorElement.focus();
+          // Add visual emphasis by briefly highlighting the field
+          errorElement.classList.add('ring-4', 'ring-red-200');
+          setTimeout(() => {
+            errorElement.classList.remove('ring-4', 'ring-red-200');
+          }, 2000);
+        }, 300);
+      }
+      return false;
     }
+
+    return true;
   };
 
   const handleSubmit = () => {
-    validateAndSubmit();
+    if (validateForm()) {
+      onSubmit();
+    }
   };
 
   const totalPrice = tire.price * quantity;
@@ -131,12 +180,19 @@ export default function Step4CustomerInfo({
               type="text"
               id="customerName"
               value={bookingData.customerName}
-              onChange={(e) => updateBookingData({ customerName: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerName ? 'border-red-500' : 'border-gray-300'
+              onChange={(e) => handleInputChange('customerName', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerName ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
                 }`}
               placeholder="Enter your full name"
             />
-            {errors.customerName && <p className="mt-1 text-sm text-red-600">{errors.customerName}</p>}
+            {errors.customerName && (
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.customerName}</p>
+              </div>
+            )}
           </div>
 
           <div>
@@ -147,12 +203,19 @@ export default function Step4CustomerInfo({
               type="email"
               id="customerEmail"
               value={bookingData.customerEmail}
-              onChange={(e) => updateBookingData({ customerEmail: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerEmail ? 'border-red-500' : 'border-gray-300'
+              onChange={(e) => handleInputChange('customerEmail', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerEmail ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
                 }`}
               placeholder="Enter your email address"
             />
-            {errors.customerEmail && <p className="mt-1 text-sm text-red-600">{errors.customerEmail}</p>}
+            {errors.customerEmail && (
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.customerEmail}</p>
+              </div>
+            )}
           </div>
 
           <div>
@@ -162,13 +225,26 @@ export default function Step4CustomerInfo({
             <input
               type="tel"
               id="customerPhone"
+              maxLength={15}
               value={bookingData.customerPhone}
-              onChange={(e) => updateBookingData({ customerPhone: e.target.value })}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerPhone ? 'border-red-500' : 'border-gray-300'
+              onChange={(e) => {
+                // Only allow numbers
+                const value = e.target.value.replace(/[^0-9]/g, '');
+                handleInputChange('customerPhone', value);
+              }}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerPhone ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
                 }`}
-              placeholder="Enter your phone number"
+              placeholder="254700000000"
+              inputMode="numeric"
             />
-            {errors.customerPhone && <p className="mt-1 text-sm text-red-600">{errors.customerPhone}</p>}
+            {errors.customerPhone && (
+              <div className="flex items-center gap-2 mt-1">
+                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-500 text-sm font-medium animate-pulse">{errors.customerPhone}</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -288,8 +364,8 @@ export default function Step4CustomerInfo({
             onClick={handleSubmit}
             disabled={isSubmitting}
             className={`px-8 py-3 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center gap-2 ${isSubmitting
-                ? 'bg-gray-400 text-white cursor-not-allowed'
-                : 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-600'
+              ? 'bg-gray-400 text-white cursor-not-allowed'
+              : 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-600'
               }`}
           >
             {isSubmitting ? (
@@ -303,6 +379,18 @@ export default function Step4CustomerInfo({
           </button>
         </div>
       </div>
+
+      {/* CSS for shake animation */}
+      <style jsx>{`
+        .shake {
+          animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+      `}</style>
     </div>
   );
-} 
+}

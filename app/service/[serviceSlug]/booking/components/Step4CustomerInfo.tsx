@@ -225,10 +225,15 @@ export default function Step4CustomerInfo({
               id="customerPhone"
               maxLength={15}
               value={bookingData.customerPhone}
-              onChange={(e) => handleInputChange('customerPhone', e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 transition-all duration-200 ${errors.customerPhone ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
+              onChange={(e) => {
+                // Only allow numbers
+                const value = e.target.value.replace(/[^0-9]/g, '');
+                handleInputChange('customerPhone', value);
+              }}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0a1c58] focus:border-transparent placeholder-gray-600 text-gray-900 ${errors.customerPhone ? 'border-red-500 bg-red-50 shake' : 'border-gray-300'
                 }`}
-              placeholder="+254 700 000 000"
+              placeholder="254700000000"
+              inputMode="numeric"
             />
             {errors.customerPhone && (
               <div className="flex items-center gap-2 mt-1">

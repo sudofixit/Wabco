@@ -8,7 +8,7 @@ function Footer() {
             <div>
                 <div className="font-semibold text-lg md:text-xl text-[#0a1c58] mb-4">Company</div>
                 <ul className="space-y-2 text-[#7d7d7d] text-base md:text-lg">
-                    <li><Link href="#" className="hover:underline">Home</Link></li>
+                    <li><Link href="/" className="hover:underline">Home</Link></li>
                     <li><Link href="/tire" className="hover:underline">Tires</Link></li>
                     <li><Link href="/service" className="hover:underline">Services</Link></li>
                     <li><Link href="/location" className="hover:underline">Location</Link></li>
