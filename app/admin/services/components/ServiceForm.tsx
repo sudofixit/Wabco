@@ -201,7 +201,9 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
 
         {/* Description field - full width */}
         <div className="md:col-span-4">
-          <label htmlFor="description" className="block text-sm font-semibold text-gray-900 mb-2">Description</label>
+          <label htmlFor="description" className="block text-sm font-semibold text-gray-900 mb-2">
+            Description
+          </label>
           <textarea
             name="description"
             id="description"
@@ -209,7 +211,7 @@ export default function ServiceForm({ service, onSubmit, onCancel, isLoading = f
             onChange={handleChange}
             onBlur={handleBlur}
             rows={4}
-            className="block w-[500] px-4 py-3 text-base rounded-md border-2 border-gray-300 shadow-2xl focus:border-[#0a1c58] focus:ring-[#0a1c58] focus:shadow-3xl text-gray-900 transition-all duration-200"
+            className="block w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl px-4 py-3 text-base rounded-md border-2 border-gray-300 shadow-2xl focus:border-[#0a1c58] focus:ring-[#0a1c58] focus:shadow-3xl text-gray-900 transition-all duration-200"
             placeholder="Enter service description..."
           />
         </div>

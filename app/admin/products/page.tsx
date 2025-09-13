@@ -13,8 +13,8 @@ interface DeleteModalProps {
 }
 function DeleteModal({ itemName, onCancel, onConfirm }: DeleteModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-      <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm flex flex-col items-center pointer-events-auto border border-gray-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none p-4">
+      <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm flex flex-col items-center pointer-events-auto border border-gray-200">
         <div className="text-xl font-bold text-gray-900 mb-4">Delete Confirmation</div>
         <div className="mb-6 text-center text-gray-900 font-semibold">
           Are you sure you want to delete <span className="font-bold">{itemName}</span>?
@@ -140,13 +140,14 @@ export default function ProductsPage() {
     setMaxPrice("");
     setTireSizeFilter("");
     setSelectedYear("All Years");
+    setSelectedBrand("All Brands");
   };
 
   // --- Close filter menu when clicking outside ---
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('.filter-popover') && !target.closest('.filter-button')) {
+      if (!target.closest('.filter-popover') && !target.closest('.filter-button') && !target.closest('.mobile-filter-menu')) {
         setShowFilterMenu(false);
       }
     };
@@ -253,23 +254,41 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="pb-8 px-2">
+    <div className="pb-8 px-2 md:px-4">
       <section className="w-full ml-0">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <div className="text-3xl font-extrabold text-[#222] leading-tight tracking-tight">Product Management</div>
-            <div className="text-base text-gray-700 mt-1 font-medium">Add, edit, or remove tire products from your inventory.</div>
+            <div className="text-2xl md:text-3xl font-extrabold text-[#222] leading-tight tracking-tight">Product Management</div>
+            <div className="text-sm md:text-base text-gray-700 mt-1 font-medium">Add, edit, or remove tire products from your inventory.</div>
           </div>
           <div className="flex gap-2 mt-2 md:mt-0">
             <button
               type="button"
               onClick={() => { setEditProduct(undefined); setShowProductModal(true); }}
-              className="bg-[#0a1c58] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#132b7c] transition text-base flex items-center gap-2 shadow-sm"
+              className="bg-[#0a1c58] text-white px-4 py-2 md:px-6 md:py-2 rounded-lg font-semibold hover:bg-[#132b7c] transition text-sm md:text-base flex items-center gap-2 shadow-sm"
             >
               + Add Product
             </button>
           </div>
         </div>
+
+        {/* Mobile Filter Toggle */}
+        <div className="md:hidden mb-4">
+          <button
+            type="button"
+            className="filter-button w-full flex items-center justify-center gap-2 bg-white border border-gray-300 px-4 py-2 rounded-lg text-[#0a1c58] font-semibold hover:bg-gray-100 transition shadow-sm text-base"
+            onClick={() => setShowFilterMenu((v) => !v)}
+          >
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" /></svg>
+            {showFilterMenu ? 'Hide Filters' : 'Show Filters'}
+            {(availabilityFilter || minPrice || maxPrice || tireSizeFilter || selectedYear !== "All Years" || selectedBrand !== "All Brands") && (
+              <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                Active
+              </span>
+            )}
+          </button>
+        </div>
+
         <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4 w-full">
           {/* Search Box */}
           <div className="relative flex-1 max-w-md">
@@ -292,138 +311,283 @@ export default function ProductsPage() {
               </button>
             )}
           </div>
-          {/* Filter Button (Availability) */}
-          <div className="relative">
-            <button
-              type="button"
-              className="filter-button flex items-center gap-2 bg-white border border-gray-300 px-4 py-2 rounded-lg text-[#0a1c58] font-semibold hover:bg-gray-100 transition shadow-sm text-base"
-              onClick={() => setShowFilterMenu((v) => !v)}
-            >
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" /></svg>
-              Filter
-              <svg className="ml-1" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" /></svg>
-              {(availabilityFilter || minPrice || maxPrice || tireSizeFilter || selectedYear !== "All Years") && (
-                <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                  Active
-                </span>
-              )}
-            </button>
-            {showFilterMenu && (
-              <div className="filter-popover absolute z-10 mt-2 w-[300px] bg-white border border-gray-200 rounded-lg shadow-lg py-3">
-                <div className="px-4 pb-2 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-gray-900">Filters</h3>
-                    <button
-                      onClick={resetFilters}
-                      className="text-xs text-gray-700 hover:text-gray-900"
-                    >
-                      Reset All
-                    </button>
-                  </div>
-                </div>
 
-                {/* Availability Filter */}
-                <div className="px-4 py-2 border-b border-gray-200">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
-                  <div className="space-y-1">
-                    {["In Stock", "Low Stock", "Out of Stock", "Contact Us"].map((option) => (
+          {/* Filter Controls - Desktop */}
+          <div className="hidden md:flex md:items-center gap-2">
+            {/* Filter Button (Availability) */}
+            <div className="relative">
+              <button
+                type="button"
+                className="filter-button flex items-center gap-2 bg-white border border-gray-300 px-4 py-2 rounded-lg text-[#0a1c58] font-semibold hover:bg-gray-100 transition shadow-sm text-base"
+                onClick={() => setShowFilterMenu((v) => !v)}
+              >
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" /></svg>
+                Filter
+                <svg className="ml-1" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" /></svg>
+                {(availabilityFilter || minPrice || maxPrice || tireSizeFilter || selectedYear !== "All Years") && (
+                  <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                    Active
+                  </span>
+                )}
+              </button>
+              {showFilterMenu && (
+                <div className="filter-popover absolute z-10 mt-2 w-[300px] bg-white border border-gray-200 rounded-lg shadow-lg py-3 right-0">
+                  <div className="px-4 pb-2 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-semibold text-gray-900">Filters</h3>
                       <button
-                        key={option}
-                        className={`block w-full text-left px-2 py-1.5 text-sm rounded hover:bg-gray-50 ${availabilityFilter === option ? "bg-gray-100 text-gray-900 font-medium" : "text-gray-900"
-                          }`}
-                        onClick={() => setAvailabilityFilter(option === availabilityFilter ? "" : option)}
+                        onClick={resetFilters}
+                        className="text-xs text-gray-700 hover:text-gray-900"
                       >
-                        {option}
+                        Reset All
                       </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Price Range Filter */}
-                <div className="px-4 py-2 border-b border-gray-200">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <input
-                        type="number"
-                        placeholder="Min"
-                        value={minPrice}
-                        onChange={(e) => setMinPrice(e.target.value)}
-                        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <input
-                        type="number"
-                        placeholder="Max"
-                        value={maxPrice}
-                        onChange={(e) => setMaxPrice(e.target.value)}
-                        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
-                      />
                     </div>
                   </div>
-                </div>
 
-                {/* Tire Size Filter */}
-                <div className="px-4 py-2 border-b border-gray-200">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tire Size</label>
-                  <input
-                    type="text"
-                    placeholder="Search tire size..."
-                    value={tireSizeFilter}
-                    onChange={(e) => setTireSizeFilter(e.target.value)}
-                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
-                  />
-                </div>
+                  {/* Availability Filter */}
+                  <div className="px-4 py-2 border-b border-gray-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+                    <div className="space-y-1">
+                      {["In Stock", "Low Stock", "Out of Stock", "Contact Us"].map((option) => (
+                        <button
+                          key={option}
+                          className={`block w-full text-left px-2 py-1.5 text-sm rounded hover:bg-gray-50 ${availabilityFilter === option ? "bg-gray-100 text-gray-900 font-medium" : "text-gray-900"
+                            }`}
+                          onClick={() => setAvailabilityFilter(option === availabilityFilter ? "" : option)}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                {/* Year Filter */}
-                <div className="px-4 py-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] text-gray-900"
-                  >
-                    {yearOptions.map((year) => (
-                      <option key={year} value={year} className="text-gray-900">{year}</option>
-                    ))}
-                  </select>
+                  {/* Price Range Filter */}
+                  <div className="px-4 py-2 border-b border-gray-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <input
+                          type="number"
+                          placeholder="Min"
+                          value={minPrice}
+                          onChange={(e) => setMinPrice(e.target.value)}
+                          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <input
+                          type="number"
+                          placeholder="Max"
+                          value={maxPrice}
+                          onChange={(e) => setMaxPrice(e.target.value)}
+                          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tire Size Filter */}
+                  <div className="px-4 py-2 border-b border-gray-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tire Size</label>
+                    <input
+                      type="text"
+                      placeholder="Search tire size..."
+                      value={tireSizeFilter}
+                      onChange={(e) => setTireSizeFilter(e.target.value)}
+                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
+                    />
+                  </div>
+
+                  {/* Year Filter */}
+                  <div className="px-4 py-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                    <select
+                      value={selectedYear}
+                      onChange={(e) => setSelectedYear(e.target.value)}
+                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] text-gray-900"
+                    >
+                      {yearOptions.map((year) => (
+                        <option key={year} value={year} className="text-gray-900">{year}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-          {/* Brand Dropdown */}
-          <div className="relative">
-            <select
-              className="appearance-none bg-white border border-gray-300 px-4 pr-10 py-2 rounded-lg text-[#0a1c58] font-semibold focus:outline-none shadow-sm text-base"
-              value={selectedBrand}
-              onChange={(e) => setSelectedBrand(e.target.value)}
-            >
-              {brandOptions.filter((b): b is string => !!b).map((brand) => (
-                <option key={brand} value={brand}>{brand}</option>
-              ))}
-            </select>
-            <svg className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" /></svg>
+              )}
+            </div>
+
+            {/* Brand Dropdown */}
+            <div className="relative">
+              <select
+                className="appearance-none bg-white border border-gray-300 px-4 pr-10 py-2 rounded-lg text-[#0a1c58] font-semibold focus:outline-none shadow-sm text-base"
+                value={selectedBrand}
+                onChange={(e) => setSelectedBrand(e.target.value)}
+              >
+                {brandOptions.filter((b): b is string => !!b).map((brand) => (
+                  <option key={brand} value={brand}>{brand}</option>
+                ))}
+              </select>
+              <svg className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" /></svg>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Filter Menu */}
+        {showFilterMenu && (
+          <div className="mobile-filter-menu md:hidden mb-4 bg-white border border-gray-200 rounded-lg p-4 shadow-sm" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  resetFilters();
+                }}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Reset All
+              </button>
+            </div>
+
+            {/* Brand Filter for Mobile */}
+            <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+              <select
+                value={selectedBrand}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setSelectedBrand(e.target.value);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] text-gray-900"
+              >
+                {brandOptions.filter((b): b is string => !!b).map((brand) => (
+                  <option key={brand} value={brand} className="text-gray-900">{brand}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Availability Filter */}
+            <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+              <div className="grid grid-cols-2 gap-2">
+                {["In Stock", "Low Stock", "Out of Stock", "Contact Us"].map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    className={`px-3 py-2 text-sm rounded border ${availabilityFilter === option
+                      ? "bg-gray-100 text-gray-900 font-medium border-gray-300"
+                      : "text-gray-900 border-gray-200 hover:bg-gray-50"}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setAvailabilityFilter(option === availabilityFilter ? "" : option);
+                    }}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Range Filter */}
+            <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={minPrice}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      setMinPrice(e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
+                  />
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={maxPrice}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      setMaxPrice(e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tire Size Filter */}
+            <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tire Size</label>
+              <input
+                type="text"
+                placeholder="Search tire size..."
+                value={tireSizeFilter}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setTireSizeFilter(e.target.value);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] placeholder:text-gray-500 text-gray-900"
+              />
+            </div>
+
+            {/* Year Filter */}
+            <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+              <select
+                value={selectedYear}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setSelectedYear(e.target.value);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a1c58] focus:border-[#0a1c58] text-gray-900"
+              >
+                {yearOptions.map((year) => (
+                  <option key={year} value={year} className="text-gray-900">{year}</option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="button"
+              className="w-full bg-gray-100 text-gray-900 py-2 rounded-lg font-semibold hover:bg-gray-200 transition"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowFilterMenu(false);
+              }}
+            >
+              Apply Filters
+            </button>
+          </div>
+        )}
+
         {showProductModal ? (
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-extrabold text-[#222] mb-6">{editProduct ? 'Edit Product' : 'Add New Product'}</h2>
             <ProductForm product={editProduct} onSubmit={handleAddOrEditProduct} onCancel={() => { setShowProductModal(false); setEditProduct(undefined); }} />
           </div>
         ) : (
-          <div className="overflow-x-auto w-full min-w-[1000px]">
+          <div className="overflow-x-auto w-full">
             {isLoading ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
               </div>
             ) : (
-              <div className="shadow-md rounded-lg bg-white">
-                <ProductTable
-                  products={filteredProducts}
-                  onEdit={handleEditProduct}
-                  onDelete={handleDeleteProduct}
-                />
+              <div className="shadow-md rounded-lg bg-white overflow-hidden">
+                <div className="overflow-x-auto">
+                  <ProductTable
+                    products={filteredProducts}
+                    onEdit={handleEditProduct}
+                    onDelete={handleDeleteProduct}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -438,4 +602,4 @@ export default function ProductsPage() {
       </section>
     </div>
   );
-} 
+}

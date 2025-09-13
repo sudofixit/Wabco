@@ -154,9 +154,14 @@ export default function AdminLayout({
         style={{ zIndex: 40 }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex flex-col items-center py-8">
-          <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={180} height={30} className="mb-10" />
-          <nav className="flex flex-col gap-4 w-full px-6">
+        {/* Fixed Logo Section */}
+        <div className="flex-shrink-0 flex justify-center py-6 border-b border-gray-200">
+          <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={180} height={30} />
+        </div>
+
+        {/* Scrollable Navigation Section */}
+        <div className="flex-1 overflow-y-auto">
+          <nav className="flex flex-col gap-2 p-4">
             {SIDEBAR_ITEMS.map(item => (
               <Link
                 key={item.key}
@@ -168,12 +173,14 @@ export default function AdminLayout({
                 {item.label}
               </Link>
             ))}
-            <div className="mt-10">
-              <LogoutButton />
-            </div>
           </nav>
+        </div>
+
+        {/* Logout Section */}
+        <div className="flex-shrink-0 p-4 border-t border-gray-200">
+          <LogoutButton />
         </div>
       </div>
     </div>
   );
-} 
+}

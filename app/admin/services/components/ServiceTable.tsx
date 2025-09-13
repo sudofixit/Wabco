@@ -16,40 +16,25 @@ export default function ServiceTable({
   isDeleting = false,
 }: ServiceTableProps) {
   return (
-    <table className="min-w-full divide-y divide-gray-300">
+    <table className="min-w-full divide-y divide-gray-300 text-[15px]">
       <thead>
         <tr>
-          <th
-            scope="col"
-            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-          >
+          <th scope="col" className="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
             Image
           </th>
-          <th
-            scope="col"
-            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-          >
+          <th scope="col" className="px-2 py-2 text-left text-[15px] font-semibold text-gray-900">
             Title
           </th>
-          <th
-            scope="col"
-            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-          >
+          <th scope="col" className="px-2 py-2 text-left text-[15px] font-semibold text-gray-900">
             Description
           </th>
-          <th
-            scope="col"
-            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-          >
+          <th scope="col" className="px-2 py-2 text-left text-[15px] font-semibold text-gray-900">
             Price
           </th>
-          <th
-            scope="col"
-            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-          >
+          <th scope="col" className="px-2 py-2 text-left text-[15px] font-semibold text-gray-900">
             Status
           </th>
-          <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+          <th scope="col" className="relative py-2 pl-3 pr-4 sm:pr-6">
             <span className="sr-only">Actions</span>
           </th>
         </tr>
@@ -57,35 +42,30 @@ export default function ServiceTable({
       <tbody className="divide-y divide-gray-200 bg-white">
         {services.map((service) => (
           <tr key={service.id}>
-            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+            <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
               <Image
                 src={service.image}
                 alt={service.title}
-                width={48}
-                height={48}
-                className="rounded"
+                width={90}
+                height={60}
+                className="rounded object-cover w-[90px] h-[60px]"
               />
             </td>
-            <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
+            <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
               {service.title}
             </td>
-            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
+            <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-700">
               {service.description}
             </td>
-            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
+            <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-700">
               KES {service.price}
             </td>
-            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-              <span
-                className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${service.isActive
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                  }`}
-              >
-                {service.isActive ? "Active" : "Inactive"}
+            <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-700">
+              <span className={`font-bold ${service.isActive ? "text-green-700" : "text-red-600"}`}>
+                {service.isActive ? "ACTIVE" : "INACTIVE"}
               </span>
             </td>
-            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+            <td className="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
               <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => onEdit(service)}
@@ -108,4 +88,4 @@ export default function ServiceTable({
       </tbody>
     </table>
   );
-} 
+}

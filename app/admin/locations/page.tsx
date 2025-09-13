@@ -206,22 +206,26 @@ export default function LocationsPage() {
             />
           </div>
         ) : (
-          <div className="overflow-x-auto w-full min-w-[700px]">
-            <div className="shadow-md rounded-lg bg-white">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <>
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            ) : (
+              <div className="shadow-md rounded-lg bg-white overflow-hidden">
+                <div className="overflow-x-auto">
+                  <div className="min-w-max">
+                    <LocationTable
+                      locations={filteredLocations}
+                      onEdit={handleEditLocation}
+                      onDelete={id => setDeleteLocation(filteredLocations.find(l => l.id === id) || null)}
+                      isDeleting={isDeleting}
+                    />
+                  </div>
                 </div>
-              ) : (
-                <LocationTable
-                  locations={filteredLocations}
-                  onEdit={handleEditLocation}
-                  onDelete={id => setDeleteLocation(filteredLocations.find(l => l.id === id) || null)}
-                  isDeleting={isDeleting}
-                />
-              )}
-            </div>
-          </div>
+              </div>
+            )}
+          </>
         )}
         {/* Delete Confirmation */}
         {deleteLocation && (

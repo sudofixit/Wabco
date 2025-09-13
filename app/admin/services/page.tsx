@@ -6,16 +6,8 @@ import { toast } from 'react-hot-toast';
 import AdminLayout from '../layout';
 import { useRouter } from 'next/navigation';
 import ServiceForm from './components/ServiceForm';
-import { ServiceFormData } from "@/types/admin/services";
-
-interface ServiceCard {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  price: number;
-  isActive: boolean;
-}
+import ServiceTable from './components/ServiceTable';
+import { ServiceFormData, Service } from "@/types/admin/services";
 
 const SIDEBAR_ITEMS = [
   { key: "products", label: "Products/Services", href: "/admin/products" },
@@ -26,11 +18,11 @@ const SIDEBAR_ITEMS = [
 
 export default function ServicesPage() {
   const [activeTab, setActiveTab] = useState("services");
-  const [serviceCards, setServiceCards] = useState<ServiceCard[]>([]);
+  const [serviceCards, setServiceCards] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showServiceForm, setShowServiceForm] = useState(false);
-  const [editService, setEditService] = useState<ServiceCard | undefined>(undefined);
-  const [deleteService, setDeleteService] = useState<ServiceCard | null>(null);
+  const [editService, setEditService] = useState<Service | undefined>(undefined);
+  const [deleteService, setDeleteService] = useState<Service | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
@@ -45,7 +37,7 @@ export default function ServicesPage() {
     const term = searchTerm.trim().toLowerCase();
     const titleMatch = service.title.toLowerCase().includes(term);
     const descriptionMatch = service.description.toLowerCase().includes(term);
-    const priceMatch = service.price.toString().includes(term);
+    const priceMatch = (service.price ?? 0).toString().includes(term);
 
     return titleMatch || descriptionMatch || priceMatch;
   });
@@ -80,7 +72,7 @@ export default function ServicesPage() {
     setShowServiceForm(true);
   };
 
-  const handleEditService = (service: ServiceCard) => {
+  const handleEditService = (service: Service) => {
     setEditService(service);
     setShowServiceForm(true);
   };
@@ -146,7 +138,13 @@ export default function ServicesPage() {
     }
   }
 
-  async function handleDeleteService() {
+  async function handleDeleteService(serviceId: number) {
+    const service = serviceCards.find(s => s.id === serviceId);
+    if (!service) return;
+    setDeleteService(service);
+  }
+
+  async function handleConfirmDelete() {
     if (!deleteService) return;
     setIsDeleting(true);
     try {
@@ -166,18 +164,18 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="pb-8 px-2">
+    <div className="pb-8 px-2 md:px-4">
       <section className="w-full ml-0">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <div className="text-3xl font-extrabold text-[#222] leading-tight tracking-tight">Service Management</div>
-            <div className="text-base text-gray-700 mt-1 font-medium">Add, edit, or remove services from your catalog.</div>
+            <div className="text-2xl md:text-3xl font-extrabold text-[#222] leading-tight tracking-tight">Service Management</div>
+            <div className="text-sm md:text-base text-gray-700 mt-1 font-medium">Add, edit, or remove services from your catalog.</div>
           </div>
           <div className="flex gap-2 mt-2 md:mt-0">
             <button
               type="button"
               onClick={handleAddService}
-              className="bg-[#0a1c58] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#132b7c] transition text-base flex items-center gap-2 shadow-sm"
+              className="bg-[#0a1c58] text-white px-4 py-2 md:px-6 md:py-2 rounded-lg font-semibold hover:bg-[#132b7c] transition text-sm md:text-base flex items-center gap-2 shadow-sm"
             >
               + Add Service
             </button>
@@ -209,8 +207,8 @@ export default function ServicesPage() {
         </div>
 
         {showServiceForm ? (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-bold text-[#0a1c58] mb-6">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-extrabold text-[#222] mb-6">
               {editService ? 'Edit Service' : 'Add New Service'}
             </h2>
             <ServiceForm
@@ -221,57 +219,23 @@ export default function ServicesPage() {
             />
           </div>
         ) : (
-          <div className="overflow-x-auto w-full min-w-[700px]">
-            <div className="shadow-md rounded-lg bg-white">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="overflow-x-auto w-full">
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            ) : (
+              <div className="shadow-md rounded-lg bg-white overflow-hidden">
+                <div className="overflow-x-auto">
+                  <ServiceTable
+                    services={filteredServices}
+                    onEdit={handleEditService}
+                    onDelete={handleDeleteService}
+                    isDeleting={isDeleting}
+                  />
                 </div>
-              ) : (
-                <table className="min-w-full w-full text-left rounded-lg overflow-hidden">
-                  <thead>
-                    <tr className="text-[#222] font-medium text-base border-b bg-[#f9fafb] rounded-t-lg">
-                      <th className="py-3 pl-6 pr-4">Image</th>
-                      <th className="py-3 px-4">Title</th>
-                      <th className="py-3 px-4">Description</th>
-                      <th className="py-3 px-4">Price</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 pr-6 pl-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredServices.map((card, idx) => (
-                      <tr key={card.id} className={`border-b last:border-0 hover:bg-gray-50 transition text-base ${idx === 0 ? 'rounded-t-lg' : ''} ${idx === serviceCards.length - 1 ? 'rounded-b-lg' : ''}`}>
-                        <td className="py-3 pl-6 pr-4 align-middle">
-                          <img src={card.image} alt={card.title} className="w-12 h-12 object-cover rounded-lg" />
-                        </td>
-                        <td className="py-3 px-4 font-semibold text-[#222] align-middle break-words whitespace-normal text-base" style={{ fontSize: '14px', fontWeight: 600, lineHeight: '1.3' }}>{card.title}</td>
-                        <td className="py-3 px-4 text-gray-700 font-medium text-sm align-middle break-words whitespace-normal">{card.description}</td>
-                        <td className="py-3 px-4 text-gray-700 font-medium text-sm align-middle whitespace-nowrap">KES {card.price}</td>
-                        <td className="py-3 px-4 align-middle">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${card.isActive
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                            }`}>
-                            {card.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="py-3 pr-6 pl-4 text-right align-middle">
-                          <div className="flex gap-2 justify-end">
-                            <button className="hover:bg-gray-100 p-2 rounded-full transition" onClick={() => handleEditService(card)} title="Edit">
-                              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.94l-4.243 1.415 1.415-4.243a4 4 0 01.94-1.414z" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            </button>
-                            <button className="hover:bg-gray-100 p-2 rounded-full transition" onClick={() => setDeleteService(card)} title="Delete">
-                              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 7V5a2 2 0 00-2-2H7a2 2 0 00-2 2v2m5 4v6m4-6v6" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -280,7 +244,7 @@ export default function ServicesPage() {
           <DeleteModal
             itemName={deleteService.title}
             onCancel={() => setDeleteService(null)}
-            onConfirm={handleDeleteService}
+            onConfirm={handleConfirmDelete}
             isLoading={isDeleting}
           />
         )}
@@ -299,8 +263,8 @@ interface DeleteModalProps {
 }
 function DeleteModal({ itemName, onCancel, onConfirm, isLoading }: DeleteModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-      <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm flex flex-col items-center pointer-events-auto border border-gray-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none p-4">
+      <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm flex flex-col items-center pointer-events-auto border border-gray-200">
         <div className="text-xl font-bold text-gray-900 mb-4">Delete Confirmation</div>
         <div className="mb-6 text-center text-gray-900 font-semibold">
           Are you sure you want to delete <span className="font-bold">{itemName}</span>?
@@ -324,4 +288,4 @@ function DeleteModal({ itemName, onCancel, onConfirm, isLoading }: DeleteModalPr
       </div>
     </div>
   );
-} 
+}

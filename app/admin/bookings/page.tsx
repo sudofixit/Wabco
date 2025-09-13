@@ -62,7 +62,7 @@ export default function BookingsPage() {
   // Filter bookings based on search term
   const filteredBookings = bookings.filter((booking) => {
     if (searchTerm.trim() === "") return true;
-    
+
     const term = searchTerm.trim().toLowerCase();
     const customerMatch = booking.customerName.toLowerCase().includes(term);
     const emailMatch = booking.customerEmail.toLowerCase().includes(term);
@@ -70,7 +70,7 @@ export default function BookingsPage() {
     const carMatch = `${booking.carYear} ${booking.carMake} ${booking.carModel}`.toLowerCase().includes(term);
     const servicesMatch = booking.services.toLowerCase().includes(term);
     const branchMatch = booking.branchName.toLowerCase().includes(term);
-    
+
     return customerMatch || emailMatch || phoneMatch || carMatch || servicesMatch || branchMatch;
   });
 
@@ -154,6 +154,7 @@ export default function BookingsPage() {
             customerName: formData.customerName,
             customerEmail: formData.customerEmail,
             customerPhone: formData.customerPhone,
+            requestType: formData.requestType
           }),
         });
         if (!response.ok) throw new Error('Failed to update booking');
@@ -187,6 +188,7 @@ export default function BookingsPage() {
             customerName: formData.customerName,
             customerEmail: formData.customerEmail,
             customerPhone: formData.customerPhone,
+            requestType: formData.requestType
           }),
         });
         if (!response.ok) throw new Error('Failed to create booking');
@@ -274,7 +276,7 @@ export default function BookingsPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
             {searchTerm && (
               <button
                 type="button"
@@ -282,7 +284,7 @@ export default function BookingsPage() {
                 onClick={() => setSearchTerm("")}
                 aria-label="Clear search"
               >
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               </button>
             )}
           </div>
@@ -303,24 +305,28 @@ export default function BookingsPage() {
             />
           </div>
         ) : (
-          <div className="overflow-x-auto w-full min-w-[1000px]">
+          <>
             {isLoading ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
               </div>
             ) : (
-              <div className="shadow-md rounded-lg bg-white">
-                <BookingTable
-                  bookings={filteredBookings}
-                  onEdit={handleEditBooking}
-                  onDelete={handleDelete}
-                  onToggleStatus={handleToggleStatus}
-                  isDeleting={isDeleting}
-                  isTogglingStatus={isTogglingStatus}
-                />
+              <div className="shadow-md rounded-lg bg-white overflow-hidden">
+                <div className="overflow-x-auto">
+                  <div className="min-w-[1000px]">
+                    <BookingTable
+                      bookings={filteredBookings}
+                      onEdit={handleEditBooking}
+                      onDelete={handleDelete}
+                      onToggleStatus={handleToggleStatus}
+                      isDeleting={isDeleting}
+                      isTogglingStatus={isTogglingStatus}
+                    />
+                  </div>
+                </div>
               </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Delete Confirmation */}
