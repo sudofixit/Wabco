@@ -260,21 +260,25 @@ export default function BookingFlow({ service, locations, flowType = 'booking' }
       {/* Progress Indicator */}
       <div className="w-full bg-white border-b">
         <div className="max-w-4xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+          <div
+            className="flex items-start justify-between"
+          >
             {steps.map((step, index) => (
-              <div key={step.number} className="flex items-center">
+              <div key={step.number} className="flex items-start">
                 <div className="flex flex-col items-center">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${currentStep >= step.number
-                      ? 'bg-[#0a1c58] text-white'
-                      : 'bg-gray-200 text-gray-600'
+                      ? "bg-[#0a1c58] text-white"
+                      : "bg-gray-200 text-gray-600"
                       }`}
                   >
                     {step.number}
                   </div>
                   <div className="text-center mt-2">
-                    <div className={`text-sm font-medium ${currentStep >= step.number ? 'text-[#0a1c58]' : 'text-gray-500'
-                      }`}>
+                    <div
+                      className={`text-sm font-medium ${currentStep >= step.number ? "text-[#0a1c58]" : "text-gray-500"
+                        }`}
+                    >
                       {step.title}
                     </div>
                     <div className="text-xs text-gray-500 hidden md:block">
@@ -284,7 +288,7 @@ export default function BookingFlow({ service, locations, flowType = 'booking' }
                 </div>
                 {index < steps.length - 1 && (
                   <div
-                    className={`flex-1 h-0.5 mx-4 transition-colors ${currentStep > step.number ? 'bg-[#0a1c58]' : 'bg-gray-200'
+                    className={`flex-1 h-0.5 mx-4 transition-colors ${currentStep > step.number ? "bg-[#0a1c58]" : "bg-gray-200"
                       }`}
                   />
                 )}
@@ -293,6 +297,8 @@ export default function BookingFlow({ service, locations, flowType = 'booking' }
           </div>
         </div>
       </div>
+
+
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">

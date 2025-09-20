@@ -9,11 +9,11 @@ import { Toaster } from "react-hot-toast";
 
 const SIDEBAR_ITEMS = [
   { key: "products", label: "Products", href: "/admin/products" },
-  { key: "services", label: "Services", href: "/admin/services" },
   { key: "bookings", label: "Bookings", href: "/admin/bookings" },
   { key: "locations", label: "Locations", href: "/admin/locations" },
   { key: "banners", label: "Banners", href: "/admin/banners" },
   { key: "brands", label: "Brands", href: "/admin/brands" },
+  { key: "carbrands", label: "Car Brands", href: "/admin/car-brands" },
   { key: "users", label: "Users", href: "/admin/users" },
 ];
 
@@ -109,7 +109,7 @@ export default function AdminLayout({
       {/* Main Content */}
       <main className="flex-1 w-full">
         {/* Top Navigation Bar */}
-        <div className="fixed left-0 right-0 top-0 bg-white shadow flex items-center h-16 px-6 justify-between">
+        <div className="fixed left-0 right-0 top-0 bg-white shadow flex items-center h-16 px-6 justify-between z-50">
           <div className="flex items-center gap-4 w-full">
             <button
               className="text-[#0a1c58] p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -142,16 +142,15 @@ export default function AdminLayout({
         </div>
 
         {/* Page Content */}
-        <div className="pt-10 pb-8 px-2">
+        <div className="pt-16 pb-8 px-2">
           {children}
         </div>
       </main>
 
-      {/* Sidebar */}
+      {/* Sidebar - Adjusted z-index to be consistent */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
-        style={{ zIndex: 40 }}
         onClick={e => e.stopPropagation()}
       >
         {/* Fixed Logo Section */}

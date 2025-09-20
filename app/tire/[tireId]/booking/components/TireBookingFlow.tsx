@@ -210,6 +210,7 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
               updateBookingData={updateBookingData}
               onNext={nextStep}
               onPrev={prevStep}
+              bookingType="tirebooking"
             />
           );
         } else {

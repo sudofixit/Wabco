@@ -632,8 +632,7 @@ export async function GET(request: Request) {
     const customerEmail = searchParams.get('customerEmail');
     const bookingDate = searchParams.get('bookingDate');
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const skip = (page - 1) * limit;
+
 
     // Build where clause for filtering
     const where: any = {};
@@ -646,8 +645,6 @@ export async function GET(request: Request) {
         where,
         include: { branch: true },
         orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
       }),
       prisma.booking.count({ where }),
     ]);
@@ -666,9 +663,7 @@ export async function GET(request: Request) {
       bookings,
       pagination: {
         page,
-        limit,
         total: totalCount,
-        pages: Math.ceil(totalCount / limit),
       },
     });
   } catch (error: any) {

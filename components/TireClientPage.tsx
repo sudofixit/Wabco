@@ -114,68 +114,79 @@ export default function TireClientPage({ tires, brands }: TireClientPageProps) {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    const productsSection = document.getElementById('products-section');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+
+    // Use a timeout to ensure state update and re-render complete before scrolling
+    setTimeout(() => {
+      const productsSection = document.getElementById('products-section');
+      if (productsSection) {
+        const rect = productsSection.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetPosition = rect.top + scrollTop - 80; // 80px offset from top
+
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   return (
-    <section className="w-full flex justify-center bg-white py-16 px-4">
-      <div className="w-full max-w-[1440px] flex flex-col md:flex-row gap-12">
-        {/* Sidebar Filters */}
-        <aside className="w-full md:w-[320px] flex-shrink-0 mb-10 md:mb-0">
-          <h2 className="text-3xl font-bold text-[#0a1c58] mb-6">Discover Our Premium Tire Selection</h2>
-          <div className="mb-4 flex items-center justify-between">
-            <span className="text-lg font-semibold text-[#0a1c58]">Filter</span>
-            <button onClick={handleClear} className="text-white bg-[#0a1c58] px-4 py-1 rounded-full text-sm font-medium">Clear All</button>
+    <section className="w-full flex justify-center bg-white py-12 px-4">
+      <div className="w-full max-w-[1320px] flex flex-col md:flex-row gap-10">
+        {/* Sidebar Filters - Moderate reduction */}
+        <aside className="w-full md:w-[280px] flex-shrink-0 mb-8 md:mb-0">
+          <h2 className="text-2xl font-bold text-[#0a1c58] mb-5">Discover Our Premium Tire Selection</h2>
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-base font-semibold text-[#0a1c58]">Filter</span>
+            <button onClick={handleClear} className="text-white bg-[#0a1c58] px-3 py-1 rounded-full text-sm font-medium">Clear All</button>
           </div>
 
-          {/* Top 3 filters with Apply */}
-          <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
-            <div className="relative mb-3">
+          {/* Top 3 filters with Apply - Moderate reduction */}
+          <div className="bg-white border border-gray-300 rounded-lg p-3 mb-5">
+            <div className="relative mb-2.5">
               <select
                 value={width}
                 onChange={e => setWidth(e.target.value)}
-                className="w-full px-4 pr-12 py-3 rounded-lg border border-gray-200 text-[#0a1c58] bg-white focus:outline-none text-base font-medium appearance-none"
+                className="w-full px-3 pr-10 py-2.5 rounded-lg border border-gray-200 text-[#0a1c58] bg-white focus:outline-none text-sm font-medium appearance-none"
               >
                 <option value="">Select Width</option>
                 {widthOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-                <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </span>
             </div>
-            <div className="relative mb-3">
+            <div className="relative mb-2.5">
               <select
                 value={ratio}
                 onChange={e => setRatio(e.target.value)}
-                className="w-full px-4 pr-12 py-3 rounded-lg border border-gray-200 text-[#0a1c58] bg-white focus:outline-none text-base font-medium appearance-none"
+                className="w-full px-3 pr-10 py-2.5 rounded-lg border border-gray-200 text-[#0a1c58] bg-white focus:outline-none text-sm font-medium appearance-none"
               >
                 <option value="">Select Ratio</option>
                 {ratioOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-                <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </span>
             </div>
-            <div className="relative mb-3">
+            <div className="relative mb-2.5">
               <select
                 value={rimSize}
                 onChange={e => setRimSize(e.target.value)}
-                className="w-full px-4 pr-12 py-3 rounded-lg border border-gray-200 text-[#0a1c58] bg-white focus:outline-none text-base font-medium appearance-none"
+                className="w-full px-3 pr-10 py-2.5 rounded-lg border border-gray-200 text-[#0a1c58] bg-white focus:outline-none text-sm font-medium appearance-none"
               >
                 <option value="">Select Rim Size</option>
                 {rimSizeOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-                <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#0a1c58" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </span>
             </div>
             <button
               onClick={handleApply}
               disabled={isApplying}
-              className={`w-full py-2 rounded-lg font-bold mt-2 transition-all duration-300 ${isApplying
+              className={`w-full py-2 rounded-lg font-bold mt-2 text-sm transition-all duration-300 ${isApplying
                 ? 'bg-green-600 text-white'
                 : 'bg-[#0a1c58] text-white hover:bg-[#132b7c]'
                 }`}
@@ -184,71 +195,70 @@ export default function TireClientPage({ tires, brands }: TireClientPageProps) {
             </button>
           </div>
 
-          {/* Individual filters */}
-          <div className="relative mb-4">
+          {/* Individual filters - Moderate reduction */}
+          <div className="relative mb-3">
             <select
               value={brand}
               onChange={e => { setBrand(e.target.value); handleFilterChange('brand', e.target.value); }}
-              className="w-full px-4 pr-12 py-3 rounded-lg bg-[#f3f3f3] text-black font-bold focus:outline-none text-base appearance-none"
+              className="w-full px-3 pr-10 py-2.5 rounded-lg bg-[#f3f3f3] text-black font-bold focus:outline-none text-sm appearance-none"
             >
               <option value="">Brand</option>
               {brands.map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
-            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-              <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
           </div>
-          <div className="relative mb-4">
+          <div className="relative mb-3">
             <select
               value={offer}
               onChange={e => { setOffer(e.target.value); handleFilterChange('offer', e.target.value); }}
-              className="w-full px-4 pr-12 py-3 rounded-lg bg-[#f3f3f3] text-black font-bold focus:outline-none text-base appearance-none"
+              className="w-full px-3 pr-10 py-2.5 rounded-lg bg-[#f3f3f3] text-black font-bold focus:outline-none text-sm appearance-none"
             >
               <option value="">Offer</option>
               {offerOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
-            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-              <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
           </div>
           <div className="relative">
             <select
               value={origin}
               onChange={e => { setOrigin(e.target.value); handleFilterChange('origin', e.target.value); }}
-              className="w-full px-4 pr-12 py-3 rounded-lg bg-[#f3f3f3] text-black font-bold focus:outline-none text-base appearance-none"
+              className="w-full px-3 pr-10 py-2.5 rounded-lg bg-[#f3f3f3] text-black font-bold focus:outline-none text-sm appearance-none"
             >
               <option value="">Origin</option>
               {originOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
-            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-              <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
           </div>
         </aside>
 
-        {/* Tire Grid */}
-
+        {/* Tire Grid - Moderate reduction */}
         <div className="flex-1" id="products-section">
           {filteredTires.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-10">
               <h3 className="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
-              <p className="text-gray-500">Try adjusting your filters to see more results.</p>
+              <p className="text-sm text-gray-500">Try adjusting your filters to see more results.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gap-x-32">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-x-24">
               {paginatedTires.map((tire) => (
                 <TireCard key={tire.id} tire={tire} />
               ))}
             </div>
           )}
 
-          {/* Pagination Controls */}
+          {/* Pagination Controls - Moderate reduction */}
           {totalPages > 1 && filteredTires.length > 0 && (
-            <div className="flex justify-center items-center gap-2 mt-10">
+            <div className="flex justify-center items-center gap-2 mt-8">
               <button
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page === 1}
-                className={`px-4 py-2 rounded ${page === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#0a1c58] text-white hover:bg-[#132b7c]'}`}
+                className={`px-3 py-2 text-sm rounded ${page === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#0a1c58] text-white hover:bg-[#132b7c]'}`}
               >
                 Prev
               </button>
@@ -256,7 +266,7 @@ export default function TireClientPage({ tires, brands }: TireClientPageProps) {
                 <button
                   key={i + 1}
                   onClick={() => handlePageChange(i + 1)}
-                  className={`px-4 py-2 rounded ${page === i + 1 ? 'bg-[#0a1c58] text-white' : 'bg-gray-100 text-[#0a1c58] hover:bg-[#e5e7eb]'}`}
+                  className={`px-3 py-2 text-sm rounded ${page === i + 1 ? 'bg-[#0a1c58] text-white' : 'bg-gray-100 text-[#0a1c58] hover:bg-[#e5e7eb]'}`}
                 >
                   {i + 1}
                 </button>
@@ -264,7 +274,7 @@ export default function TireClientPage({ tires, brands }: TireClientPageProps) {
               <button
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page === totalPages}
-                className={`px-4 py-2 rounded ${page === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#0a1c58] text-white hover:bg-[#132b7c]'}`}
+                className={`px-3 py-2 text-sm rounded ${page === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#0a1c58] text-white hover:bg-[#132b7c]'}`}
               >
                 Next
               </button>
@@ -274,4 +284,4 @@ export default function TireClientPage({ tires, brands }: TireClientPageProps) {
       </div>
     </section>
   );
-} 
+}

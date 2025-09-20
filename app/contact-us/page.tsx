@@ -152,10 +152,6 @@ export default function ContactUsPage() {
       const result = await response.json();
 
       if (response.ok) {
-        const successMessage = result.message || 'Thank you for your message! We will get back to you within 24 hours.';
-        setSubmitStatus({ success: true, message: successMessage });
-        showSuccess(successMessage);
-
         // Reset form
         setFormData({
           name: '',
@@ -171,13 +167,11 @@ export default function ContactUsPage() {
       } else {
         const errorMessage = result.error || 'Failed to send your message. Please try again.';
         setSubmitStatus({ success: false, message: errorMessage });
-        showError(errorMessage);
       }
     } catch (error) {
       console.error('Contact form submission error:', error);
       const errorMessage = 'Failed to send your message. Please try again.';
       setSubmitStatus({ success: false, message: errorMessage });
-      showError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -444,6 +438,17 @@ export default function ContactUsPage() {
               >
                 {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
+              {submitStatus && (
+                <div
+                  className={`p-4 mb-4 rounded-lg text-center font-semibold transition-opacity duration-300
+      ${submitStatus.success
+                      ? 'bg-green-100 text-green-800 border border-green-300'
+                      : 'bg-red-100 text-red-800 border border-red-300'
+                    }`}
+                >
+                  {submitStatus.message}
+                </div>
+              )}
             </div>
           </form>
         </div>

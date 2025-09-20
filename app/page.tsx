@@ -34,32 +34,20 @@ export default async function Home() {
   const availableBrands: Brand[] = allBrands;
 
   return (
-    <div className="bg-white min-h-screen w-full flex flex-col items-center font-sans">
+    <div className="bg-white min-h-screen w-full flex flex-col items-center">
       {/* Header */}
-      <header className="w-full max-w-[1440px] flex items-center justify-between py-4 px-4 md:py-6 md:px-8 lg:px-16">
-        <div className="flex items-center gap-4">
-          <Image
-            src="/Wabco Logo.jpeg"
-            alt="Wabco Mobility Logo"
-            width={180}
-            height={24}
-            className="md:w-[231px] md:h-[30px]"
-          />
+      <header className="w-full max-w-[1320px] flex items-center justify-between py-4 px-6 md:px-12">
+        <div className="flex items-center gap-3">
+          <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={208} height={27} />
         </div>
-
-        {/* Desktop Navigation */}
         <nav className="hidden lg:flex gap-6 xl:gap-10 text-base xl:text-lg font-medium text-[#0a1c58]">
           <Link href="/" className="font-bold text-black transition">Home</Link>
           <Link href="/tire" className="hover:text-black transition">Tires</Link>
           <Link href="/service" className="hover:text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
-
-        {/* Desktop Contact Button */}
-        <Link href="/contact-us" className="hidden lg:block">
-          <button className="border-2 border-[#0a1c58] text-[#0a1c58] px-6 xl:px-8 py-2 rounded-full font-semibold text-base xl:text-lg hover:bg-[#0a1c58] hover:text-white transition">
-            Contact Us
-          </button>
+        <Link href="/contact-us">
+          <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">Contact Us</button>
         </Link>
 
         {/* Mobile Navigation */}

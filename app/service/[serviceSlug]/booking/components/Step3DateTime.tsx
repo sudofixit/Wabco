@@ -24,6 +24,7 @@ interface Step3Props {
   updateBookingData: (data: Partial<BookingData>) => void;
   onNext: () => void;
   onPrev: () => void;
+  bookingType?: 'servicebooking' | 'tirebooking';
 }
 
 // Generate time slots from 9:00 to 17:30
@@ -39,7 +40,13 @@ const generateTimeSlots = (): string[] => {
   return slots;
 };
 
-export default function Step3DateTime({ bookingData, updateBookingData, onNext, onPrev }: Step3Props) {
+export default function Step3DateTime({
+  bookingData,
+  updateBookingData,
+  onNext,
+  onPrev,
+  bookingType = 'servicebooking'
+}: Step3Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
@@ -56,9 +63,19 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
   const minDateString = today.toISOString().split('T')[0];
   const maxDateString = maxDate.toISOString().split('T')[0];
 
-  // Fetch available slots when date, branch, or service changes
+  // Fetch available slots when date, branch, or service changes (only for service booking)
   useEffect(() => {
     const fetchAvailableSlots = async () => {
+      // For tire booking, all slots are always available
+      if (bookingType === 'tirebooking') {
+        setAvailableSlots(timeSlots);
+        setBookedSlots([]);
+        setAllSlots(timeSlots);
+        setApiMessage('All time slots are available for tire booking');
+        return;
+      }
+
+      // Service booking logic (existing)
       if (!bookingData.bookingDate || !bookingData.branchId) {
         setAvailableSlots(timeSlots);
         setBookedSlots([]);
@@ -118,7 +135,7 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
     };
 
     fetchAvailableSlots();
-  }, [bookingData.bookingDate, bookingData.branchId, bookingData.serviceId]);
+  }, [bookingData.bookingDate, bookingData.branchId, bookingData.serviceId, bookingType]);
 
   const handleDateChange = (date: string) => {
     updateBookingData({ bookingDate: date });
@@ -133,6 +150,23 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
   };
 
   const handleTimeChange = (time: string) => {
+    // For tire booking, all slots are always available
+    if (bookingType === 'tirebooking') {
+      updateBookingData({ bookingTime: time });
+
+      // Clear any existing errors
+      if (errors.bookingTime || errors.timeConflict) {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.bookingTime;
+          delete newErrors.timeConflict;
+          return newErrors;
+        });
+      }
+      return;
+    }
+
+    // Service booking logic (existing)
     // Check if this time slot is booked for the same service
     const isBookedForSameService = bookedSlots.includes(time);
 
@@ -216,12 +250,34 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
     });
   };
 
+  // Get dynamic content based on booking type
+  const getBookingTypeText = () => {
+    return bookingType === 'tirebooking'
+      ? {
+        title: 'tire installation',
+        availability: 'Multiple tire installations can be scheduled at the same time',
+        conflict: 'All time slots are available for tire booking'
+      }
+      : {
+        title: 'service',
+        availability: 'Different services can share time slots',
+        conflict: 'Same service bookings create conflicts'
+      };
+  };
+
+  const bookingTypeText = getBookingTypeText();
+
   return (
     <div className="space-y-14">
       {/* Step Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#0a1c58] mb-2">Select Date & Time</h2>
         <p className="text-gray-600">Choose your preferred appointment date and time</p>
+        {bookingType === 'tirebooking' && (
+          <p className="text-green-600 text-sm mt-2 font-medium">
+            ✓ All time slots are available for tire booking
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -271,8 +327,8 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-[#0a1c58]">Select Time</h3>
 
-          {/* Time Conflict Error */}
-          {errors.timeConflict && (
+          {/* Time Conflict Error (only for service booking) */}
+          {bookingType === 'servicebooking' && errors.timeConflict && (
             <div className="text-red-600 text-sm p-4 bg-red-50 border border-red-200 rounded-lg font-medium">
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -298,7 +354,7 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
             </div>
           )}
 
-          {isLoadingSlots ? (
+          {isLoadingSlots && bookingType === 'servicebooking' ? (
             <div className="flex justify-center items-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0a1c58]"></div>
               <span className="ml-2 text-gray-600">Loading available slots...</span>
@@ -306,7 +362,7 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
           ) : (
             <div id="bookingTime" className="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4">
               {allSlots.map((time) => {
-                const isBookedForSameService = bookedSlots.includes(time);
+                const isBookedForSameService = bookingType === 'servicebooking' && bookedSlots.includes(time);
                 const isSelected = bookingData.bookingTime === time;
                 const isAvailable = availableSlots.includes(time);
 
@@ -316,22 +372,26 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
                     onClick={() => handleTimeChange(time)}
                     className={`p-3 text-sm font-medium rounded-lg border-2 transition-all relative ${isSelected
                       ? 'border-[#0a1c58] bg-[#0a1c58] text-white shadow-md'
-                      : isBookedForSameService
-                        ? 'border-orange-300 bg-orange-50 text-orange-700 cursor-pointer hover:border-orange-400 hover:bg-orange-100'
-                        : isAvailable
-                          ? 'border-gray-200 text-gray-700 hover:border-[#0a1c58] hover:bg-blue-50'
-                          : 'border-gray-200 bg-gray-100 text-gray-400'
+                      : bookingType === 'tirebooking'
+                        ? 'border-gray-200 text-gray-700 hover:border-[#0a1c58] hover:bg-blue-50'
+                        : isBookedForSameService
+                          ? 'border-orange-300 bg-orange-50 text-orange-700 cursor-pointer hover:border-orange-400 hover:bg-orange-100'
+                          : isAvailable
+                            ? 'border-gray-200 text-gray-700 hover:border-[#0a1c58] hover:bg-blue-50'
+                            : 'border-gray-200 bg-gray-100 text-gray-400'
                       }`}
                     title={
-                      isBookedForSameService
-                        ? `This time is already booked for "${bookingData.serviceTitle}". Click to see details.`
-                        : isAvailable
-                          ? `Available time slot - book "${bookingData.serviceTitle}"`
-                          : 'Time slot unavailable'
+                      bookingType === 'tirebooking'
+                        ? `Available time slot - book tire installation`
+                        : isBookedForSameService
+                          ? `This time is already booked for "${bookingData.serviceTitle}". Click to see details.`
+                          : isAvailable
+                            ? `Available time slot - book "${bookingData.serviceTitle}"`
+                            : 'Time slot unavailable'
                     }
                   >
                     {time}
-                    {isBookedForSameService && (
+                    {bookingType === 'servicebooking' && isBookedForSameService && (
                       <div className="text-xs mt-1 text-orange-600 font-medium">Same Service Conflict</div>
                     )}
                   </button>
@@ -345,7 +405,7 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
               <h4 className="font-semibold text-green-800 mb-2">✓ Selected Time</h4>
               <p className="text-green-700 font-medium">{bookingData.bookingTime}</p>
               <p className="text-green-600 text-sm mt-1">
-                Ready to book "{bookingData.serviceTitle}" at this time
+                Ready to book {bookingType === 'tirebooking' ? 'tire installation' : `"${bookingData.serviceTitle}"`} at this time
               </p>
             </div>
           )}
@@ -360,8 +420,10 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
           <div className="text-sm text-gray-500">
             <p>• Available hours: 9:00 AM - 5:30 PM</p>
             <p>• 30-minute appointment slots</p>
-            <p className="text-green-600">• Different services can share time slots</p>
-            <p className="text-orange-600">• Same service bookings create conflicts</p>
+            <p className="text-green-600">• {bookingTypeText.availability}</p>
+            {bookingType === 'servicebooking' && (
+              <p className="text-orange-600">• {bookingTypeText.conflict}</p>
+            )}
           </div>
         </div>
       </div>
@@ -371,7 +433,7 @@ export default function Step3DateTime({ bookingData, updateBookingData, onNext, 
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-[#0a1c58] mb-4">Appointment Summary</h3>
           <div className="space-y-2 text-gray-700">
-            <p><span className="font-medium">Service:</span> {bookingData.serviceTitle ? bookingData.serviceTitle : bookingData.servicesTitles}</p>
+            <p><span className="font-medium">{bookingType === 'tirebooking' ? 'Service:' : 'Service:'}</span> {bookingData.serviceTitle ? bookingData.serviceTitle : bookingData.servicesTitles}</p>
             <p><span className="font-medium">Vehicle:</span> {bookingData.carYear} {bookingData.carMake} {bookingData.carModel}</p>
             <p><span className="font-medium">Location:</span> {bookingData.branchName}</p>
             <p><span className="font-medium">Date:</span> {formatDate(bookingData.bookingDate)}</p>
