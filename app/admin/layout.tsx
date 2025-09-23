@@ -10,10 +10,10 @@ import { Toaster } from "react-hot-toast";
 const SIDEBAR_ITEMS = [
   { key: "products", label: "Products", href: "/admin/products" },
   { key: "bookings", label: "Bookings", href: "/admin/bookings" },
+  { key: "services", label: "Services", href: "/admin/services" },
   { key: "locations", label: "Locations", href: "/admin/locations" },
   { key: "banners", label: "Banners", href: "/admin/banners" },
   { key: "brands", label: "Brands", href: "/admin/brands" },
-  { key: "carbrands", label: "Car Brands", href: "/admin/car-brands" },
   { key: "users", label: "Users", href: "/admin/users" },
 ];
 
