@@ -224,8 +224,7 @@ export default function TireClientPage({ tires, brands }: TireClientPageProps) {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-x-24 
-                            justify-items-center md:justify-items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center md:justify-items-start">
               {paginatedTires.map(tire => (
                 <TireCard key={tire.id} tire={tire} />
               ))}

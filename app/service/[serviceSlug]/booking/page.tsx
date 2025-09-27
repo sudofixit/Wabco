@@ -5,32 +5,28 @@ import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 
 interface BookingPageProps {
-  params: Promise<{ serviceSlug: string }>;
-}
-
-// Function to generate slug from title
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-// Function to find service by slug
-async function findServiceBySlug(slug: string) {
-  const services = await prisma.service.findMany({
-    where: { isActive: true }
-  });
-
-  return services.find((service: any) => generateSlug(service.title) === slug);
+  params: Promise<{ serviceId: string }>;
 }
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata({ params }: BookingPageProps): Promise<Metadata> {
-  const { serviceSlug } = await params;
+  const { serviceId } = await params;
 
   try {
-    const service = await findServiceBySlug(serviceSlug);
+    const serviceIdNumber = parseInt(serviceId);
+    if (isNaN(serviceIdNumber)) {
+      return {
+        title: "Service Not Found | WABCO Mobility",
+        description: "The requested service could not be found."
+      };
+    }
+
+    const service = await prisma.service.findUnique({
+      where: {
+        id: serviceIdNumber,
+        isActive: true
+      }
+    });
 
     if (!service) {
       return {
@@ -67,7 +63,7 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
         description: `Professional ${serviceTitle.toLowerCase()} service. Book online today.`,
       },
       alternates: {
-        canonical: `/service/${serviceSlug}/booking`
+        canonical: `/service/${serviceId}/booking`
       }
     };
   } catch (error) {
@@ -79,11 +75,21 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
 }
 
 export default async function BookingPage({ params }: BookingPageProps) {
-  const { serviceSlug } = await params;
+  const { serviceId } = await params;
 
   try {
-    // Find the service by slug
-    const service = await findServiceBySlug(serviceSlug);
+    const serviceIdNumber = parseInt(serviceId);
+    if (isNaN(serviceIdNumber)) {
+      notFound();
+    }
+
+    // Find the service by ID
+    const service = await prisma.service.findUnique({
+      where: {
+        id: serviceIdNumber,
+        isActive: true
+      }
+    });
 
     if (!service) {
       notFound();
@@ -128,4 +134,4 @@ export default async function BookingPage({ params }: BookingPageProps) {
     console.error('Error loading booking page:', error);
     notFound();
   }
-} 
+}

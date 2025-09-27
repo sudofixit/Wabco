@@ -262,8 +262,21 @@ export default function ServicePage({ searchParams }: PageProps) {
                   <button
                     onClick={() => {
                       if (selectedServices.length === 0) return;
-                      const serviceIds = selectedServices.join(',');
-                      window.location.href = `/service/multi/quote?services=${serviceIds}`;
+
+                      if (selectedServices.length === 1) {
+                        // Single service - go to individual service quote
+                        const serviceId = selectedServices[0];
+                        const selectedService = allServices.find(s => s.id === serviceId);
+                        if (selectedService) {
+                          // Use  id
+                          const serviceSlug = selectedService.id;
+                          window.location.href = `/service/${serviceSlug}/quote`;
+                        }
+                      } else {
+                        // Multiple services - go to multi quote
+                        const serviceIds = selectedServices.join(',');
+                        window.location.href = `/service/multi/quote?services=${serviceIds}`;
+                      }
                     }}
                     disabled={selectedServices.length === 0}
                     className={`w-full py-3 px-4 rounded-lg font-semibold transition ${selectedServices.length > 0

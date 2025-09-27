@@ -34,58 +34,49 @@ interface CountryCode {
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
-    vehicleBrand: '',
-    vehicleModel: '',
-    vehicleYear: '',
-    subscribeToOffers: false
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+    vehicleBrand: "",
+    vehicleModel: "",
+    vehicleYear: "",
+    subscribeToOffers: false,
   });
-  const [countryCode, setCountryCode] = useState('+971');
+  const [countryCode, setCountryCode] = useState("+971");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
-  const [submitStatus, setSubmitStatus] = useState<{ success: boolean, message: string } | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<{ success: boolean; message: string } | null>(null);
+
   const { success: showSuccess, error: showError } = useToast();
 
   const validateForm = (): boolean => {
     const errors: ValidationErrors = {};
     let isValid = true;
 
-    // Reset errors
-    setValidationErrors({});
-
-    // Name validation
     if (!formData.name.trim()) {
-      errors.name = 'Name is required';
+      errors.name = "Name is required";
       isValid = false;
     }
-
-    // Email validation
     if (!formData.email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = "Email is required";
       isValid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = "Please enter a valid email address";
       isValid = false;
     }
-
-    // Phone validation
     if (!formData.phone.trim()) {
-      errors.phone = 'Phone number is required';
+      errors.phone = "Phone number is required";
       isValid = false;
     } else if (!/^\d+$/.test(formData.phone)) {
-      errors.phone = 'Phone number should contain only digits';
+      errors.phone = "Phone number should contain only digits";
       isValid = false;
     } else if (formData.phone.length < 7 || formData.phone.length > 15) {
-      errors.phone = 'Phone number should be between 7 and 15 digits';
+      errors.phone = "Phone number should be between 7 and 15 digits";
       isValid = false;
     }
-
-    // Message validation
     if (!formData.message.trim()) {
-      errors.message = 'Message is required';
+      errors.message = "Message is required";
       isValid = false;
     }
 
@@ -93,25 +84,18 @@ export default function ContactUsPage() {
     return isValid;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
-
-    // Clear validation error when user starts typing
     if (validationErrors[name as keyof ValidationErrors]) {
-      setValidationErrors(prev => ({
-        ...prev,
-        [name]: undefined
-      }));
+      setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
     }
-
-    // Clear submit status when user makes changes
-    if (submitStatus) {
-      setSubmitStatus(null);
-    }
+    if (submitStatus) setSubmitStatus(null);
   };
 
   const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -120,9 +104,9 @@ export default function ContactUsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) {
-      showError('Please fix the errors in the form');
+      showError("Please fix the errors in the form");
+      setSubmitStatus({ success: false, message: "Please fix the errors in the form." });
       return;
     }
 
@@ -130,15 +114,12 @@ export default function ContactUsPage() {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch('/api/contact-us', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/contact-us", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          phone: countryCode + formData.phone, // Combine country code with phone number
-          // Only include vehicle info if at least one field is filled
+          phone: countryCode + formData.phone,
           ...(formData.vehicleBrand || formData.vehicleModel || formData.vehicleYear
             ? {
               vehicleBrand: formData.vehicleBrand || undefined,
@@ -152,32 +133,36 @@ export default function ContactUsPage() {
       const result = await response.json();
 
       if (response.ok) {
-        // Reset form
         setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          message: '',
-          vehicleBrand: '',
-          vehicleModel: '',
-          vehicleYear: '',
-          subscribeToOffers: false
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          vehicleBrand: "",
+          vehicleModel: "",
+          vehicleYear: "",
+          subscribeToOffers: false,
         });
-        setCountryCode('+971');
+        setCountryCode("+971");
+        showSuccess("Message sent successfully!");
+        setSubmitStatus({ success: true, message: "Your message was sent successfully." });
       } else {
-        const errorMessage = result.error || 'Failed to send your message. Please try again.';
+        const errorMessage = result.error || "Failed to send your message. Please try again.";
+        showError(errorMessage);
         setSubmitStatus({ success: false, message: errorMessage });
       }
     } catch (error) {
-      console.error('Contact form submission error:', error);
-      const errorMessage = 'Failed to send your message. Please try again.';
+      console.error("Contact form submission error:", error);
+      const errorMessage = "Failed to send your message. Please try again.";
+      showError(errorMessage);
       setSubmitStatus({ success: false, message: errorMessage });
     } finally {
       setIsSubmitting(false);
+      // Auto-hide message after 5 seconds
+      setTimeout(() => setSubmitStatus(null), 5000);
     }
   };
 
-  // Generate year options (current year to 20 years back)
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 21 }, (_, i) => currentYear - i);
 
@@ -200,7 +185,7 @@ export default function ContactUsPage() {
           <Link href="/" className="hover:text-black transition">Home</Link>
           <Link href="/tire" className="hover:text-black transition">Tires</Link>
           <Link href="/service" className="hover:text-black transition">Services</Link>
-          <Link href="/location" className="font-bold text-black transition">Location</Link>
+          <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
 
         {/* Desktop Contact Button */}
@@ -281,13 +266,6 @@ export default function ContactUsPage() {
 
           {/* Right Form */}
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-6 w-full">
-            {/* Inline success/error message */}
-            {submitStatus && (
-              <div className={`p-4 rounded-lg ${submitStatus.success ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
-                {submitStatus.message}
-              </div>
-            )}
-
             {/* Vehicle Information Row */}
             <div className="flex flex-col md:flex-row gap-4 w-full">
               <div className="flex-1 relative">

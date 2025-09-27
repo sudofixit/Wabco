@@ -29,7 +29,7 @@ interface Location {
 
 export default function QuotePage() {
   const params = useParams();
-  const serviceSlug = params.serviceSlug as string;
+  const serviceId = params.serviceSlug as string;
 
   const [service, setService] = useState<Service | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -38,20 +38,20 @@ export default function QuotePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch services and find the matching one
+        // Parse service ID
+        const serviceIdNumber = parseInt(serviceId);
+        if (isNaN(serviceIdNumber)) {
+          toast.error('Invalid service ID');
+          return;
+        }
+
+        // Fetch services and find the matching one by ID
         const servicesResponse = await fetch('/api/services');
         if (!servicesResponse.ok) throw new Error('Failed to fetch services');
         const services = await servicesResponse.json();
 
-        // Convert slug back to title to find the service
-        const serviceTitle = serviceSlug
-          .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
 
-        const matchedService = services.find((s: Service) =>
-          s.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') === serviceSlug
-        );
+        const matchedService = services.find((s: Service) => s.id === serviceIdNumber);
 
         if (!matchedService) {
           toast.error('Service not found');
@@ -75,7 +75,7 @@ export default function QuotePage() {
     };
 
     fetchData();
-  }, [serviceSlug]);
+  }, [serviceId]);
 
   if (isLoading) {
     return (
@@ -106,4 +106,4 @@ export default function QuotePage() {
       flowType="quotation"
     />
   );
-} 
+}

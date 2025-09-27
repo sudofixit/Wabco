@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(serializedServices, {
       headers: {
-        'Cache-Control': 'public, max-age=600, stale-while-revalidate=1200', // 10 minutes cache, 20 minutes stale
+        "Cache-Control": "no-store",
         'Content-Type': 'application/json',
       }
     });

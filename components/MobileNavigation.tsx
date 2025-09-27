@@ -11,7 +11,7 @@ export default function MobileNavigation() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="lg:hidden flex flex-col items-center justify-center w-8 h-8 space-y-1"
+        className="md:hidden flex flex-col items-center justify-center w-8 h-8 space-y-1"
         aria-label="Open mobile menu"
       >
         <span className="block w-6 h-0.5 bg-[#0a1c58]"></span>
