@@ -8,16 +8,16 @@ interface ServiceCardProps {
   service: Service;
 }
 
-// Function to generate slug from title
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
+// // Function to generate slug from title
+// function generateSlug(title: string): string {
+//   return title
+//     .toLowerCase()
+//     .replace(/[^a-z0-9]+/g, '-')
+//     .replace(/^-+|-+$/g, '');
+// }
 
 export default function ServiceCard({ service }: ServiceCardProps) {
-  const serviceSlug = generateSlug(service.title);
+  const serviceSlug = service.id
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 flex flex-col shadow-sm overflow-hidden">

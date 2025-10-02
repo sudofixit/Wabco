@@ -5,15 +5,15 @@ import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 
 interface BookingPageProps {
-  params: Promise<{ serviceId: string }>;
+  params: Promise<{ serviceSlug: string }>;
 }
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata({ params }: BookingPageProps): Promise<Metadata> {
-  const { serviceId } = await params;
+  const { serviceSlug } = await params;
 
   try {
-    const serviceIdNumber = parseInt(serviceId);
+    const serviceIdNumber = parseInt(serviceSlug);
     if (isNaN(serviceIdNumber)) {
       return {
         title: "Service Not Found | WABCO Mobility",
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
         title: `Book ${serviceTitle} | WABCO Mobility`,
         description: `Professional ${serviceTitle.toLowerCase()} service at WABCO Mobility. Book your appointment online.`,
         type: "website",
-        locale: "en_KE",
+        locale: "en_SOM",
         siteName: "WABCO Mobility",
         images: service.image ? [
           {
@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
         description: `Professional ${serviceTitle.toLowerCase()} service. Book online today.`,
       },
       alternates: {
-        canonical: `/service/${serviceId}/booking`
+        canonical: `/service/${serviceSlug}/booking`
       }
     };
   } catch (error) {
@@ -75,10 +75,10 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
 }
 
 export default async function BookingPage({ params }: BookingPageProps) {
-  const { serviceId } = await params;
+  const { serviceSlug } = await params;
 
   try {
-    const serviceIdNumber = parseInt(serviceId);
+    const serviceIdNumber = parseInt(serviceSlug);
     if (isNaN(serviceIdNumber)) {
       notFound();
     }
