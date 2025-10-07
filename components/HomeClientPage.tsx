@@ -103,14 +103,14 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
           </div>
 
           {/* Right: Tires Card - Show on mobile with different layout */}
-          <div className="w-full lg:w-[570px] lg:h-[341px] bg-white border border-[#C7C7C7] rounded-lg lg:rounded-none shadow-md lg:shadow-none flex flex-col justify-start">
+          <div className="w-full lg:w-[570px] pb-6 bg-white border border-[#C7C7C7] rounded-lg lg:rounded-none shadow-md lg:shadow-none flex flex-col justify-start">
             <div className="px-4 md:px-8 pt-4 md:pt-6 pb-4 text-center text-lg md:text-[20px] font-bold text-black font-poppins">
               Tires
             </div>
             <div className="border-t border-[#C7C7C7] w-full" />
 
             {/* Option 1 */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 px-4 md:px-6 py-4 bg-[#F7F7F7] mt-4 mx-4 rounded-lg lg:rounded-none min-h-[100px] lg:h-[110px]">
+            {/* <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 px-4 md:px-6 py-4 bg-[#F7F7F7] mt-4 mx-4 rounded-lg lg:rounded-none min-h-[100px] lg:h-[110px]">
               <Image
                 src="/car.png"
                 alt="Car icon"
@@ -126,12 +126,12 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
                   Enter your make and model to find tires that fit.
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Option 2 */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 px-4 md:px-6 py-4 bg-[#F7F7F7] mt-4 mx-4 mb-4 lg:mb-0 hover:bg-[#e5e7eb] transition-colors text-left rounded-lg lg:rounded-none min-h-[100px] lg:h-[110px]"
+              className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 px-4 md:px-6 py-4 bg-zinc-400  mt-4 mx-4 mb-4 lg:mb-0 hover:bg-zinc-500 transition-colors text-left rounded-lg lg:rounded-none min-h-[100px] lg:h-[110px] cursor-pointer"
             >
               <Image
                 src="/tyre.png"
