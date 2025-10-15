@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 
 interface BookingData {
   id: number;
@@ -24,35 +25,40 @@ interface BookingData {
   };
 }
 
-// Mock data for demonstration - replace with your actual data fetching
-const mockBookingData: BookingData = {
-  id: 123456,
-  requestType: 'booking',
-  services: 'Oil Change, Brake Inspection, Tire Rotation',
-  carYear: '2020',
-  carMake: 'Honda',
-  carModel: 'Civic',
-  customerName: 'John Smith',
-  customerEmail: 'john.smith@email.com',
-  customerPhone: '+1 (555) 123-4567',
-  bookingDate: new Date('2024-01-15'),
-  bookingTime: '10:00 AM',
-  branchName: 'Downtown Service Center',
-  branch: {
-    address: '123 Main St, Downtown, City 12345',
-    phone: '+1 (555) 987-6543',
-    workingHours: 'Mon-Fri 8AM-6PM, Sat 9AM-4PM'
-  }
-};
-
 export default function ConfirmationPage() {
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get('bookingId');
   const [booking, setBooking] = useState<BookingData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Move the data setting to useEffect to avoid state update warnings
   useEffect(() => {
-    // In a real app, you'd fetch data here based on booking ID from URL params
-    setBooking(mockBookingData);
-  }, []);
+    async function fetchBookingDetails() {
+      if (!bookingId) {
+        setError('No booking ID provided');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/bookings/${bookingId}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch booking details');
+        }
+
+        const bookingData = await response.json();
+        setBooking(bookingData);
+      } catch (err) {
+        console.error('Error fetching booking:', err);
+        setError('Failed to load booking details');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchBookingDetails();
+  }, [bookingId]);
 
   const formatDate = (date: Date | null): string => {
     if (!date) return 'N/A';
