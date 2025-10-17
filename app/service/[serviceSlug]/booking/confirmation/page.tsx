@@ -60,9 +60,11 @@ export default function ConfirmationPage() {
     fetchBookingDetails();
   }, [bookingId]);
 
-  const formatDate = (date: Date | null): string => {
+  const formatDate = (date: Date | string | null): string => {
     if (!date) return 'N/A';
-    return date.toLocaleDateString('en-US', {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) return 'Invalid date';
+    return parsedDate.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
