@@ -64,8 +64,20 @@ export default function TireCard({ tire }: { tire: Tire }) {
       >
         {/* Brand Logo */}
         <div className="w-full flex items-center mt-2 mb-2">
-          <Image src={tire.brandLogo} alt={tire.brand} width={90} height={25} />
+          {tire.brandLogo && (
+            <Image
+              src={tire.brandLogo}
+              alt={tire.brand}
+              width={90}
+              height={25}
+              unoptimized
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          )}
         </div>
+
 
         {/* Tire Image */}
         <div
@@ -89,7 +101,7 @@ export default function TireCard({ tire }: { tire: Tire }) {
               {tire.pattern}
             </div>
             <div className="text-[14px] mb-1.5 font-poppins">
-              <span className="text-black font-bold">Tire Size: </span>
+              <span className="text-black font-bold">Tyre Size: </span>
               <span className="text-black">{tire.tireSize}</span>
             </div>
             <div className="text-[14px] mb-1.5 font-poppins">
@@ -122,12 +134,7 @@ export default function TireCard({ tire }: { tire: Tire }) {
 
             {/* Year & Origin */}
             <div className="flex gap-2 mb-0">
-              <div className="bg-[#f3f3f3] rounded-lg px-2 py-1 text-center font-poppins flex-1">
-                <div className="text-[12px] text-[#7d7d7d] font-medium">Year</div>
-                <div className="text-[13px] text-black font-semibold">
-                  {tire.year}
-                </div>
-              </div>
+
               <div className="bg-[#f3f3f3] rounded-lg px-2 py-1 text-center font-poppins flex-1">
                 <div className="text-[12px] text-[#7d7d7d] font-medium">
                   Origin
@@ -182,7 +189,7 @@ export default function TireCard({ tire }: { tire: Tire }) {
 
             {/* Get Quotation */}
             <Link
-              href={`/tire/${tire.id}/quote?quantity=${quantity}`}
+              href={`/tyre/${tire.id}/quote?quantity=${quantity}`}
               className="
                 w-full h-[48px] rounded-xl font-bold text-[13px]
                 flex items-center justify-center font-poppins
@@ -200,9 +207,9 @@ export default function TireCard({ tire }: { tire: Tire }) {
           {/* Book Now */}
           <div className="w-full pb-4">
             <Link
-              href={`/tire/${tire.id}/booking?quantity=${quantity}`}
+              href={`/tyre/${tire.id}/booking?quantity=${quantity}`}
               className="
-                w-full h-[38px] rounded-full bg-[#0a1c58]
+                w-full h-[48px] rounded-full bg-[#0a1c58]
                 text-white font-bold text-[13px]
                 flex items-center justify-center font-poppins
                 hover:bg-[#132b7c] transition no-underline

@@ -111,7 +111,7 @@ export default function ConfirmationPage() {
             </div>
             <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
               <Link href="/" className="hover:text-black transition">Home</Link>
-              <Link href="/tire" className="hover:text-black transition">Tires</Link>
+              <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
               <Link href="/service" className="font-bold text-black transition">Services</Link>
               <Link href="/location" className="hover:text-black transition">Location</Link>
             </nav>

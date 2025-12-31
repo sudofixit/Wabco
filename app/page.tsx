@@ -6,6 +6,7 @@ import HomeClientPage from "../components/HomeClientPage";
 import MobileNavigation from "../components/MobileNavigation";
 import prisma from "@/lib/prisma";
 import Footer from "@/components/Footer";
+import CountryDropdown from "@/components/CountryDropdown";
 
 interface Brand {
   id: number;
@@ -40,17 +41,29 @@ export default async function Home() {
       {/* Header */}
       <header className="w-full max-w-[1320px] flex items-center justify-between py-4 px-6 md:px-12">
         <div className="flex items-center gap-3">
-          <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={208} height={27} />
+          <Image
+            src="/Wabco Logo.jpeg"
+            alt="Wabco Mobility Logo"
+            width={208}
+            height={27}
+          />
         </div>
         <nav className="hidden lg:flex gap-6 xl:gap-10 text-base xl:text-lg font-medium text-[#0a1c58]">
           <Link href="/" className="font-bold text-black transition">Home</Link>
-          <Link href="/tire" className="hover:text-black transition">Tires</Link>
+          <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
           <Link href="/service" className="hover:text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
-        <Link href="/contact-us">
-          <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">Contact Us</button>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/contact-us">
+            <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">
+              Contact Us
+            </button>
+          </Link>
+
+          {/* Country Dropdown */}
+          <CountryDropdown />
+        </div>
 
         {/* Mobile Navigation */}
         <MobileNavigation />

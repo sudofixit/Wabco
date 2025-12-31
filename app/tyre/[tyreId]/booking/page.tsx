@@ -3,7 +3,7 @@
 import { useParams, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import TireBookingFlow from '../booking/components/TireBookingFlow';
+import TireBookingFlow from './components/TireBookingFlow';
 
 interface Tire {
   id: number;
@@ -39,10 +39,10 @@ interface Location {
   updatedAt: string;
 }
 
-export default function TireQuotePage() {
+export default function TireBookingPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const tireId = params.tireId as string;
+  const tireId = params.tyreId as string;
   const quantity = parseInt(searchParams.get('quantity') || '1');
 
   const [tire, setTire] = useState<Tire | null>(null);
@@ -58,7 +58,7 @@ export default function TireQuotePage() {
         ]);
 
         if (!tireResponse.ok) {
-          throw new Error('Failed to fetch tire');
+          throw new Error('Failed to fetch tyre');
         }
 
         if (!locationsResponse.ok) {
@@ -103,7 +103,7 @@ export default function TireQuotePage() {
         setLocations(transformedLocations);
       } catch (error) {
         console.error('Error fetching data:', error);
-        toast.error('Failed to load tire details');
+        toast.error('Failed to load tyre details');
       } finally {
         setIsLoading(false);
       }
@@ -133,7 +133,7 @@ export default function TireQuotePage() {
       <div className="min-h-screen bg-gray-50 font-poppins flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0a1c58] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading quote form...</p>
+          <p className="text-gray-600">Loading booking form...</p>
         </div>
       </div>
     );
@@ -143,8 +143,8 @@ export default function TireQuotePage() {
     return (
       <div className="min-h-screen bg-gray-50 font-poppins flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-[#0a1c58] mb-4">Tire Not Found</h1>
-          <p className="text-gray-600">The requested tire could not be found.</p>
+          <h1 className="text-2xl font-bold text-[#0a1c58] mb-4">Tyre Not Found</h1>
+          <p className="text-gray-600">The requested tyre could not be found.</p>
         </div>
       </div>
     );
@@ -155,7 +155,7 @@ export default function TireQuotePage() {
       tire={tire}
       locations={locations}
       quantity={quantity}
-      flowType="quotation"
+      flowType="booking"
     />
   );
 } 

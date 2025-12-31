@@ -3,6 +3,28 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
+const countries = [
+  {
+    code: "ETH",
+    name: "Ethiopia",
+    flag: "/flags/et.png",
+    href: "https://wabco-ethiopia.vercel.app/",
+  },
+  {
+    code: "SOM",
+    name: "Somalia",
+    flag: "/flags/so.png",
+    href: "https://www.wabcomobility.com/",
+  },
+  // {
+  //   code: "KEN",
+  //   name: "Kenya",
+  //   flag: "/flags/ke.png",
+  //   href: "https://test.wabcomobility.com/",
+  // },
+];
+
+
 export default function MobileNavigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -40,38 +62,72 @@ export default function MobileNavigation() {
               <nav className="flex flex-col space-y-6">
                 <Link
                   href="/"
-                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
+                  className="text-lg font-medium text-[#0a1c58]"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Home
                 </Link>
+
                 <Link
-                  href="/tire"
+                  href="/tyre"
+                  className="text-lg font-medium text-[#0a1c58]"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Tyres
+                </Link>
+                <Link
+                  href="/car"
                   className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Tires
+                  Cars
                 </Link>
-                <Link
-                  href="/service"
-                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Services
-                </Link>
+
                 <Link
                   href="/location"
-                  className="text-lg font-medium text-[#0a1c58] hover:text-black transition"
+                  className="text-lg font-medium text-[#0a1c58]"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Location
                 </Link>
+
+                <div className="pt-4 border-t border-gray-200">
+                  <p className="text-sm font-semibold text-gray-500 mb-3">
+                    Select Country
+                  </p>
+
+                  <div className="flex flex-col gap-3">
+                    {countries.map((country) => (
+                      <a
+                        key={country.code}
+                        href={country.href}
+                        target="_self"
+                        className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-100 transition cursor-pointer"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Image
+                          src={country.flag}
+                          alt={country.name}
+                          width={24}
+                          height={16}
+                          className="rounded-sm"
+                        />
+                        <span className="font-medium text-[#0a1c58]">
+                          {country.name} ({country.code})
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Contact */}
                 <Link href="/contact-us" className="mt-4" onClick={() => setIsMobileMenuOpen(false)}>
                   <button className="w-full border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-3 rounded-full font-semibold text-lg hover:bg-[#0a1c58] hover:text-white transition">
                     Contact Us
                   </button>
                 </Link>
               </nav>
+
             </div>
           </div>
         </div>

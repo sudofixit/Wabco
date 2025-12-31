@@ -70,7 +70,7 @@ export default function ServicePage({ searchParams }: PageProps) {
         setAllServices(activeServices);
 
         const serviceBannersResponse = await fetch('/api/banners');
-        if (!serviceBannersResponse.ok) throw new Error('Failed to fetch tire banners');
+        if (!serviceBannersResponse.ok) throw new Error('Failed to fetch tyre banners');
         const serviceBannersData = await serviceBannersResponse.json();
         setBanners(serviceBannersData);
       } catch (error) {
@@ -160,7 +160,7 @@ export default function ServicePage({ searchParams }: PageProps) {
         </div>
         <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
           <Link href="/" className="hover:text-black transition">Home</Link>
-          <Link href="/tire" className="hover:text-black transition">Tires</Link>
+          <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
           <Link href="/service" className="font-bold text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
@@ -440,11 +440,11 @@ export default function ServicePage({ searchParams }: PageProps) {
         <div className="w-full max-w-[1440px] grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Tire Rotation Special */}
           <div className="relative bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between p-8 min-h-[510px]">
-            <Image src="/6.png" alt="Tire Rotation" fill className="object-cover absolute inset-0 opacity-30" />
+            <Image src="/6.png" alt="Tyre Rotation" fill className="object-cover absolute inset-0 opacity-30" />
             <div className="relative z-10 flex flex-col h-full justify-between">
               <span className="bg-white text-black font-bold text-4xl px-10 py-4 rounded-full shadow-lg rotate-[-15deg] absolute top-8 right-8 border-2 border-white" style={{ letterSpacing: '2px' }}>$19.99</span>
-              <h4 className="text-4xl font-bold text-black mb-4 mt-100 font-poppins">Tire Rotation Special</h4>
-              <p className="text-black text-lg mb-8 font-poppins">Regular tire rotation extends the life of your tires and improves fuel efficiency. Take advantage of our limited-time offer.</p>
+              <h4 className="text-4xl font-bold text-black mb-4 mt-100 font-poppins">Tyre Rotation Special</h4>
+              <p className="text-black text-lg mb-8 font-poppins">Regular tyre rotation extends the life of your tyres and improves fuel efficiency. Take advantage of our limited-time offer.</p>
               <ul className="text-black text-xl flex flex-col gap-4 font-poppins mt-6">
                 <li className="flex items-center gap-2 font-bold">
                   <Image src="/loc.png" alt="Location icon" width={18} height={26} />
@@ -460,11 +460,11 @@ export default function ServicePage({ searchParams }: PageProps) {
 
           {/* Flat Tire Offer */}
           <div className="relative bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between p-8 min-h-[510px]">
-            <Image src="/7.png" alt="Flat Tire" fill className="object-cover absolute inset-0 opacity-30" />
+            <Image src="/7.png" alt="Flat Tyre" fill className="object-cover absolute inset-0 opacity-30" />
             <div className="relative z-10 flex flex-col h-full justify-between">
               <span className="bg-white text-black font-bold text-4xl px-10 py-4 rounded-full shadow-lg rotate-[-15deg] absolute top-8 right-8 border-2 border-white" style={{ letterSpacing: '2px' }}>$29.99</span>
-              <h4 className="text-4xl font-bold text-black mb-4 mt-100 font-poppins">Flat Tire Repair</h4>
-              <p className="text-black text-lg mb-8 font-poppins">Professional flat tire repair service. We'll get you back on the road safely and quickly.</p>
+              <h4 className="text-4xl font-bold text-black mb-4 mt-100 font-poppins">Flat Tyre Repair</h4>
+              <p className="text-black text-lg mb-8 font-poppins">Professional flat tyre repair service. We'll get you back on the road safely and quickly.</p>
               <ul className="text-black text-xl flex flex-col gap-4 font-poppins mt-6">
                 <li className="flex items-center gap-2 font-bold">
                   <Image src="/loc.png" alt="Location icon" width={18} height={26} />

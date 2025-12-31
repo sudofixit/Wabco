@@ -80,7 +80,7 @@ export default function TireConfirmationPage() {
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
         </svg>
-        Print {booking?.requestSource === 'tire' ? 'Tire ' : ''}Booking Confirmation
+        Print {booking?.requestSource === 'tire' ? 'Tyre ' : ''}Booking Confirmation
       </button>
     );
   };
@@ -133,7 +133,7 @@ export default function TireConfirmationPage() {
             </div>
             <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
               <Link href="/" className="hover:text-black transition">Home</Link>
-              <Link href="/tire" className="hover:text-black transition">Tires</Link>
+              <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
               <Link href="/service" className="hover:text-black transition">Services</Link>
               <Link href="/location" className="hover:text-black transition">Location</Link>
             </nav>
@@ -168,15 +168,15 @@ export default function TireConfirmationPage() {
               </div>
               <h1 className="text-3xl print:text-base font-bold text-[#0a1c58] mb-4 print:mb-1">
                 {isTireBooking
-                  ? (booking.requestType === 'booking' ? 'Your Tire Booking is Confirmed!' : 'Your Tire Quotation Request has been submitted!')
+                  ? (booking.requestType === 'booking' ? 'Your Tyre Booking is Confirmed!' : 'Your Tyre Quotation Request has been submitted!')
                   : (booking.requestType === 'booking' ? 'Booking Confirmed!' : 'Quote Request Submitted!')
                 }
               </h1>
               <p className="text-gray-600 text-lg print:hidden">
                 {isTireBooking
                   ? (booking.requestType === 'booking'
-                    ? 'Your tire installation appointment has been successfully booked. We\'ll see you soon!'
-                    : 'Your tire quote request has been submitted. We\'ll contact you soon with pricing details!'
+                    ? 'Your tyre installation appointment has been successfully booked. We\'ll see you soon!'
+                    : 'Your tyre quote request has been submitted. We\'ll contact you soon with pricing details!'
                   )
                   : (booking.requestType === 'booking'
                     ? 'Your service appointment has been successfully booked. We\'ll see you soon!'
@@ -194,7 +194,7 @@ export default function TireConfirmationPage() {
                 <div className="border border-gray-200 rounded-lg p-6 print:p-2 mb-6 print:mb-2">
                   <h2 className="text-xl print:text-sm font-semibold text-[#0a1c58] mb-6 print:mb-2">
                     {isTireBooking
-                      ? (booking.requestType === 'booking' ? 'Tire Booking Details' : 'Tire Quote Request Details')
+                      ? (booking.requestType === 'booking' ? 'Tyre Booking Details' : 'Tyre Quote Request Details')
                       : (booking.requestType === 'booking' ? 'Booking Details' : 'Quote Request Details')
                     }
                   </h2>
@@ -213,7 +213,7 @@ export default function TireConfirmationPage() {
                     {/* Service/Tire */}
                     <div>
                       <p className="text-sm print:text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                        {isTireBooking ? 'Tire' : 'Service'}
+                        {isTireBooking ? 'Tyre' : 'Service'}
                       </p>
                       <p className="text-gray-900 font-medium print:text-xs print:leading-tight">{booking.services}</p>
                     </div>
@@ -304,7 +304,7 @@ export default function TireConfirmationPage() {
                           <span className="text-blue-600 mt-1 print:mt-0">•</span>
                           <span>
                             {isTireBooking
-                              ? 'Tire installation times may vary depending on your vehicle and tire type'
+                              ? 'Tyre installation times may vary depending on your vehicle and tyre type'
                               : 'Service completion times may vary depending on your vehicle\'s condition'
                             }
                           </span>
@@ -363,10 +363,10 @@ export default function TireConfirmationPage() {
 
             {/* Action Buttons - Hidden when printing */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 print:hidden">
-              <Link href={isTireBooking ? "/tire" : "/service"}>
+              <Link href={isTireBooking ? "/tyre" : "/service"}>
                 <button className="w-full sm:w-auto border-2 border-[#0a1c58] text-[#0a1c58] px-8 py-3 rounded-lg font-semibold hover:bg-[#0a1c58] hover:text-white transition">
                   {isTireBooking
-                    ? (booking.requestType === 'booking' ? 'Browse More Tires' : 'Back to Tires')
+                    ? (booking.requestType === 'booking' ? 'Browse More Tyres' : 'Back to Tyres')
                     : (booking.requestType === 'booking' ? 'Book Another Service' : 'Back to Services')
                   }
                 </button>

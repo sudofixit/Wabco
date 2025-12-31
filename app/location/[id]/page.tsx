@@ -32,12 +32,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${location.name} - Tire Services & Auto Care | WABCO Mobility`,
-    description: `Visit WABCO Mobility at ${location.name}, ${location.address}. Professional tire services, wheel alignment, and vehicle inspection. Call ${location.phone} for appointments.`,
-    keywords: `WABCO Mobility, ${location.name}, tire services, wheel alignment, vehicle inspection, auto care, ${location.address}`,
+    title: `${location.name} - Tyre Services & Auto Care | WABCO Mobility`,
+    description: `Visit WABCO Mobility at ${location.name}, ${location.address}. Professional tyre services, wheel alignment, and vehicle inspection. Call ${location.phone} for appointments.`,
+    keywords: `WABCO Mobility, ${location.name}, tyre services, wheel alignment, vehicle inspection, auto care, ${location.address}`,
     openGraph: {
       title: `${location.name} | WABCO Mobility`,
-      description: `Professional tire services at ${location.name}. Located at ${location.address}`,
+      description: `Professional tyre services at ${location.name}. Located at ${location.address}`,
       type: "website",
       locale: "en_KE",
       siteName: "WABCO Mobility",
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     twitter: {
       card: "summary_large_image",
       title: `${location.name} | WABCO Mobility`,
-      description: `Professional tire services at ${location.name}. Located at ${location.address}`,
+      description: `Professional tyre services at ${location.name}. Located at ${location.address}`,
     },
     alternates: {
       canonical: `/location/${location.id}`
@@ -86,7 +86,7 @@ export default async function LocationDetailPage({ params }: PageProps) {
         </div>
         <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
           <Link href="/" className="hover:text-black transition">Home</Link>
-          <Link href="/tire" className="hover:text-black transition">Tires</Link>
+          <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
           <Link href="/service" className="hover:text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
@@ -196,8 +196,8 @@ export default async function LocationDetailPage({ params }: PageProps) {
               <h2 className="text-2xl font-bold text-[#0a1c58] mb-6">Services Available</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="font-semibold text-lg text-[#0a1c58] mb-2">Tire Installation</h3>
-                  <p className="text-gray-600">Professional tire mounting and balancing services</p>
+                  <h3 className="font-semibold text-lg text-[#0a1c58] mb-2">Tyre Installation</h3>
+                  <p className="text-gray-600">Professional tyre mounting and balancing services</p>
                 </div>
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h3 className="font-semibold text-lg text-[#0a1c58] mb-2">Wheel Alignment</h3>

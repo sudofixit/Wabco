@@ -76,8 +76,8 @@ interface TireBookingFlowProps {
 
 const getSteps = (flowType: 'booking' | 'quotation') => {
   const baseSteps = [
-    { number: 1, title: 'Tire & Car', description: 'Select tire and car details' },
-    { number: 2, title: 'Branch', description: 'Choose Branch for Tire Installation' },
+    { number: 1, title: 'Tyre & Car', description: 'Select tyre and car details' },
+    { number: 2, title: 'Branch', description: 'Choose Branch for Tyre Installation' },
   ];
 
   if (flowType === 'booking') {
@@ -166,13 +166,13 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
       }
 
       const createdBooking = await response.json();
-      toast.success(flowType === 'booking' ? 'Tire booking created successfully!' : 'Tire quote request submitted successfully!');
+      toast.success(flowType === 'booking' ? 'Tyre booking created successfully!' : 'Tyre quote request submitted successfully!');
 
       // Redirect to confirmation page
-      router.push(`/tire/${tire.id}/booking/confirmation?bookingId=${createdBooking.id}`);
+      router.push(`/tyre/${tire.id}/booking/confirmation?bookingId=${createdBooking.id}`);
     } catch (error) {
-      console.error(`Error creating tire ${flowType}:`, error);
-      toast.error(`Failed to ${flowType === 'booking' ? 'create tire booking' : 'submit tire quote request'}. Please try again.`);
+      console.error(`Error creating tyre ${flowType}:`, error);
+      toast.error(`Failed to ${flowType === 'booking' ? 'create tyre booking' : 'submit tyre quote request'}. Please try again.`);
     } finally {
       setIsSubmitting(false);
     }
@@ -210,7 +210,7 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
               updateBookingData={updateBookingData}
               onNext={nextStep}
               onPrev={prevStep}
-              bookingType="tirebooking"
+              bookingType="tyrebooking"
             />
           );
         } else {
@@ -259,7 +259,7 @@ export default function TireBookingFlow({ tire, locations, quantity, flowType = 
           </div>
           <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
             <Link href="/" className="hover:text-black transition">Home</Link>
-            <Link href="/tire" className="font-bold text-black transition">Tires</Link>
+            <Link href="/tyre" className="font-bold text-black transition">Tyres</Link>
             <Link href="/service" className="hover:text-black transition">Services</Link>
             <Link href="/location" className="hover:text-black transition">Location</Link>
           </nav>

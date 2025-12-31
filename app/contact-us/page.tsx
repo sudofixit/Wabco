@@ -183,7 +183,7 @@ export default function ContactUsPage() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
           <Link href="/" className="hover:text-black transition">Home</Link>
-          <Link href="/tire" className="hover:text-black transition">Tires</Link>
+          <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
           <Link href="/service" className="hover:text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
@@ -222,7 +222,7 @@ export default function ContactUsPage() {
             Get in Touch with WABCO Mobility
           </h1>
           <p className="font-poppins text-base md:text-lg text-white max-w-xl md:max-w-2xl">
-            Ready to enhance your driving experience? Contact us for inquiries, bookings, or expert advice on tires and services.
+            Ready to enhance your driving experience? Contact us for inquiries, bookings, or expert advice on tyres and services.
           </p>
         </div>
       </section>
@@ -237,7 +237,7 @@ export default function ContactUsPage() {
             <div className="absolute inset-0 flex flex-col justify-between items-center p-4 md:p-6 bg-black/45">
               <div className="w-full text-left mb-4 md:mb-8">
                 <h2 className="text-white font-bold text-xl md:text-2xl leading-tight mb-4 md:mb-8 font-poppins max-w-[260px]">
-                  Contact WABCO Mobility for All Your Tire & Service Needs
+                  Contact WABCO Mobility for All Your Tyre & Service Needs
                 </h2>
               </div>
               <div className="flex flex-col gap-3 md:gap-4 w-full">

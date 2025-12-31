@@ -113,7 +113,7 @@ export default function TireClientPage({ tires, brands }: TireClientPageProps) {
         {/* Sidebar Filters */}
         <aside className="w-full md:w-[280px] flex-shrink-0 mb-8 md:mb-0">
           <h2 className="text-2xl font-bold text-[#0a1c58] mb-5">
-            Discover Our Premium Tire Selection
+            Discover Our Premium Tyre Selection
           </h2>
           <div className="mb-3 flex items-center justify-between">
             <span className="text-base font-semibold text-[#0a1c58]">Filter</span>

@@ -119,19 +119,19 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
       {/* Step Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#0a1c58] mb-2">
-          {flowType === 'booking' ? 'Select Tire & Car Details' : 'Request a Tire Quote'}
+          {flowType === 'booking' ? 'Select Tyre & Car Details' : 'Request a Tyre Quote'}
         </h2>
         <p className="text-gray-600">
           {flowType === 'booking'
-            ? 'Confirm your tire selection and provide your vehicle information'
-            : 'Confirm your tire selection and provide your vehicle information for quotation'
+            ? 'Confirm your tyre selection and provide your vehicle information'
+            : 'Confirm your tyre selection and provide your vehicle information for quotation'
           }
         </p>
       </div>
 
       {/* Selected Tire Display */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-[#0a1c58] mb-4">Selected Tire</h3>
+        <h3 className="text-lg font-semibold text-[#0a1c58] mb-4">Selected Tyre</h3>
         <div className="flex items-start gap-4">
           <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
             <Image
@@ -170,14 +170,14 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
           </div>
         </div>
         <div className="mt-4 text-sm text-blue-700">
-          ✓ Tire is pre-selected with quantity {quantity}. You can change it by going back to the tire page.
+          ✓ Tyre is pre-selected with quantity {quantity}. You can change it by going back to the tyre page.
         </div>
       </div>
 
       {/* Car Details Form */}
       <div className="space-y-6">
         <h3 className="text-lg font-semibold text-[#0a1c58]">Vehicle Information</h3>
-        <p className="text-gray-600">Please provide your vehicle details to ensure proper tire fitment and installation.</p>
+        <p className="text-gray-600">Please provide your vehicle details to ensure proper tyre fitment and installation.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Car Year */}
@@ -286,7 +286,7 @@ export default function Step1TireCar({ tire, quantity, bookingData, updateBookin
             <div>
               <h4 className="text-sm font-semibold text-yellow-800">Important Note</h4>
               <p className="text-sm text-yellow-700 mt-1">
-                Please ensure your vehicle information is accurate. Our technicians will verify tire compatibility before installation to ensure optimal performance and safety.
+                Please ensure your vehicle information is accurate. Our technicians will verify tyre compatibility before installation to ensure optimal performance and safety.
               </p>
             </div>
           </div>

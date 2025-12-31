@@ -24,7 +24,7 @@ interface Step3Props {
   updateBookingData: (data: Partial<BookingData>) => void;
   onNext: () => void;
   onPrev: () => void;
-  bookingType?: 'servicebooking' | 'tirebooking';
+  bookingType?: 'servicebooking' | 'tyrebooking';
 }
 
 // Generate time slots from 9:00 to 17:30
@@ -67,11 +67,11 @@ export default function Step3DateTime({
   useEffect(() => {
     const fetchAvailableSlots = async () => {
       // For tire booking, all slots are always available
-      if (bookingType === 'tirebooking') {
+      if (bookingType === 'tyrebooking') {
         setAvailableSlots(timeSlots);
         setBookedSlots([]);
         setAllSlots(timeSlots);
-        setApiMessage('All time slots are available for tire booking');
+        setApiMessage('All time slots are available for tyre booking');
         return;
       }
 
@@ -151,7 +151,7 @@ export default function Step3DateTime({
 
   const handleTimeChange = (time: string) => {
     // For tire booking, all slots are always available
-    if (bookingType === 'tirebooking') {
+    if (bookingType === 'tyrebooking') {
       updateBookingData({ bookingTime: time });
 
       // Clear any existing errors
@@ -252,11 +252,11 @@ export default function Step3DateTime({
 
   // Get dynamic content based on booking type
   const getBookingTypeText = () => {
-    return bookingType === 'tirebooking'
+    return bookingType === 'tyrebooking'
       ? {
-        title: 'tire installation',
-        availability: 'Multiple tire installations can be scheduled at the same time',
-        conflict: 'All time slots are available for tire booking'
+        title: 'tyre installation',
+        availability: 'Multiple tyre installations can be scheduled at the same time',
+        conflict: 'All time slots are available for tyre booking'
       }
       : {
         title: 'service',
@@ -273,9 +273,9 @@ export default function Step3DateTime({
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#0a1c58] mb-2">Select Date & Time</h2>
         <p className="text-gray-600">Choose your preferred appointment date and time</p>
-        {bookingType === 'tirebooking' && (
+        {bookingType === 'tyrebooking' && (
           <p className="text-green-600 text-sm mt-2 font-medium">
-            ✓ All time slots are available for tire booking
+            ✓ All time slots are available for tyre booking
           </p>
         )}
       </div>
@@ -372,7 +372,7 @@ export default function Step3DateTime({
                     onClick={() => handleTimeChange(time)}
                     className={`p-3 text-sm font-medium rounded-lg border-2 transition-all relative ${isSelected
                       ? 'border-[#0a1c58] bg-[#0a1c58] text-white shadow-md'
-                      : bookingType === 'tirebooking'
+                      : bookingType === 'tyrebooking'
                         ? 'border-gray-200 text-gray-700 hover:border-[#0a1c58] hover:bg-blue-50'
                         : isBookedForSameService
                           ? 'border-orange-300 bg-orange-50 text-orange-700 cursor-pointer hover:border-orange-400 hover:bg-orange-100'
@@ -381,8 +381,8 @@ export default function Step3DateTime({
                             : 'border-gray-200 bg-gray-100 text-gray-400'
                       }`}
                     title={
-                      bookingType === 'tirebooking'
-                        ? `Available time slot - book tire installation`
+                      bookingType === 'tyrebooking'
+                        ? `Available time slot - book tyre installation`
                         : isBookedForSameService
                           ? `This time is already booked for "${bookingData.serviceTitle}". Click to see details.`
                           : isAvailable
@@ -405,7 +405,7 @@ export default function Step3DateTime({
               <h4 className="font-semibold text-green-800 mb-2">✓ Selected Time</h4>
               <p className="text-green-700 font-medium">{bookingData.bookingTime}</p>
               <p className="text-green-600 text-sm mt-1">
-                Ready to book {bookingType === 'tirebooking' ? 'tire installation' : `"${bookingData.serviceTitle}"`} at this time
+                Ready to book {bookingType === 'tyrebooking' ? 'tyre installation' : `"${bookingData.serviceTitle}"`} at this time
               </p>
             </div>
           )}
@@ -433,7 +433,7 @@ export default function Step3DateTime({
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-[#0a1c58] mb-4">Appointment Summary</h3>
           <div className="space-y-2 text-gray-700">
-            <p><span className="font-medium">{bookingType === 'tirebooking' ? 'Service:' : 'Service:'}</span> {bookingData.serviceTitle ? bookingData.serviceTitle : bookingData.servicesTitles}</p>
+            <p><span className="font-medium">{bookingType === 'tyrebooking' ? 'Service:' : 'Service:'}</span> {bookingData.serviceTitle ? bookingData.serviceTitle : bookingData.servicesTitles}</p>
             <p><span className="font-medium">Vehicle:</span> {bookingData.carYear} {bookingData.carMake} {bookingData.carModel}</p>
             <p><span className="font-medium">Location:</span> {bookingData.branchName}</p>
             <p><span className="font-medium">Date:</span> {formatDate(bookingData.bookingDate)}</p>

@@ -184,7 +184,7 @@ export default function BranchFinderMap({
                 `}
                 <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid #eee;">
                   <p style="margin: 0; font-size: 12px; color: #666; font-style: italic;">
-                    🎯 We'll find the nearest tire center for you
+                    🎯 We'll find the nearest tyre center for you
                   </p>
                 </div>
               </div>
@@ -320,7 +320,7 @@ export default function BranchFinderMap({
           </div>
           <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; text-align: center;">
             <p style="margin: 0; font-size: 12px; color: #666; font-style: italic;">
-              🔧 Professional tire services available
+              🔧 Professional tyre services available
             </p>
           </div>
         </div>
@@ -454,7 +454,7 @@ export default function BranchFinderMap({
       {isGoogleMapsLoaded && locations.length > 0 && (
         <div className="absolute left-6 top-6 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow z-10">
           <div className="text-sm font-semibold text-[#0a1c58]">
-            {locations.filter(loc => loc.lat && loc.lng).length} tire centers
+            {locations.filter(loc => loc.lat && loc.lng).length} tyre centers
             {userLocation && ' 📍 Your location found'}
           </div>
         </div>

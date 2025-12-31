@@ -9,12 +9,12 @@ import Footer from "@/components/Footer";
 
 // Generate dynamic metadata for SEO
 export const metadata: Metadata = {
-  title: "Premium Tires for Every Vehicle | WABCO Mobility",
-  description: "Discover top-quality tires tailored to your vehicle, driving style, and weather conditions. Shop by vehicle, size, or brand with professional installation services in Nairobi, Kenya.",
-  keywords: "tires, car tires, truck tires, premium tires, tire installation, Nairobi, Kenya, WABCO Mobility, vehicle tires, tire brands, tire sizes",
+  title: "Premium Tyres for Every Vehicle | WABCO Mobility",
+  description: "Discover top-quality tyres tailored to your vehicle, driving style, and weather conditions. Shop by vehicle, size, or brand with professional installation services in Nairobi, Kenya.",
+  keywords: "tyres, car tyres, truck tyres, premium tyres, tyre installation, Nairobi, Kenya, WABCO Mobility, vehicle tyres, tyre brands, tyre sizes",
   openGraph: {
-    title: "Premium Tires for Every Vehicle | WABCO Mobility",
-    description: "Discover top-quality tires tailored to your vehicle. Professional installation services available in Nairobi.",
+    title: "Premium Tyres for Every Vehicle | WABCO Mobility",
+    description: "Discover top-quality tyres tailored to your vehicle. Professional installation services available in Nairobi.",
     type: "website",
     locale: "en_KE",
     siteName: "WABCO Mobility",
@@ -23,14 +23,14 @@ export const metadata: Metadata = {
         url: "/bg tire page.png",
         width: 1200,
         height: 630,
-        alt: "WABCO Mobility Premium Tires"
+        alt: "WABCO Mobility Premium Tyres"
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Premium Tires for Every Vehicle | WABCO Mobility",
-    description: "Discover top-quality tires with professional installation services in Nairobi.",
+    title: "Premium Tyres for Every Vehicle | WABCO Mobility",
+    description: "Discover top-quality tyres with professional installation services in Nairobi.",
   },
   alternates: {
     canonical: "/tire"
@@ -156,7 +156,7 @@ export default async function TirePage({ searchParams }: PageProps) {
         </div>
         <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
           <Link href="/" className="hover:text-black transition">Home</Link>
-          <Link href="/tire" className="font-bold text-black transition">Tires</Link>
+          <Link href="/tyre" className="font-bold text-black transition">Tyres</Link>
           <Link href="/service" className="hover:text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
@@ -181,8 +181,8 @@ export default async function TirePage({ searchParams }: PageProps) {
         )}
         <div className="absolute inset-0 bg-black opacity-40 z-0" />
         <div className="relative z-10 flex flex-col w-full max-w-[1320px] px-6 md:px-12 py-12">
-          <h1 className="font-poppins text-white text-3xl md:text-4xl font-bold leading-tight mb-4 max-w-lg">Find the Perfect Tires for Every Journey</h1>
-          <p className="text-white text-base md:text-lg max-w-lg drop-shadow">Discover top-quality tires tailored to your vehicle, driving style, and weather conditions. Shop by vehicle, size, or brand — and drive with confidence every mile.</p>
+          <h1 className="font-poppins text-white text-3xl md:text-4xl font-bold leading-tight mb-4 max-w-lg">Find the Perfect Tyres for Every Journey</h1>
+          <p className="text-white text-base md:text-lg max-w-lg drop-shadow">Discover top-quality tyres tailored to your vehicle, driving style, and weather conditions. Shop by vehicle, size, or brand — and drive with confidence every mile.</p>
         </div>
       </section>
 

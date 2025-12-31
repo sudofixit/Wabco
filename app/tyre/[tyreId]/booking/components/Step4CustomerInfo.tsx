@@ -161,12 +161,12 @@ export default function Step4CustomerInfo({
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-[#0a1c58] mb-2">
-            {flowType === 'booking' ? 'Complete Your Tire Booking' : 'Complete Your Tire Quote Request'}
+            {flowType === 'booking' ? 'Complete Your Tyre Booking' : 'Complete Your Tyre Quote Request'}
           </h2>
           <p className="text-gray-600">
             {flowType === 'booking'
-              ? 'Please provide your contact information to confirm your tire installation booking.'
-              : 'Please provide your contact information to receive your tire quotation.'
+              ? 'Please provide your contact information to confirm your tyre installation booking.'
+              : 'Please provide your contact information to receive your tyre quotation.'
             }
           </p>
         </div>
@@ -262,13 +262,13 @@ export default function Step4CustomerInfo({
       {/* Booking Summary */}
       <div className="space-y-6">
         <h3 className="text-lg font-semibold text-[#0a1c58]">
-          {flowType === 'booking' ? 'Tire Booking Summary' : 'Tire Quote Request Summary'}
+          {flowType === 'booking' ? 'Tyre Booking Summary' : 'Tyre Quote Request Summary'}
         </h3>
 
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 space-y-6">
           {/* Tire Details */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-3">Tire</h4>
+            <h4 className="font-semibold text-gray-900 mb-3">Tyre</h4>
             <div className="flex items-start gap-3">
               <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                 <Image
@@ -343,7 +343,7 @@ export default function Step4CustomerInfo({
               <li>• Please arrive 10 minutes before your appointment</li>
               <li>• Bring your vehicle registration documents</li>
               <li>• Contact us if you need to reschedule</li>
-              <li>• Installation time may vary based on tire type</li>
+              <li>• Installation time may vary based on tyre type</li>
             </ul>
           </div>
         )}
@@ -371,10 +371,10 @@ export default function Step4CustomerInfo({
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                {flowType === 'booking' ? 'Confirming Tire Booking...' : 'Submitting Tire Quote Request...'}
+                {flowType === 'booking' ? 'Confirming Tyre Booking...' : 'Submitting Tyre Quote Request...'}
               </>
             ) : (
-              flowType === 'booking' ? 'Confirm Tire Booking ✓' : 'Submit Tire Quote Request ✓'
+              flowType === 'booking' ? 'Confirm Tyre Booking ✓' : 'Submit Tyre Quote Request ✓'
             )}
           </button>
         </div>

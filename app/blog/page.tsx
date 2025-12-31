@@ -23,14 +23,14 @@ export default function BlogPage() {
         },
         {
             id: 2,
-            title: "Why Tire Maintenance Matters",
+            title: "Why Tyre Maintenance Matters",
             date: "August 10, 2025",
             author: "Wabco Mobility",
-            description: "Learn how proper tire care improves safety and saves money.",
+            description: "Learn how proper tyre care improves safety and saves money.",
             content: `
-      Tires are one of the most critical safety components of a car. Regularly
-      checking tire pressure, alignment, and tread depth can prevent accidents
-      and improve fuel efficiency. Rotating your tires every 5,000 to 8,000
+      Tyres are one of the most critical safety components of a car. Regularly
+      checking tyre pressure, alignment, and tread depth can prevent accidents
+      and improve fuel efficiency. Rotating your tyres every 5,000 to 8,000
       kilometers helps distribute wear evenly, extending their lifespan.
     `,
         },
@@ -54,8 +54,8 @@ export default function BlogPage() {
         <div className="bg-white min-h-screen w-full flex flex-col items-center font-sans">
             <Head>
                 <title>Blog - WABCO Mobility</title>
-                <meta name="description" content="Expert tips and advice on car maintenance, tire selection, and vehicle care from WABCO Mobility in Somalia." />
-                <meta name="keywords" content="car maintenance tips, tire advice, vehicle care Somalia, WABCO Mobility blog" />
+                <meta name="description" content="Expert tips and advice on car maintenance, tyre selection, and vehicle care from WABCO Mobility in Somalia." />
+                <meta name="keywords" content="car maintenance tips, tyre advice, vehicle care Somalia, WABCO Mobility blog" />
             </Head>
 
             {/* Header */}
@@ -73,7 +73,7 @@ export default function BlogPage() {
                 {/* Desktop Navigation */}
                 <nav className="hidden lg:flex gap-6 xl:gap-10 text-base xl:text-lg font-medium text-[#0a1c58]">
                     <Link href="/" className="hover:text-black transition">Home</Link>
-                    <Link href="/tire" className="hover:text-black transition">Tires</Link>
+                    <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
                     <Link href="/service" className="hover:text-black transition">Services</Link>
                     <Link href="/location" className="hover:text-black transition">Location</Link>
                 </nav>
@@ -97,7 +97,7 @@ export default function BlogPage() {
             <div className="w-full bg-gradient-to-r from-blue-900 to-blue-700 text-white py-12 md:py-16 px-4 flex flex-col items-center">
                 <div className="w-full max-w-[1440px] text-center">
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">WABCO Mobility Blog</h1>
-                    <p className="text-lg md:text-xl max-w-3xl mx-auto">Expert tips and advice on car maintenance, tires, and vehicle care</p>
+                    <p className="text-lg md:text-xl max-w-3xl mx-auto">Expert tips and advice on car maintenance, tyres, and vehicle care</p>
                 </div>
             </div>
 

@@ -14,12 +14,12 @@ export default function FAQPage() {
 
     const faqs = [
         {
-            question: "What types of tires do you sell?",
-            answer: "We offer a wide selection of passenger car tires, SUV tires, truck tires, and performance tires. We carry trusted brands to ensure quality and durability for all road conditions."
+            question: "What types of tyres do you sell?",
+            answer: "We offer a wide selection of passenger car tyres, SUV tyres, truck tyres, and performance tyres. We carry trusted brands to ensure quality and durability for all road conditions."
         },
         {
             question: "Do you provide car repair and servicing?",
-            answer: "Yes, we provide professional car servicing including tire fitting, balancing, oil changes, and brake checks."
+            answer: "Yes, we provide professional car servicing including tyre fitting, balancing, oil changes, and brake checks."
         },
         {
             question: "Can I find spare parts for my car at your shop?",
@@ -30,7 +30,7 @@ export default function FAQPage() {
             answer: "Yes, we provide full car service solutions including oil changes, diagnostics, brake service, and electrical system checks."
         },
         {
-            question: "How can I order tires or spare parts?",
+            question: "How can I order tyres or spare parts?",
             answer: "You can easily place your order directly through our website. Simply browse our products and services, select what you need, and complete your order online."
         },
         {
@@ -42,7 +42,7 @@ export default function FAQPage() {
             answer: "We accept cash, bank transfer, and mobile money payments."
         },
         {
-            question: "Can you help me choose the right tire or part for my car?",
+            question: "Can you help me choose the right tyre or part for my car?",
             answer: "Of course! Our team is happy to recommend the best option based on your car type, driving conditions, and budget."
         },
         {
@@ -59,8 +59,8 @@ export default function FAQPage() {
         <div className="bg-white min-h-screen w-full flex flex-col items-center font-sans">
             <Head>
                 <title>FAQ - WABCO Mobility</title>
-                <meta name="description" content="Frequently asked questions about WABCO Mobility tires, car services, and spare parts in Kenya." />
-                <meta name="keywords" content="tire FAQ, car service questions, auto parts Kenya, WABCO Mobility support" />
+                <meta name="description" content="Frequently asked questions about WABCO Mobility tyres, car services, and spare parts in Kenya." />
+                <meta name="keywords" content="tyre FAQ, car service questions, auto parts Kenya, WABCO Mobility support" />
             </Head>
 
             {/* Header */}
@@ -78,7 +78,7 @@ export default function FAQPage() {
                 {/* Desktop Navigation */}
                 <nav className="hidden lg:flex gap-6 xl:gap-10 text-base xl:text-lg font-medium text-[#0a1c58]">
                     <Link href="/" className="hover:text-black transition">Home</Link>
-                    <Link href="/tire" className="hover:text-black transition">Tires</Link>
+                    <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
                     <Link href="/service" className="hover:text-black transition">Services</Link>
                     <Link href="/location" className="hover:text-black transition">Location</Link>
                 </nav>

@@ -100,7 +100,7 @@ export default async function LocationPage({ searchParams }: PageProps) {
           </div>
           <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
             <Link href="/" className="hover:text-black transition">Home</Link>
-            <Link href="/tire" className="hover:text-black transition">Tires</Link>
+            <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
             <Link href="/service" className="hover:text-black transition">Services</Link>
             <Link href="/location" className="font-bold text-black transition">Location</Link>
           </nav>
@@ -129,8 +129,8 @@ export default async function LocationPage({ searchParams }: PageProps) {
             <circle cx="1370" cy="12" r="6" fill="white" />
           </svg>
           <div className="absolute left-0 bottom-0 flex flex-col items-start" style={{ paddingLeft: 40, paddingBottom: 60, width: '100%' }}>
-            <h1 className="font-poppins" style={{ fontSize: 44, fontWeight: 600, color: '#fff', lineHeight: 1.1, marginBottom: 18 }}>Find a Tire Centre Near You</h1>
-            <p className="font-poppins" style={{ fontSize: 18, color: '#fff', maxWidth: 500 }}>Easily locate your nearest store for expert tire services, fast installations, and trusted support — wherever the road takes you.</p>
+            <h1 className="font-poppins" style={{ fontSize: 44, fontWeight: 600, color: '#fff', lineHeight: 1.1, marginBottom: 18 }}>Find a Tyre Centre Near You</h1>
+            <p className="font-poppins" style={{ fontSize: 18, color: '#fff', maxWidth: 500 }}>Easily locate your nearest store for expert tyre services, fast installations, and trusted support — wherever the road takes you.</p>
           </div>
         </section>
 
@@ -144,7 +144,7 @@ export default async function LocationPage({ searchParams }: PageProps) {
           <div className="w-full max-w-[1440px] mb-12">
             <h2 className="text-3xl font-bold text-[#0a1c58] text-center mb-4">All Our Locations</h2>
             <p className="text-lg text-gray-600 text-center max-w-2xl mx-auto">
-              Browse through all our tire service centers and find the one that's most convenient for you.
+              Browse through all our tyre service centers and find the one that's most convenient for you.
             </p>
           </div>
 

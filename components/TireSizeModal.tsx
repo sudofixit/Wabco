@@ -77,7 +77,7 @@ export default function TireSizeModal({ isOpen, onClose, availableSizes }: TireS
     if (selectedDiameter) params.append('rimSize', selectedDiameter); // Note: using 'rimSize' to match TireClientPage
 
     const queryString = params.toString();
-    router.push(`/tire${queryString ? '?' + queryString : ''}`);
+    router.push(`/tyre${queryString ? '?' + queryString : ''}`);
     onClose();
   };
 
@@ -235,7 +235,7 @@ export default function TireSizeModal({ isOpen, onClose, availableSizes }: TireS
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
                   <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Search Tires
+                Search Tyres
               </button>
             </div>
           </div>
