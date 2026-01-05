@@ -7,6 +7,7 @@ import ServiceCard from "@/components/ServiceCard";
 import { Service } from "@/types/service";
 import MobileNavigation from "@/components/MobileNavigation";
 import Footer from "@/components/Footer";
+import HeroCarousel from "@/components/HeroCarousel";
 
 interface PageProps {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -121,8 +122,20 @@ export default function ServicePage({ searchParams }: PageProps) {
     window.location.href = `/service/multi/quote?services=${serviceIds}`;
   };
 
-  const serviceHeroBanner: Banner[] = banners.filter((banner) => banner.title == 'Services-HeroBanner')
+  // Filter banners by pattern
+  const getHeroBanners = (prefix: string) => {
+    return banners
+      .filter((banner) => banner.title.startsWith(prefix))
+      .sort((a, b) => {
+        const getNumber = (title: string) => {
+          const match = title.match(/\d+$/);
+          return match ? parseInt(match[0]) : 0;
+        };
+        return getNumber(a.title) - getNumber(b.title);
+      });
+  };
 
+  const serviceHeroBanner: Banner[] = getHeroBanners('Services-HeroBanner')
   // if (isLoading) {
   //   return (
   //     <div className="bg-white min-h-screen w-full flex flex-col items-center font-poppins">
@@ -154,20 +167,18 @@ export default function ServicePage({ searchParams }: PageProps) {
   return (
     <div className="bg-white min-h-screen w-full flex flex-col items-center font-poppins">
       {/* Header */}
-      <header className="w-full max-w-[1440px] flex items-center justify-between py-6 px-8 md:px-16">
-        <div className="flex items-center gap-4">
-          <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={231} height={30} />
+      <header className="w-full max-w-[1320px] flex items-center justify-between py-4 px-6 md:px-12">
+        <div className="flex items-center gap-3">
+          <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={208} height={27} />
         </div>
-        <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
+        <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
           <Link href="/" className="hover:text-black transition">Home</Link>
           <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
           <Link href="/service" className="font-bold text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
         <Link href="/contact-us">
-          <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-8 py-2 rounded-full font-semibold text-lg hover:bg-[#0a1c58] hover:text-white transition">
-            Contact Us
-          </button>
+          <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">Contact Us</button>
         </Link>
 
         {/* Mobile Navigation */}
@@ -175,26 +186,11 @@ export default function ServicePage({ searchParams }: PageProps) {
       </header>
 
       {/* Hero Section */}
-      <section className="relative w-full flex justify-center items-end min-h-[600px] bg-black pb-12 overflow-hidden">
-        {(serviceHeroBanner[0] &&
-          <Image
-            src={serviceHeroBanner[0].image}
-            alt="Car driving"
-            fill
-            className="object-cover opacity-80"
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-black opacity-40 z-0" />
-        <div className="relative z-10 flex flex-col w-full max-w-[1440px] px-8 md:px-16 py-16">
-          <h1 className="font-poppins text-white text-4xl md:text-5xl font-bold leading-tight mb-6 max-w-2xl">
-            Professional Services for Your Vehicle
-          </h1>
-          <p className="text-white text-lg md:text-xl max-w-xl drop-shadow">
-            Experience top-quality service from our certified technicians. From routine maintenance to complex repairs, we've got you covered.
-          </p>
-        </div>
-      </section>
+      <HeroCarousel
+        banners={serviceHeroBanner}
+        heading="Professional Services for Your Vehicle"
+        subheading="Experience top-quality service from our certified technicians. From routine maintenance to complex repairs, we've got you covered."
+      />
 
       {/* Main Content with Sidebar */}
       <section className="w-full flex justify-center bg-white py-16 px-4">

@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { Suspense } from "react";
 import MobileNavigation from "@/components/MobileNavigation";
 import Footer from "@/components/Footer";
+import HeroCarousel from "@/components/HeroCarousel";
 
 // Generate dynamic metadata for SEO
 export const metadata: Metadata = {
@@ -98,7 +99,21 @@ export default async function TirePage({ searchParams }: PageProps) {
       createdAt: b.createdAt.toISOString(),
       updatedAt: b.updatedAt.toISOString(),
     }));
-  const tireHeroBanner: Banner[] = banners.filter((banner) => banner.title == 'Tyrepage-HeroBanner')
+
+  // Filter banners by pattern
+  const getHeroBanners = (prefix: string) => {
+    return banners
+      .filter((banner) => banner.title.startsWith(prefix))
+      .sort((a, b) => {
+        const getNumber = (title: string) => {
+          const match = title.match(/\d+$/);
+          return match ? parseInt(match[0]) : 0;
+        };
+        return getNumber(a.title) - getNumber(b.title);
+      });
+  };
+
+  const tyreHeroBanner: Banner[] = getHeroBanners('Tyrepage-HeroBanner')
   const tireBanner: Banner[] = banners.filter((banner) => banner.title == 'Tyrepage-Banner1')
 
   const tires: Tire[] = products.map((p: any) => {
@@ -154,7 +169,7 @@ export default async function TirePage({ searchParams }: PageProps) {
         <div className="flex items-center gap-3">
           <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={208} height={27} />
         </div>
-        <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
+        <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
           <Link href="/" className="hover:text-black transition">Home</Link>
           <Link href="/tyre" className="font-bold text-black transition">Tyres</Link>
           <Link href="/service" className="hover:text-black transition">Services</Link>
@@ -169,22 +184,11 @@ export default async function TirePage({ searchParams }: PageProps) {
       </header>
 
       {/* Hero Section - Moderate reduction */}
-      <section className="relative w-full flex justify-center items-end min-h-[500px] bg-black pb-10 overflow-hidden">
-        {(tireHeroBanner[0] &&
-          <Image
-            src={tireHeroBanner[0].image}
-            alt="Car driving"
-            fill
-            className="object-cover opacity-80"
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-black opacity-40 z-0" />
-        <div className="relative z-10 flex flex-col w-full max-w-[1320px] px-6 md:px-12 py-12">
-          <h1 className="font-poppins text-white text-3xl md:text-4xl font-bold leading-tight mb-4 max-w-lg">Find the Perfect Tyres for Every Journey</h1>
-          <p className="text-white text-base md:text-lg max-w-lg drop-shadow">Discover top-quality tyres tailored to your vehicle, driving style, and weather conditions. Shop by vehicle, size, or brand — and drive with confidence every mile.</p>
-        </div>
-      </section>
+      <HeroCarousel
+        banners={tyreHeroBanner}
+        heading="Find the Perfect Tyres for Every Journey"
+        subheading="Discover top-quality tyres tailored to your vehicle, driving style, and weather conditions. Shop by vehicle, size, or brand — and drive with confidence every mile."
+      />
 
       {/* Client Component for Filters and Grid */}
       <TireClientPage tires={tires} brands={brands} />

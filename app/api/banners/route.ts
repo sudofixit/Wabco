@@ -6,7 +6,6 @@ export async function GET() {
     const banners = await prisma.banner.findMany({
       orderBy: { createdAt: 'desc' },
     });
-    console.log("BANNERS", banners)
     return NextResponse.json(banners);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch banners' }, { status: 500 });

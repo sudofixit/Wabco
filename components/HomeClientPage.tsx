@@ -1,9 +1,10 @@
-"use client"
-import { useEffect, useState } from "react";
+"use client";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import TireSizeModal from "./TireSizeModal";
 import { useRouter } from "next/navigation";
-
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 
 interface Brand {
   id: number;
@@ -32,127 +33,224 @@ interface Banner {
 export default function HomeClientPage({ availableSizes, availableBrands }: HomeClientPageProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [banners, setBanners] = useState<Banner[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
+  // Hero carousel setup
+  const [heroEmblaRef, heroEmblaApi] = useEmblaCarousel({ loop: true }, [
+    Autoplay({ delay: 5000, stopOnInteraction: false })
+  ]);
+  const [heroSelectedIndex, setHeroSelectedIndex] = useState(0);
+
   useEffect(() => {
-    const fetchBanners = async () => {
+    const fetchCarBrands = async () => {
       try {
-        setIsLoading(true);
         const tireBannersResponse = await fetch('/api/banners');
-        console.log("BannersData", tireBannersResponse);
-
-        if (!tireBannersResponse.ok) throw new Error('Failed to fetch tire banners');
+        if (!tireBannersResponse.ok) throw new Error('Failed to fetch tyre banners');
         const tireBannersData = await tireBannersResponse.json();
-
         setBanners(tireBannersData);
       } catch (error) {
-        console.error('Error fetching banners:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Error fetching tire brands:', error);
       }
     };
 
-    fetchBanners();
+    fetchCarBrands();
   }, []);
 
-  console.log("Banners state:", banners);
+  // Hero carousel effect
+  const onHeroSelect = useCallback(() => {
+    if (!heroEmblaApi) return;
+    setHeroSelectedIndex(heroEmblaApi.selectedScrollSnap());
+  }, [heroEmblaApi]);
 
-  // Filter banners with safe fallbacks
-  const tyreHeroBanner: Banner[] = banners.filter((banner) => banner.title === 'Homepage-TyreHeroBanner');
+  // Brands carousel setup
+  const [brandsEmblaRef, brandsEmblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    dragFree: false,
+  }, [Autoplay({ delay: 3000, stopOnInteraction: false })]);
+
+  useEffect(() => {
+    if (!heroEmblaApi) return;
+    onHeroSelect();
+    heroEmblaApi.on("select", onHeroSelect);
+    return () => {
+      heroEmblaApi.off("select", onHeroSelect);
+    };
+  }, [heroEmblaApi, onHeroSelect]);
+
+  const scrollToHero = useCallback((index: number) => {
+    if (heroEmblaApi) heroEmblaApi.scrollTo(index);
+  }, [heroEmblaApi]);
+
+  // Filter banners by pattern
+  const getHeroBanners = (prefix: string) => {
+    return banners
+      .filter((banner) => banner.title.startsWith(prefix))
+      .sort((a, b) => {
+        const getNumber = (title: string) => {
+          const match = title.match(/\d+$/);
+          return match ? parseInt(match[0]) : 0;
+        };
+        return getNumber(a.title) - getNumber(b.title);
+      });
+  };
+
+  const tyreHeroBanners = getHeroBanners('Homepage-TyreHeroBanner');
   const tyreBanner1: Banner[] = banners.filter((banner) => banner.title === 'Homepage-TyreBanner1');
   const tyreBanner2: Banner[] = banners.filter((banner) => banner.title === 'Homepage-TyreBanner2');
   const tyreBanner3: Banner[] = banners.filter((banner) => banner.title === 'Homepage-TyreBanner3');
 
-  // Fallback image URLs
-  const heroBannerImage = tyreHeroBanner.length > 0 ? tyreHeroBanner[0].image : "/fallback-hero.jpg";
-  const banner1Image = tyreBanner1.length > 0 ? tyreBanner1[0].image : "/fallback-banner1.jpg";
-  const banner2Image = tyreBanner2.length > 0 ? tyreBanner2[0].image : "/fallback-banner2.jpg";
-  const banner3Image = tyreBanner3.length > 0 ? tyreBanner3[0].image : "/fallback-banner3.jpg";
-
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative w-full flex justify-center items-end min-h-[500px] md:min-h-[680px] lg:min-h-[780px] bg-black pb-8 md:pb-12">
-        {!isLoading && (
-          <Image
-            src={heroBannerImage}
-            alt="Car driving"
-            fill
-            className="object-cover opacity-80 transition-opacity duration-300"
-            priority
-          />
-        )}
-        <div className="relative z-10 flex flex-col lg:flex-row w-full max-w-[1440px] px-4 md:px-8 lg:px-16 items-center justify-between gap-8 lg:gap-16">
-          {/* Left: Text */}
-          <div className="flex flex-col gap-4 w-full lg:max-w-[651px] text-center lg:text-left pt-8 md:pt-16 lg:pt-0 pb-8 lg:pb-0">
-            <h1 className="font-poppins text-white text-2xl md:text-4xl lg:text-[3.1rem] font-bold leading-tight drop-shadow-lg">
-              Drive with Confidence,<br />Powered by Premium Tires
-            </h1>
-            <p className="text-white text-base md:text-lg lg:text-[1.15rem] max-w-md mx-auto lg:mx-0 drop-shadow">
-              Discover top-quality tyres, expert fitting, and unbeatable prices — all in one place. Your road safety starts here.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 mt-2 justify-center lg:justify-start">
-              <button className="bg-white text-[#0a1c58] px-6 md:px-8 py-3 rounded-full font-semibold text-base md:text-lg shadow hover:bg-gray-100 transition cursor-pointer" onClick={() => router.push('/contact-us')}>
-                Contact Us
-              </button>
-              <button className="border border-white text-white px-6 md:px-8 py-3 rounded-full font-semibold text-base md:text-lg hover:bg-white hover:text-[#0a1c58] transition cursor-pointer" onClick={() => router.push('/tire')}>
-                Explore
-              </button>
+      {/* Hero Section with Carousel */}
+      <section className="relative w-full flex flex-col items-center bg-black">
+        {/* Image Carousel - Desktop with Text Overlay, Mobile without */}
+        <div className="relative w-full">
+          <div className="relative w-full min-h-[300px] md:min-h-[500px] lg:min-h-[780px]">
+            {/* Carousel */}
+            <div className="overflow-hidden h-full" ref={heroEmblaRef}>
+              <div className="flex h-full">
+                {tyreHeroBanners.length > 0 ? (
+                  tyreHeroBanners.map((banner, index) => (
+                    <div key={banner.id} className="flex-[0_0_100%] min-w-0 relative h-full">
+                      <div className="relative w-full h-[300px] md:h-[500px] lg:h-[780px]">
+                        <Image
+                          src={banner.image}
+                          alt={banner.title}
+                          fill
+                          className="object-cover"
+                          priority={index === 0}
+                          sizes="100vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex-[0_0_100%] min-w-0 relative">
+                    <div className="relative w-full h-[300px] md:h-[500px] lg:h-[780px] bg-gray-800" />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Right: Tires Card - Show on mobile with different layout */}
-          <div className="w-full lg:w-[570px] pb-6 bg-white border border-[#C7C7C7] rounded-lg lg:rounded-none shadow-md lg:shadow-none flex flex-col justify-start">
-            <div className="px-4 md:px-8 pt-4 md:pt-6 pb-4 text-center text-lg md:text-[20px] font-bold text-black font-poppins">
-              Tires
-            </div>
-            <div className="border-t border-[#C7C7C7] w-full" />
+            {/* Desktop Text Overlay - Hidden on Mobile */}
+            <div className="hidden md:block absolute inset-0 z-10">
+              <div className="h-full flex items-end pb-12 lg:pb-20">
+                <div className="w-full max-w-[1440px] mx-auto px-8 lg:px-16">
+                  <div className="flex flex-row items-end justify-between gap-8 lg:gap-16">
+                    {/* Left: Text */}
+                    <div className="flex flex-col gap-4 w-full lg:max-w-[651px]">
+                      <h1 className="font-poppins text-white text-3xl md:text-4xl lg:text-[3.1rem] font-bold leading-tight drop-shadow-2xl">
+                        Drive with Confidence,<br />Powered by Premium Tyres
+                      </h1>
+                      <p className="text-white text-base md:text-lg lg:text-[1.15rem] max-w-md drop-shadow-lg">
+                        Discover top-quality tyres, expert fitting, and unbeatable prices — all in one place. Your road safety starts here.
+                      </p>
+                      <div className="flex flex-row gap-4 mt-2">
+                        <button
+                          className="bg-white text-[#0a1c58] px-8 py-3 rounded-full font-semibold text-lg shadow-lg hover:bg-gray-100 transition-all hover:scale-105"
+                          onClick={() => router.push('/contact-us')}
+                        >
+                          Contact Us
+                        </button>
+                        <button
+                          className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-white hover:text-[#0a1c58] transition-all hover:scale-105"
+                          onClick={() => router.push('/tire')}
+                        >
+                          Explore
+                        </button>
+                      </div>
+                    </div>
 
-            {/* Option 1 */}
-            {/* <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 px-4 md:px-6 py-4 bg-[#F7F7F7] mt-4 mx-4 rounded-lg lg:rounded-none min-h-[100px] lg:h-[110px]">
-              <Image
-                src="/car.png"
-                alt="Car icon"
-                width={150}
-                height={65}
-                className="object-contain sm:w-[190px] sm:h-[81px]"
-              />
-              <div className="flex flex-col justify-center h-full text-center sm:text-left">
-                <div className="font-semibold text-base md:text-[18px] text-black font-poppins">
-                  Shop Tires by Vehicles
-                </div>
-                <div className="text-black text-sm md:text-[16px] font-poppins">
-                  Enter your make and model to find tires that fit.
+                    {/* Right: Desktop Card */}
+                    <div className="w-full lg:w-[570px] pb-6 bg-white border border-[#C7C7C7] rounded-lg lg:rounded-none shadow-md lg:shadow-none flex flex-col justify-start">
+                      {/* Tab */}
+                      <div className="flex">
+                        <div className="flex-1 py-4 font-semibold text-center transition-all duration-300 text-[#0a1c58]">
+                          Tyres
+                        </div>
+                      </div>
+                      <div className="border-b-2 border-[#0a1c58] transition-all duration-300" />
+
+                      <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 px-4 md:px-6 py-4 bg-zinc-200 mt-4 mx-4 mb-4 lg:mb-0 hover:bg-zinc-300 transition-colors text-left rounded-lg lg:rounded-none min-h-[100px] lg:h-[110px] cursor-pointer"
+                      >
+                        <Image
+                          src="/tyre.png"
+                          alt="Tyre icon"
+                          width={85}
+                          height={78}
+                          className="object-contain sm:w-[105px] sm:h-[96px]"
+                        />
+                        <div className="flex flex-col justify-center h-full text-center sm:text-left">
+                          <div className="font-semibold text-base md:text-[18px] text-black font-poppins">
+                            Enter your tyre size
+                          </div>
+                          <div className="text-black text-sm md:text-[16px] font-poppins">
+                            to find the best options.
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div> */}
+            </div>
 
-            {/* Option 2 */}
+            {/* Carousel Dots */}
+            {tyreHeroBanners.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+                {tyreHeroBanners.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => scrollToHero(index)}
+                    className={`transition-all duration-300 rounded-full ${index === heroSelectedIndex
+                      ? 'bg-white w-4 md:w-6 h-1.5 md:h-2'
+                      : 'bg-white/50 w-1.5 md:w-2 h-1.5 md:h-2 hover:bg-white/75'
+                      }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Card Below Image */}
+        <div className="md:hidden w-full px-4 py-8 bg-white relative z-10">
+          <div className="w-full bg-white border border-[#C7C7C7] rounded-lg shadow-md flex flex-col">
+            {/* Tab */}
+            <div className="flex">
+              <div className="flex-1 py-4 font-semibold text-center transition-all duration-300 text-[#0a1c58]">
+                Tyres
+              </div>
+            </div>
+            <div className="border-b-2 border-[#0a1c58] transition-all duration-300" />
+
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 px-4 md:px-6 py-4 bg-zinc-400  mt-4 mx-4 mb-4 lg:mb-0 hover:bg-zinc-500 transition-colors text-left rounded-lg lg:rounded-none min-h-[100px] lg:h-[110px] cursor-pointer"
+              className="flex flex-col sm:flex-row items-center gap-4 px-4 py-4 bg-zinc-200 m-4 hover:bg-zinc-300 transition-colors text-left rounded-lg cursor-pointer min-h-[100px]"
             >
               <Image
                 src="/tyre.png"
-                alt="Tire icon"
+                alt="Tyre icon"
                 width={85}
                 height={78}
-                className="object-contain sm:w-[105px] sm:h-[96px]"
+                className="object-contain w-20 h-20 sm:w-[105px] sm:h-[96px]"
               />
-              <div className="flex flex-col justify-center h-full text-center sm:text-left">
-                <div className="font-semibold text-base md:text-[18px] text-black font-poppins">
-                  Enter your tire size
+              <div className="flex flex-col justify-center text-center sm:text-left">
+                <div className="font-semibold text-base text-black font-poppins">
+                  Enter your tyre size
                 </div>
-                <div className="text-black text-sm md:text-[16px] font-poppins">
+                <div className="text-black text-sm font-poppins">
                   to find the best options.
                 </div>
               </div>
             </button>
           </div>
         </div>
-        {/* Overlay for darkening the image */}
-        <div className="absolute inset-0 bg-black opacity-40 z-0" />
       </section>
 
       {/* Why Choose Wabco Mobility? */}
@@ -162,7 +260,7 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
             Why Choose Wabco Mobility?
           </h2>
           <p className="text-base md:text-lg text-[#0a1c58] mb-8 md:mb-12 text-center max-w-2xl font-medium px-4">
-            We're not just another tire shop. We're your partners in safe, reliable driving with unmatched service and expertise.
+            We're not just another tyre shop. We're your partners in safe, reliable driving with unmatched service and expertise.
           </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-x-8 lg:gap-y-12 w-full">
             {/* Card 1 */}
@@ -186,7 +284,7 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
               <div>
                 <div className="font-bold text-lg text-black mb-2">Quality Guarantee</div>
                 <div className="text-gray-700 text-base font-normal">
-                  Premium tire brands with comprehensive warranties. Your satisfaction is our priority.
+                  Premium tyre brands with comprehensive warranties. Your satisfaction is our priority.
                 </div>
               </div>
             </div>
@@ -199,7 +297,7 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
               <div>
                 <div className="font-bold text-lg text-black mb-2">Fast Service</div>
                 <div className="text-gray-700 text-base font-normal">
-                  Most tire installations completed in 45 minutes or less. No appointment needed for basic services.
+                  Most tyre installations completed in 45 minutes or less. No appointment needed for basic services.
                 </div>
               </div>
             </div>
@@ -224,11 +322,11 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
       <section className="w-full flex flex-col items-center bg-white py-12 md:py-16 px-4">
         <div className="w-full max-w-[1440px] flex flex-col gap-6 md:gap-8">
           {/* Top Promo Banner - Full width */}
-          {!isLoading && tyreBanner1.length > 0 && (
+          {tyreBanner1[0] && (
             <div className="relative w-full aspect-[4/3] md:aspect-[21/9] rounded-2xl overflow-hidden">
               <Image
-                src={banner1Image}
-                alt={tyreBanner1[0].title || "Promotion banner"}
+                src={tyreBanner1[0].image}
+                alt={tyreBanner1[0].title}
                 fill
                 className="object-cover object-left"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1440px"
@@ -239,12 +337,12 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
 
           {/* Bottom Row: Two-column layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
-            {/* Tire Rotation Special */}
-            {!isLoading && tyreBanner2.length > 0 && (
+            {/* Tyre Rotation Special */}
+            {tyreBanner2[0] && (
               <div className="relative w-full aspect-[4/3] md:aspect-[7/5] rounded-2xl overflow-hidden">
                 <Image
-                  src={banner2Image}
-                  alt={tyreBanner2[0].title || "Tire rotation special"}
+                  src={tyreBanner2[0].image}
+                  alt={tyreBanner2[0].title}
                   fill
                   className="object-cover object-left"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 720px"
@@ -252,12 +350,12 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
               </div>
             )}
 
-            {/* Flat Tire Offer */}
-            {!isLoading && tyreBanner3.length > 0 && (
+            {/* Flat Tyre Offer */}
+            {tyreBanner3[0] && (
               <div className="relative w-full aspect-[4/3] md:aspect-[7/5] rounded-2xl overflow-hidden">
                 <Image
-                  src={banner3Image}
-                  alt={tyreBanner3[0].title || "Flat tire offer"}
+                  src={tyreBanner3[0].image}
+                  alt={tyreBanner3[0].title}
                   fill
                   className="object-cover object-left"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 720px"
@@ -270,29 +368,52 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
       </section>
 
       {/* Brands Section */}
-      <section className="w-full flex flex-col items-center bg-white py-12 md:py-16 px-4">
-        <div className="w-full max-w-[1370px] flex flex-col items-center">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0a1c58] mb-4 text-center">Brands</h2>
-          <p className="text-base md:text-lg text-gray-700 mb-8 md:mb-10 text-center max-w-2xl px-4">
-            At Tire Centre, we partner with some of the world's most trusted and high-performing tire brands to ensure your safety, comfort, and performance on the road. Whether you're looking for all-season reliability, winter traction, or ultra-high-performance tires — we've got the right brand for your vehicle and lifestyle.
+      <section className="w-full flex flex-col items-center bg-white py-16 md:py-20 px-4">
+        <div className="w-full max-w-342.5 flex flex-col items-center">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0a1c58] mb-4 text-center">
+            Premium Tire Brands
+          </h2>
+          <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8 text-center max-w-2xl px-4">
+            At Tire Centre, we partner with some of the world's most trusted and high-performing tire brands.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full justify-items-center">
+
+          {/* Mobile Grid View */}
+          <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-4 w-full justify-items-center py-4">
             {availableBrands.map((brand, index) => (
-              <div key={brand.id || index} className="bg-white rounded-2xl shadow-md flex items-center justify-center w-full max-w-[316px] h-[150px] md:h-[176px] p-4 md:p-6">
+              <div key={brand.id || index} className="bg-white rounded-2xl shadow-md flex items-center justify-center w-full max-w-79 h-37.5 p-4 transition-transform hover:scale-105">
                 <Image
-                  src={brand.logo || '/brands/default-logo.png'}
+                  src={brand.logo}
                   alt={brand.name || 'Brand'}
                   width={150}
                   height={36}
-                  className="object-contain max-w-full max-h-full md:w-[184px] md:h-[44px]"
+                  className="object-contain max-w-full max-h-full"
                 />
               </div>
             ))}
           </div>
+
+          {/* Desktop 360 Carousel */}
+          <div className="hidden md:block w-full overflow-hidden py-4" ref={brandsEmblaRef}>
+            <div className="flex">
+              {availableBrands.map((brand, index) => (
+                <div key={brand.id || index} className="flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4">
+                  <div className="bg-white rounded-2xl shadow-md flex items-center justify-center h-44 p-6 transition-transform hover:scale-105 mr-4">
+                    <Image
+                      src={brand.logo}
+                      alt={brand.name || 'Brand'}
+                      width={150}
+                      height={36}
+                      className="object-contain max-w-full max-h-full w-46 h-11"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Tire Size Modal */}
+      {/* Tyre Size Modal */}
       <TireSizeModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

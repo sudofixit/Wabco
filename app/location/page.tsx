@@ -6,6 +6,7 @@ import LocationCard from "@/components/LocationCard";
 import type { Location } from "@/types/location";
 import MobileNavigation from "@/components/MobileNavigation";
 import Footer from "@/components/Footer";
+import HeroCarousel from "@/components/HeroCarousel";
 
 interface PageProps {
   params: Promise<{ [key: string]: string }>
@@ -50,8 +51,21 @@ export default async function LocationPage({ searchParams }: PageProps) {
       createdAt: b.createdAt.toISOString(),
       updatedAt: b.updatedAt.toISOString(),
     }));
-  const locationHeroBanner: Banner[] = banners.filter((banner) => banner.title == 'Location-HeroBanner')
 
+  // Filter banners by pattern
+  const getHeroBanners = (prefix: string) => {
+    return banners
+      .filter((banner) => banner.title.startsWith(prefix))
+      .sort((a, b) => {
+        const getNumber = (title: string) => {
+          const match = title.match(/\d+$/);
+          return match ? parseInt(match[0]) : 0;
+        };
+        return getNumber(a.title) - getNumber(b.title);
+      });
+  };
+
+  const locationHeroBanner: Banner[] = getHeroBanners('Location-HeroBanner')
 
   // Serialize data for client components
   const serializedAllLocations: Location[] = allLocations.map((location: any) => ({
@@ -94,45 +108,31 @@ export default async function LocationPage({ searchParams }: PageProps) {
 
       <div className="bg-white min-h-screen w-full flex flex-col items-center font-poppins">
         {/* Header */}
-        <header className="w-full max-w-[1440px] flex items-center justify-between py-6 px-8 md:px-16">
-          <div className="flex items-center gap-4">
-            <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={231} height={30} />
+        <header className="w-full max-w-[1320px] flex items-center justify-between py-4 px-6 md:px-12">
+          <div className="flex items-center gap-3">
+            <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={208} height={27} />
           </div>
-          <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
+          <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
             <Link href="/" className="hover:text-black transition">Home</Link>
             <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
             <Link href="/service" className="hover:text-black transition">Services</Link>
             <Link href="/location" className="font-bold text-black transition">Location</Link>
           </nav>
           <Link href="/contact-us">
-            <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-8 py-2 rounded-full font-semibold text-lg hover:bg-[#0a1c58] hover:text-white transition">Contact Us</button>
+            <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">Contact Us</button>
           </Link>
+
           {/* Mobile Navigation */}
           <MobileNavigation />
         </header>
 
         {/* Hero Section */}
-        <section className="relative w-full flex justify-center items-end overflow-hidden" style={{ height: 600, minHeight: 600 }}>
-          {(locationHeroBanner[0] && <Image
-            src={locationHeroBanner[0].image}
-            alt="Location Hero"
-            fill
-            style={{ objectFit: 'cover' }}
-            priority
-          />
-          )}
-          {/* Subtle gradient for text readability */}
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0) 100%)' }} />
-          {/* White SVG line with dot at top right */}
-          <svg className="absolute" style={{ top: 60, right: 60, width: 'calc(100% - 120px)', height: 24 }} viewBox="0 0 1380 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="0" y1="12" x2="1370" y2="12" stroke="white" strokeWidth="2" />
-            <circle cx="1370" cy="12" r="6" fill="white" />
-          </svg>
-          <div className="absolute left-0 bottom-0 flex flex-col items-start" style={{ paddingLeft: 40, paddingBottom: 60, width: '100%' }}>
-            <h1 className="font-poppins" style={{ fontSize: 44, fontWeight: 600, color: '#fff', lineHeight: 1.1, marginBottom: 18 }}>Find a Tyre Centre Near You</h1>
-            <p className="font-poppins" style={{ fontSize: 18, color: '#fff', maxWidth: 500 }}>Easily locate your nearest store for expert tyre services, fast installations, and trusted support — wherever the road takes you.</p>
-          </div>
-        </section>
+        <HeroCarousel
+          banners={locationHeroBanner}
+          heading="Find a Tyre Centre Near You"
+          subheading="Easily locate your nearest store for expert tyre services, fast installations, and trusted support — wherever the road takes you."
+
+        />
 
         {/* Branch Finder Section */}
         <section className="w-full bg-white">
