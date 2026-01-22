@@ -6,6 +6,8 @@ import MobileNavigation from "../../components/MobileNavigation";
 import { useToast } from "../hooks/useToast";
 import countryCodes from "@/lib/constants";
 import Footer from "@/components/Footer";
+import CountryDropdown from "@/components/CountryDropdown";
+
 
 interface FormData {
   name: string;
@@ -169,19 +171,11 @@ export default function ContactUsPage() {
   return (
     <div className="bg-white min-h-screen w-full flex flex-col items-center font-poppins">
       {/* Header */}
-      <header className="w-full max-w-[1440px] flex items-center justify-between py-4 px-4 md:py-6 md:px-8 lg:px-16">
-        <div className="flex items-center gap-4">
-          <Image
-            src="/Wabco Logo.jpeg"
-            alt="Wabco Mobility Logo"
-            width={180}
-            height={24}
-            className="md:w-[231px] md:h-[30px]"
-          />
+      <header className="w-full max-w-[1320px] flex items-center justify-between py-4 px-6 md:px-12">
+        <div className="flex items-center gap-3">
+          <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={208} height={27} />
         </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-10 text-lg font-medium text-[#0a1c58]">
+        <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
           <Link href="/" className="hover:text-black transition">Home</Link>
           <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
           <Link href="/service" className="hover:text-black transition">Services</Link>
@@ -189,18 +183,23 @@ export default function ContactUsPage() {
         </nav>
 
         {/* Desktop Contact Button */}
-        <Link href="/contact-us" className="hidden lg:block">
-          <button className="border-2 border-[#0a1c58] text-[#0a1c58] px-6 xl:px-8 py-2 rounded-full font-semibold text-base xl:text-lg hover:bg-[#0a1c58] hover:text-white transition">
-            Contact Us
-          </button>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/contact-us">
+            <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">
+              Contact Us
+            </button>
+          </Link>
+
+          {/* Country Dropdown */}
+          <CountryDropdown />
+        </div>
 
         {/* Mobile Navigation */}
         <MobileNavigation />
       </header>
 
       {/* Hero Section */}
-      <section className="relative w-full flex justify-center items-end overflow-hidden h-[400px] md:h-[500px] lg:h-[600px]">
+      <section className="relative w-full flex justify-center items-end overflow-hidden h-[400px] md:h-[500px] lg:h-[650px]">
         <Image
           src="/book now bg.png"
           alt="Contact Us Hero"

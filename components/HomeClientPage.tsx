@@ -5,6 +5,7 @@ import TireSizeModal from "./TireSizeModal";
 import { useRouter } from "next/navigation";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import PromoBannerCarousel from "./AdvertisementCarousel";
 
 interface Brand {
   id: number;
@@ -96,9 +97,7 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
   };
 
   const tyreHeroBanners = getHeroBanners('Homepage-TyreHeroBanner');
-  const tyreBanner1: Banner[] = banners.filter((banner) => banner.title === 'Homepage-TyreBanner1');
-  const tyreBanner2: Banner[] = banners.filter((banner) => banner.title === 'Homepage-TyreBanner2');
-  const tyreBanner3: Banner[] = banners.filter((banner) => banner.title === 'Homepage-TyreBanner3');
+  const tyreBanner: Banner[] = banners.filter((banner) => banner.title === 'Homepage-TyreBanner');
 
   return (
     <>
@@ -106,14 +105,14 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
       <section className="relative w-full flex flex-col items-center bg-black">
         {/* Image Carousel - Desktop with Text Overlay, Mobile without */}
         <div className="relative w-full">
-          <div className="relative w-full min-h-[300px] md:min-h-[500px] lg:min-h-[780px]">
+          <div className="relative w-full min-h-[300px] md:min-h-[500px] lg:min-h-[650px]">
             {/* Carousel */}
             <div className="overflow-hidden h-full" ref={heroEmblaRef}>
               <div className="flex h-full">
                 {tyreHeroBanners.length > 0 ? (
                   tyreHeroBanners.map((banner, index) => (
                     <div key={banner.id} className="flex-[0_0_100%] min-w-0 relative h-full">
-                      <div className="relative w-full h-[300px] md:h-[500px] lg:h-[780px]">
+                      <div className="relative w-full h-[300px] md:h-[500px] lg:h-[650px]">
                         <Image
                           src={banner.image}
                           alt={banner.title}
@@ -322,48 +321,12 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
       <section className="w-full flex flex-col items-center bg-white py-12 md:py-16 px-4">
         <div className="w-full max-w-[1440px] flex flex-col gap-6 md:gap-8">
           {/* Top Promo Banner - Full width */}
-          {tyreBanner1[0] && (
-            <div className="relative w-full aspect-[4/3] md:aspect-[21/9] rounded-2xl overflow-hidden">
-              <Image
-                src={tyreBanner1[0].image}
-                alt={tyreBanner1[0].title}
-                fill
-                className="object-cover object-left"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1440px"
-                priority
-              />
-            </div>
+          {tyreBanner && (
+            <PromoBannerCarousel
+              topBanners={tyreBanner}
+            />
           )}
 
-          {/* Bottom Row: Two-column layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
-            {/* Tyre Rotation Special */}
-            {tyreBanner2[0] && (
-              <div className="relative w-full aspect-[4/3] md:aspect-[7/5] rounded-2xl overflow-hidden">
-                <Image
-                  src={tyreBanner2[0].image}
-                  alt={tyreBanner2[0].title}
-                  fill
-                  className="object-cover object-left"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 720px"
-                />
-              </div>
-            )}
-
-            {/* Flat Tyre Offer */}
-            {tyreBanner3[0] && (
-              <div className="relative w-full aspect-[4/3] md:aspect-[7/5] rounded-2xl overflow-hidden">
-                <Image
-                  src={tyreBanner3[0].image}
-                  alt={tyreBanner3[0].title}
-                  fill
-                  className="object-cover object-left"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 720px"
-                  priority
-                />
-              </div>
-            )}
-          </div>
         </div>
       </section>
 
@@ -377,26 +340,11 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
             At Tire Centre, we partner with some of the world's most trusted and high-performing tire brands.
           </p>
 
-          {/* Mobile Grid View */}
-          <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-4 w-full justify-items-center py-4">
-            {availableBrands.map((brand, index) => (
-              <div key={brand.id || index} className="bg-white rounded-2xl shadow-md flex items-center justify-center w-full max-w-79 h-37.5 p-4 transition-transform hover:scale-105">
-                <Image
-                  src={brand.logo}
-                  alt={brand.name || 'Brand'}
-                  width={150}
-                  height={36}
-                  className="object-contain max-w-full max-h-full"
-                />
-              </div>
-            ))}
-          </div>
-
           {/* Desktop 360 Carousel */}
-          <div className="hidden md:block w-full overflow-hidden py-4" ref={brandsEmblaRef}>
+          <div className="w-full overflow-hidden py-4" ref={brandsEmblaRef}>
             <div className="flex">
               {availableBrands.map((brand, index) => (
-                <div key={brand.id || index} className="flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4">
+                <div key={brand.id || index} className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4">
                   <div className="bg-white rounded-2xl shadow-md flex items-center justify-center h-44 p-6 transition-transform hover:scale-105 mr-4">
                     <Image
                       src={brand.logo}
@@ -412,6 +360,7 @@ export default function HomeClientPage({ availableSizes, availableBrands }: Home
           </div>
         </div>
       </section>
+
 
       {/* Tyre Size Modal */}
       <TireSizeModal

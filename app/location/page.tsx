@@ -7,6 +7,8 @@ import type { Location } from "@/types/location";
 import MobileNavigation from "@/components/MobileNavigation";
 import Footer from "@/components/Footer";
 import HeroCarousel from "@/components/HeroCarousel";
+import CountryDropdown from "@/components/CountryDropdown";
+
 
 interface PageProps {
   params: Promise<{ [key: string]: string }>
@@ -118,9 +120,16 @@ export default async function LocationPage({ searchParams }: PageProps) {
             <Link href="/service" className="hover:text-black transition">Services</Link>
             <Link href="/location" className="font-bold text-black transition">Location</Link>
           </nav>
-          <Link href="/contact-us">
-            <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">Contact Us</button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/contact-us">
+              <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">
+                Contact Us
+              </button>
+            </Link>
+
+            {/* Country Dropdown */}
+            <CountryDropdown />
+          </div>
 
           {/* Mobile Navigation */}
           <MobileNavigation />

@@ -7,6 +7,8 @@ import { Suspense } from "react";
 import MobileNavigation from "@/components/MobileNavigation";
 import Footer from "@/components/Footer";
 import HeroCarousel from "@/components/HeroCarousel";
+import CountryDropdown from "@/components/CountryDropdown";
+import PromoBannerCarousel from "@/components/AdvertisementCarousel";
 
 // Generate dynamic metadata for SEO
 export const metadata: Metadata = {
@@ -175,9 +177,16 @@ export default async function TirePage({ searchParams }: PageProps) {
           <Link href="/service" className="hover:text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
-        <Link href="/contact-us">
-          <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">Contact Us</button>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/contact-us">
+            <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">
+              Contact Us
+            </button>
+          </Link>
+
+          {/* Country Dropdown */}
+          <CountryDropdown />
+        </div>
 
         {/* Mobile Navigation */}
         <MobileNavigation />
@@ -196,15 +205,9 @@ export default async function TirePage({ searchParams }: PageProps) {
       {/* Promo Banner - Moderate reduction */}
       <section className="w-full flex justify-center bg-white py-8 px-4">
         {tireBanner[0] && (
-          <div className="relative w-full max-w-[1320px] aspect-[4/2] md:aspect-[1320/280] rounded-xl overflow-hidden">
-            <Image
-              src={tireBanner[0].image}
-              alt={tireBanner[0].title}
-              fill
-              className="object-cover object-left"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1320px"
-            />
-          </div>
+          <PromoBannerCarousel
+            topBanners={tireBanner}
+          />
         )}
       </section>
 

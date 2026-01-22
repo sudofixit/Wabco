@@ -8,6 +8,8 @@ import { Service } from "@/types/service";
 import MobileNavigation from "@/components/MobileNavigation";
 import Footer from "@/components/Footer";
 import HeroCarousel from "@/components/HeroCarousel";
+import CountryDropdown from "@/components/CountryDropdown";
+
 
 interface PageProps {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -136,6 +138,8 @@ export default function ServicePage({ searchParams }: PageProps) {
   };
 
   const serviceHeroBanner: Banner[] = getHeroBanners('Services-HeroBanner')
+  const serviceBanner1: Banner[] = getHeroBanners('Servicepage-Banner1')
+  const serviceBanner2: Banner[] = getHeroBanners('Servicepage-Banner2')
   // if (isLoading) {
   //   return (
   //     <div className="bg-white min-h-screen w-full flex flex-col items-center font-poppins">
@@ -177,9 +181,16 @@ export default function ServicePage({ searchParams }: PageProps) {
           <Link href="/service" className="font-bold text-black transition">Services</Link>
           <Link href="/location" className="hover:text-black transition">Location</Link>
         </nav>
-        <Link href="/contact-us">
-          <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">Contact Us</button>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/contact-us">
+            <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">
+              Contact Us
+            </button>
+          </Link>
+
+          {/* Country Dropdown */}
+          <CountryDropdown />
+        </div>
 
         {/* Mobile Navigation */}
         <MobileNavigation />
@@ -436,42 +447,18 @@ export default function ServicePage({ searchParams }: PageProps) {
         <div className="w-full max-w-[1440px] grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Tire Rotation Special */}
           <div className="relative bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between p-8 min-h-[510px]">
-            <Image src="/6.png" alt="Tyre Rotation" fill className="object-cover absolute inset-0 opacity-30" />
-            <div className="relative z-10 flex flex-col h-full justify-between">
-              <span className="bg-white text-black font-bold text-4xl px-10 py-4 rounded-full shadow-lg rotate-[-15deg] absolute top-8 right-8 border-2 border-white" style={{ letterSpacing: '2px' }}>$19.99</span>
-              <h4 className="text-4xl font-bold text-black mb-4 mt-100 font-poppins">Tyre Rotation Special</h4>
-              <p className="text-black text-lg mb-8 font-poppins">Regular tyre rotation extends the life of your tyres and improves fuel efficiency. Take advantage of our limited-time offer.</p>
-              <ul className="text-black text-xl flex flex-col gap-4 font-poppins mt-6">
-                <li className="flex items-center gap-2 font-bold">
-                  <Image src="/loc.png" alt="Location icon" width={18} height={26} />
-                  <span>Available at all locations</span>
-                </li>
-                <li className="flex items-center gap-2 font-bold">
-                  <Image src="/tome.png" alt="Time icon" width={18} height={26} />
-                  <span>Quick 20-minute service</span>
-                </li>
-              </ul>
-            </div>
+            {serviceBanner1?.[0] && (
+              <Image src={serviceBanner1[0].image} alt="Tyre Rotation" fill className="object-cover absolute inset-0" />
+
+            )}
           </div>
 
           {/* Flat Tire Offer */}
           <div className="relative bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between p-8 min-h-[510px]">
-            <Image src="/7.png" alt="Flat Tyre" fill className="object-cover absolute inset-0 opacity-30" />
-            <div className="relative z-10 flex flex-col h-full justify-between">
-              <span className="bg-white text-black font-bold text-4xl px-10 py-4 rounded-full shadow-lg rotate-[-15deg] absolute top-8 right-8 border-2 border-white" style={{ letterSpacing: '2px' }}>$29.99</span>
-              <h4 className="text-4xl font-bold text-black mb-4 mt-100 font-poppins">Flat Tyre Repair</h4>
-              <p className="text-black text-lg mb-8 font-poppins">Professional flat tyre repair service. We'll get you back on the road safely and quickly.</p>
-              <ul className="text-black text-xl flex flex-col gap-4 font-poppins mt-6">
-                <li className="flex items-center gap-2 font-bold">
-                  <Image src="/loc.png" alt="Location icon" width={18} height={26} />
-                  <span>Available at all locations</span>
-                </li>
-                <li className="flex items-center gap-2 font-bold">
-                  <Image src="/tome.png" alt="Time icon" width={18} height={26} />
-                  <span>30-minute repair time</span>
-                </li>
-              </ul>
-            </div>
+            {serviceBanner2?.[0] && (
+              <Image src={serviceBanner2[0].image} alt="Flat Tyre" fill className="object-cover absolute inset-0" />
+
+            )}
           </div>
         </div>
       </section>

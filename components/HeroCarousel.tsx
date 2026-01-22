@@ -48,14 +48,14 @@ export default function HeroCarousel({ banners, heading, subheading }: HeroCarou
         <section className="relative w-full flex flex-col items-center bg-black">
             {/* Image Carousel */}
             <div className="relative w-full">
-                <div className="relative w-full min-h-[300px] md:min-h-[500px] lg:min-h-[780px]">
+                <div className="relative w-full min-h-[300px] md:min-h-[500px] lg:min-h-[650px]">
                     {/* Carousel */}
                     <div className="overflow-hidden h-full" ref={heroEmblaRef}>
                         <div className="flex h-full">
                             {banners.length > 0 ? (
                                 banners.map((banner, index) => (
                                     <div key={banner.id} className="flex-[0_0_100%] min-w-0 relative h-full">
-                                        <div className="relative w-full h-[300px] md:h-[500px] lg:h-[780px]">
+                                        <div className="relative w-full h-[300px] md:h-[500px] lg:h-[650px]">
                                             <Image
                                                 src={banner.image}
                                                 alt={banner.title}

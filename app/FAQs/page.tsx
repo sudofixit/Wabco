@@ -1,5 +1,7 @@
 'use client'
+import CountryDropdown from '@/components/CountryDropdown';
 import Footer from '@/components/Footer';
+import MobileNavigation from '@/components/MobileNavigation';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -64,38 +66,30 @@ export default function FAQPage() {
             </Head>
 
             {/* Header */}
-            <header className="w-full max-w-[1440px] flex items-center justify-between py-4 px-4 md:py-6 md:px-8 lg:px-16">
-                <div className="flex items-center gap-4">
-                    <Image
-                        src="/Wabco Logo.jpeg"
-                        alt="Wabco Mobility Logo"
-                        width={180}
-                        height={24}
-                        className="md:w-[231px] md:h-[30px]"
-                    />
+            <header className="w-full max-w-[1320px] flex items-center justify-between py-4 px-6 md:px-12">
+                <div className="flex items-center gap-3">
+                    <Image src="/Wabco Logo.jpeg" alt="Wabco Mobility Logo" width={208} height={27} />
                 </div>
-
-                {/* Desktop Navigation */}
-                <nav className="hidden lg:flex gap-6 xl:gap-10 text-base xl:text-lg font-medium text-[#0a1c58]">
+                <nav className="hidden md:flex gap-8 text-base font-medium text-[#0a1c58]">
                     <Link href="/" className="hover:text-black transition">Home</Link>
                     <Link href="/tyre" className="hover:text-black transition">Tyres</Link>
                     <Link href="/service" className="hover:text-black transition">Services</Link>
                     <Link href="/location" className="hover:text-black transition">Location</Link>
                 </nav>
 
-                {/* Desktop Contact Button */}
-                <Link href="/contact-us" className="hidden lg:block">
-                    <button className="border-2 border-[#0a1c58] text-[#0a1c58] px-6 xl:px-8 py-2 rounded-full font-semibold text-base xl:text-lg hover:bg-[#0a1c58] hover:text-white transition">
-                        Contact Us
-                    </button>
-                </Link>
+                <div className="flex items-center gap-4">
+                    <Link href="/contact-us">
+                        <button className="hidden md:block border-2 border-[#0a1c58] text-[#0a1c58] px-6 py-1.5 rounded-full font-semibold text-base hover:bg-[#0a1c58] hover:text-white transition">
+                            Contact Us
+                        </button>
+                    </Link>
+
+                    {/* Country Dropdown */}
+                    <CountryDropdown />
+                </div>
 
                 {/* Mobile Navigation */}
-                <div className="lg:hidden">
-                    <button className="text-[#0a1c58]">
-                        <i className="fas fa-bars text-xl"></i>
-                    </button>
-                </div>
+                <MobileNavigation />
             </header>
 
             {/* Page Header */}
